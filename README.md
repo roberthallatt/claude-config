@@ -7,7 +7,7 @@ Shared Claude Code configuration files for consistent coding standards across pr
 ### Option 1: One-line install (recommended)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/YOURUSERNAME/claude-config/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/roberthallatt/claude-config/main/install.sh | bash
 ```
 
 > **Note:** Replace `YOURUSERNAME` with your actual GitHub username/organization.
@@ -15,7 +15,7 @@ curl -fsSL https://raw.githubusercontent.com/YOURUSERNAME/claude-config/main/ins
 ### Option 2: Clone and install
 
 ```bash
-git clone https://github.com/YOURUSERNAME/claude-config.git ~/.claude-config
+git clone https://github.com/roberthallatt/claude-config.git ~/.claude-config
 cd ~/.claude-config
 ./install.sh
 ```
@@ -119,7 +119,7 @@ To get the latest configurations:
 cd ~/.claude-config && git pull && ./install.sh
 
 # Or re-run the one-liner
-curl -fsSL https://raw.githubusercontent.com/YOURUSERNAME/claude-config/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/roberthallatt/claude-config/main/install.sh | bash
 ```
 
 ## Customization
@@ -167,7 +167,7 @@ Add this to your project's README:
 Install shared Claude Code configs (one-time setup):
 
 \`\`\`bash
-curl -fsSL https://raw.githubusercontent.com/YOURUSERNAME/claude-config/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/roberthallatt/claude-config/main/install.sh | bash
 \`\`\`
 ```
 

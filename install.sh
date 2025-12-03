@@ -29,7 +29,7 @@ if [ -f "$SCRIPT_DIR/stacks/craftcms.md" ]; then
 else
     # Running via curl - need to clone first
     INSTALL_SOURCE="remote"
-    REPO_URL="${REPO_URL:-https://github.com/YOURUSERNAME/claude-config}"
+    REPO_URL="${REPO_URL:-https://github.com/roberthallatt/claude-config}"
     
     echo -e "${YELLOW}Repository URL: $REPO_URL${NC}"
     echo ""
