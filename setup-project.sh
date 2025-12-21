@@ -200,7 +200,14 @@ detect_ddev_config() {
     
     # Build primary URL
     if [[ -n "$DDEV_PRIMARY_FQDN" ]]; then
-      DDEV_PRIMARY_URL="https://$DDEV_PRIMARY_FQDN"
+      # Check if FQDN already has a TLD (contains a dot after the hostname)
+      if [[ "$DDEV_PRIMARY_FQDN" == *.*.* ]]; then
+        # Already a full FQDN (e.g., www.kidsnewtocanada.test)
+        DDEV_PRIMARY_URL="https://$DDEV_PRIMARY_FQDN"
+      else
+        # Partial FQDN (e.g., www.caringforkids) - append the project TLD
+        DDEV_PRIMARY_URL="https://${DDEV_PRIMARY_FQDN}.${DDEV_TLD}"
+      fi
     elif [[ -n "$DDEV_TLD" ]] && [[ "$DDEV_TLD" != "ddev.site" ]]; then
       DDEV_PRIMARY_URL="https://${DDEV_NAME}.${DDEV_TLD}"
     else
