@@ -1,0 +1,621 @@
+#!/bin/bash
+#
+# setup-project.sh
+# Deploy Claude Code / AI agent configuration to a CPS project
+#
+# Usage:
+#   ./setup-project.sh --stack=expressionengine --project=/path/to/project [options]
+#
+# Options:
+#   --stack       Stack template to use (expressionengine, craftcms, wordpress-roots, nextjs, docusaurus)
+#   --project     Target project directory
+#   --name        Human-readable project name (optional, derived from directory if not provided)
+#   --slug        Project slug for templates (optional, derived from directory if not provided)
+#   --dry-run     Show what would be done without making changes
+#   --force       Overwrite existing configuration without prompting
+#   --clean       Remove existing Claude/AI config before deploying (CLAUDE.md, AGENTS.md, .claude/)
+#   --refresh     Re-scan project and regenerate CLAUDE.md only (preserves .claude/ customizations)
+#   --skip-vscode Skip VSCode settings (if you manage them separately)
+#   --with-mcp    Deploy .mcp.json for ExpressionEngine MCP server integration
+#   --analyze     Generate analysis prompt for Claude to customize config
+#
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+# Script directory (where claude-config-repo lives)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Default values
+STACK=""
+PROJECT_DIR=""
+PROJECT_NAME=""
+PROJECT_SLUG=""
+DRY_RUN=false
+FORCE=false
+CLEAN=false
+REFRESH=false
+SKIP_VSCODE=false
+WITH_MCP=false
+ANALYZE=false
+
+# Detected values (populated during analysis)
+DDEV_NAME=""
+DDEV_DOCROOT=""
+DDEV_PHP=""
+DDEV_DB_TYPE=""
+DDEV_DB_VERSION=""
+DDEV_NODEJS=""
+TEMPLATE_GROUP=""
+HAS_TAILWIND=false
+HAS_STASH=false
+HAS_STRUCTURE=false
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --stack=*)
+      STACK="${1#*=}"
+      shift
+      ;;
+    --project=*)
+      PROJECT_DIR="${1#*=}"
+      shift
+      ;;
+    --name=*)
+      PROJECT_NAME="${1#*=}"
+      shift
+      ;;
+    --slug=*)
+      PROJECT_SLUG="${1#*=}"
+      shift
+      ;;
+    --dry-run)
+      DRY_RUN=true
+      shift
+      ;;
+    --force)
+      FORCE=true
+      shift
+      ;;
+    --clean)
+      CLEAN=true
+      shift
+      ;;
+    --refresh)
+      REFRESH=true
+      shift
+      ;;
+    --skip-vscode)
+      SKIP_VSCODE=true
+      shift
+      ;;
+    --with-mcp)
+      WITH_MCP=true
+      shift
+      ;;
+    --analyze)
+      ANALYZE=true
+      shift
+      ;;
+    -h|--help)
+      echo "Usage: $0 --stack=<stack> --project=<path> [options]"
+      echo ""
+      echo "Options:"
+      echo "  --stack=<n>       Stack template (required)"
+      echo "  --project=<path>  Target project directory (required)"
+      echo "  --name=<n>        Human-readable project name"
+      echo "  --slug=<slug>     Project slug for templates"
+      echo "  --dry-run         Preview changes without applying"
+      echo "  --force           Overwrite existing config without prompting"
+      echo "  --clean           Remove existing config before deploying (fresh start)"
+      echo "  --refresh         Re-scan and regenerate CLAUDE.md only (keeps .claude/)"
+      echo "  --skip-vscode     Do not copy VSCode settings"
+      echo "  --with-mcp        Deploy .mcp.json for EE MCP server integration"
+      echo "  --analyze         Generate analysis prompt for Claude"
+      echo ""
+      echo "Available stacks:"
+      ls -1 "$SCRIPT_DIR/projects/" 2>/dev/null | sed 's/^/  - /'
+      exit 0
+      ;;
+    *)
+      echo -e "${RED}Unknown option: $1${NC}"
+      exit 1
+      ;;
+  esac
+done
+
+# Validation
+if [[ -z "$STACK" ]]; then
+  echo -e "${RED}Error: --stack is required${NC}"
+  echo "Available stacks:"
+  ls -1 "$SCRIPT_DIR/projects/" 2>/dev/null | sed 's/^/  - /'
+  exit 1
+fi
+
+if [[ -z "$PROJECT_DIR" ]]; then
+  echo -e "${RED}Error: --project is required${NC}"
+  exit 1
+fi
+
+# Resolve project directory to absolute path
+PROJECT_DIR="$(cd "$PROJECT_DIR" 2>/dev/null && pwd)" || {
+  echo -e "${RED}Error: Project directory does not exist: $PROJECT_DIR${NC}"
+  exit 1
+}
+
+# Check stack exists
+STACK_DIR="$SCRIPT_DIR/projects/$STACK"
+if [[ ! -d "$STACK_DIR" ]]; then
+  echo -e "${RED}Error: Stack '$STACK' not found${NC}"
+  echo "Available stacks:"
+  ls -1 "$SCRIPT_DIR/projects/" 2>/dev/null | sed 's/^/  - /'
+  exit 1
+fi
+
+# Derive project name and slug if not provided
+if [[ -z "$PROJECT_NAME" ]]; then
+  PROJECT_NAME="$(basename "$PROJECT_DIR")"
+fi
+
+if [[ -z "$PROJECT_SLUG" ]]; then
+  PROJECT_SLUG="$(basename "$PROJECT_DIR" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')"
+fi
+
+# ============================================================================
+# Project Detection Functions
+# ============================================================================
+
+detect_ddev_config() {
+  local config_file="$PROJECT_DIR/.ddev/config.yaml"
+  if [[ -f "$config_file" ]]; then
+    DDEV_NAME=$(grep -E "^name:" "$config_file" 2>/dev/null | head -1 | sed 's/name:[[:space:]]*//' | tr -d '"' || echo "")
+    DDEV_DOCROOT=$(grep -E "^docroot:" "$config_file" 2>/dev/null | head -1 | sed 's/docroot:[[:space:]]*//' | tr -d '"' || echo "public")
+    DDEV_PHP=$(grep -E "^php_version:" "$config_file" 2>/dev/null | head -1 | sed 's/php_version:[[:space:]]*//' | tr -d '"' || echo "8.1")
+    DDEV_NODEJS=$(grep -E "^nodejs_version:" "$config_file" 2>/dev/null | head -1 | sed 's/nodejs_version:[[:space:]]*//' | tr -d '"' || echo "18")
+    
+    # TLD detection (default: ddev.site)
+    DDEV_TLD=$(grep -E "^project_tld:" "$config_file" 2>/dev/null | head -1 | sed 's/project_tld:[[:space:]]*//' | tr -d '"' || echo "ddev.site")
+    
+    # Get all additional FQDNs
+    local fqdns=$(grep -A10 "additional_fqdns:" "$config_file" 2>/dev/null | grep -E "^\s+-" | sed 's/.*-[[:space:]]*//' | tr -d '"')
+    
+    # Try to find an FQDN that contains the DDEV name (prefer English/primary domain)
+    DDEV_PRIMARY_FQDN=""
+    if [[ -n "$fqdns" ]]; then
+      # First, try to find one that contains the DDEV name
+      DDEV_PRIMARY_FQDN=$(echo "$fqdns" | grep -i "$DDEV_NAME" | head -1 || true)
+      # If no match, use the first FQDN
+      if [[ -z "$DDEV_PRIMARY_FQDN" ]]; then
+        DDEV_PRIMARY_FQDN=$(echo "$fqdns" | head -1)
+      fi
+    fi
+    
+    # Build primary URL
+    if [[ -n "$DDEV_PRIMARY_FQDN" ]]; then
+      DDEV_PRIMARY_URL="https://$DDEV_PRIMARY_FQDN"
+    elif [[ -n "$DDEV_TLD" ]] && [[ "$DDEV_TLD" != "ddev.site" ]]; then
+      DDEV_PRIMARY_URL="https://${DDEV_NAME}.${DDEV_TLD}"
+    else
+      DDEV_PRIMARY_URL="https://${DDEV_NAME}.ddev.site"
+    fi
+    
+    # Database detection (more complex due to nested structure)
+    if grep -q "type: mariadb" "$config_file" 2>/dev/null; then
+      DDEV_DB_TYPE="MariaDB"
+      DDEV_DB_VERSION=$(grep -A1 "database:" "$config_file" 2>/dev/null | grep "version:" | sed 's/.*version:[[:space:]]*//' | tr -d '"' || echo "10.11")
+    elif grep -q "type: mysql" "$config_file" 2>/dev/null; then
+      DDEV_DB_TYPE="MySQL"
+      DDEV_DB_VERSION=$(grep -A1 "database:" "$config_file" 2>/dev/null | grep "version:" | sed 's/.*version:[[:space:]]*//' | tr -d '"' || echo "8.0")
+    else
+      DDEV_DB_TYPE="MariaDB"
+      DDEV_DB_VERSION="10.11"
+    fi
+    return 0
+  fi
+  return 1
+}
+
+detect_template_group() {
+  local templates_dir="$PROJECT_DIR/system/user/templates"
+  if [[ -d "$templates_dir" ]]; then
+    # Find the first non-underscore directory (the main template group)
+    TEMPLATE_GROUP=$(ls -1 "$templates_dir" 2>/dev/null | grep -v "^_" | head -1 || true)
+  fi
+  return 0
+}
+
+detect_frontend_tools() {
+  # Check for Tailwind
+  if [[ -f "$PROJECT_DIR/$DDEV_DOCROOT/tailwind.config.js" ]] || [[ -f "$PROJECT_DIR/tailwind.config.js" ]]; then
+    HAS_TAILWIND=true
+  fi
+  return 0
+}
+
+detect_addons() {
+  local addons_dir="$PROJECT_DIR/system/user/addons"
+  if [[ -d "$addons_dir" ]]; then
+    [[ -d "$addons_dir/stash" ]] && HAS_STASH=true
+    [[ -d "$addons_dir/structure" ]] && HAS_STRUCTURE=true
+  fi
+  return 0
+}
+
+# ============================================================================
+# Helper Functions
+# ============================================================================
+
+do_copy() {
+  local src="$1"
+  local dest="$2"
+  if [[ "$DRY_RUN" == true ]]; then
+    echo -e "  ${YELLOW}[DRY-RUN]${NC} cp -r $src → $dest"
+  else
+    cp -r "$src" "$dest"
+    echo -e "  ${GREEN}✓${NC} Copied $(basename "$src")"
+  fi
+}
+
+do_mkdir() {
+  local dir="$1"
+  if [[ "$DRY_RUN" == true ]]; then
+    echo -e "  ${YELLOW}[DRY-RUN]${NC} mkdir -p $dir"
+  else
+    mkdir -p "$dir"
+  fi
+}
+
+do_symlink() {
+  local target="$1"
+  local link="$2"
+  if [[ "$DRY_RUN" == true ]]; then
+    echo -e "  ${YELLOW}[DRY-RUN]${NC} ln -sf $target → $link"
+  else
+    ln -sf "$target" "$link"
+    echo -e "  ${GREEN}✓${NC} Created symlink AGENTS.md → CLAUDE.md"
+  fi
+}
+
+do_template() {
+  local src="$1"
+  local dest="$2"
+  if [[ "$DRY_RUN" == true ]]; then
+    echo -e "  ${YELLOW}[DRY-RUN]${NC} Template $src → $dest"
+    echo -e "           Substitutions: {{PROJECT_NAME}}=$PROJECT_NAME, {{PROJECT_SLUG}}=$PROJECT_SLUG"
+  else
+    sed -e "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" \
+        -e "s/{{PROJECT_SLUG}}/$PROJECT_SLUG/g" \
+        -e "s/{{DDEV_NAME}}/${DDEV_NAME:-$PROJECT_SLUG}/g" \
+        -e "s/{{DDEV_DOCROOT}}/${DDEV_DOCROOT:-public}/g" \
+        -e "s/{{DDEV_PHP}}/${DDEV_PHP:-8.1}/g" \
+        -e "s/{{DDEV_DB_TYPE}}/${DDEV_DB_TYPE:-MariaDB}/g" \
+        -e "s/{{DDEV_DB_VERSION}}/${DDEV_DB_VERSION:-10.11}/g" \
+        -e "s/{{DDEV_TLD}}/${DDEV_TLD:-ddev.site}/g" \
+        -e "s|{{DDEV_PRIMARY_URL}}|${DDEV_PRIMARY_URL:-https://${DDEV_NAME:-$PROJECT_SLUG}.ddev.site}|g" \
+        -e "s/{{TEMPLATE_GROUP}}/${TEMPLATE_GROUP:-$PROJECT_SLUG}/g" \
+        "$src" > "$dest"
+    echo -e "  ${GREEN}✓${NC} Created CLAUDE.md from template"
+  fi
+}
+
+do_clean() {
+  # Remove existing Claude/AI configuration files
+  local files_to_clean=(
+    "$PROJECT_DIR/CLAUDE.md"
+    "$PROJECT_DIR/AGENTS.md"
+    "$PROJECT_DIR/.claude"
+  )
+  
+  echo -e "${CYAN}Cleaning existing configuration...${NC}"
+  
+  for item in "${files_to_clean[@]}"; do
+    if [[ -e "$item" ]] || [[ -L "$item" ]]; then
+      if [[ "$DRY_RUN" == true ]]; then
+        echo -e "  ${YELLOW}[DRY-RUN]${NC} rm -rf $item"
+      else
+        rm -rf "$item"
+        echo -e "  ${GREEN}✓${NC} Removed $(basename "$item")"
+      fi
+    fi
+  done
+  echo ""
+}
+
+# ============================================================================
+# Main Execution
+# ============================================================================
+
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}  Claude Code Configuration Setup${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+
+# Run detection
+echo -e "${CYAN}Scanning project...${NC}"
+detect_ddev_config && echo -e "  ${GREEN}✓${NC} Found DDEV config" || echo -e "  ${YELLOW}○${NC} No DDEV config found"
+detect_template_group
+if [[ -n "$TEMPLATE_GROUP" ]]; then
+  echo -e "  ${GREEN}✓${NC} Found template group: $TEMPLATE_GROUP"
+else
+  echo -e "  ${YELLOW}○${NC} No template group detected"
+fi
+detect_frontend_tools
+[[ "$HAS_TAILWIND" == true ]] && echo -e "  ${GREEN}✓${NC} Tailwind CSS detected" || echo -e "  ${YELLOW}○${NC} No Tailwind config found"
+detect_addons
+[[ "$HAS_STASH" == true ]] && echo -e "  ${GREEN}✓${NC} Stash add-on detected" || true
+[[ "$HAS_STRUCTURE" == true ]] && echo -e "  ${GREEN}✓${NC} Structure add-on detected" || true
+echo ""
+
+echo -e "  Stack:       ${GREEN}$STACK${NC}"
+echo -e "  Project:     ${GREEN}$PROJECT_DIR${NC}"
+echo -e "  Name:        ${GREEN}$PROJECT_NAME${NC}"
+echo -e "  Slug:        ${GREEN}$PROJECT_SLUG${NC}"
+[[ -n "$DDEV_NAME" ]] && echo -e "  DDEV Name:   ${GREEN}$DDEV_NAME${NC}"
+[[ -n "$DDEV_DOCROOT" ]] && echo -e "  Docroot:     ${GREEN}$DDEV_DOCROOT${NC}"
+[[ -n "$DDEV_PHP" ]] && echo -e "  PHP:         ${GREEN}$DDEV_PHP${NC}"
+[[ -n "$DDEV_DB_TYPE" ]] && echo -e "  Database:    ${GREEN}$DDEV_DB_TYPE $DDEV_DB_VERSION${NC}"
+[[ -n "$DDEV_PRIMARY_URL" ]] && echo -e "  Primary URL: ${GREEN}$DDEV_PRIMARY_URL${NC}"
+echo -e "  Dry Run:     ${YELLOW}$DRY_RUN${NC}"
+echo -e "  Force:       ${YELLOW}$FORCE${NC}"
+echo -e "  Clean:       ${YELLOW}$CLEAN${NC}"
+echo -e "  Refresh:     ${YELLOW}$REFRESH${NC}"
+echo ""
+
+# Clean existing configuration if --clean flag is set
+if [[ "$CLEAN" == true ]]; then
+  do_clean
+fi
+
+# Refresh mode: only regenerate CLAUDE.md, skip everything else
+if [[ "$REFRESH" == true ]]; then
+  echo -e "${BLUE}Refreshing CLAUDE.md...${NC}"
+  echo ""
+  
+  # Regenerate CLAUDE.md from template
+  if [[ -f "$STACK_DIR/CLAUDE.md.template" ]]; then
+    do_template "$STACK_DIR/CLAUDE.md.template" "$PROJECT_DIR/CLAUDE.md"
+  elif [[ -f "$STACK_DIR/CLAUDE.md" ]]; then
+    do_copy "$STACK_DIR/CLAUDE.md" "$PROJECT_DIR/"
+  fi
+  
+  # Ensure AGENTS.md symlink exists
+  if [[ ! -L "$PROJECT_DIR/AGENTS.md" ]]; then
+    do_symlink "CLAUDE.md" "$PROJECT_DIR/AGENTS.md"
+  fi
+  
+  # Deploy MCP if requested (even in refresh mode)
+  if [[ "$WITH_MCP" == true ]] && [[ -f "$STACK_DIR/.mcp.json" ]]; then
+    echo ""
+    echo -e "${CYAN}Deploying MCP configuration...${NC}"
+    do_copy "$STACK_DIR/.mcp.json" "$PROJECT_DIR/"
+  fi
+  
+  echo ""
+  echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo -e "${GREEN}  CLAUDE.md refreshed successfully!${NC}"
+  echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo ""
+  echo -e "${CYAN}Updated values:${NC}"
+  [[ -n "$DDEV_NAME" ]] && echo -e "  DDEV Name:   ${GREEN}$DDEV_NAME${NC}"
+  [[ -n "$DDEV_DOCROOT" ]] && echo -e "  Docroot:     ${GREEN}$DDEV_DOCROOT${NC}"
+  [[ -n "$DDEV_PHP" ]] && echo -e "  PHP:         ${GREEN}$DDEV_PHP${NC}"
+  [[ -n "$DDEV_DB_TYPE" ]] && echo -e "  Database:    ${GREEN}$DDEV_DB_TYPE $DDEV_DB_VERSION${NC}"
+  [[ -n "$DDEV_PRIMARY_URL" ]] && echo -e "  Primary URL: ${GREEN}$DDEV_PRIMARY_URL${NC}"
+  [[ -n "$TEMPLATE_GROUP" ]] && echo -e "  Template:    ${GREEN}$TEMPLATE_GROUP${NC}"
+  [[ "$HAS_TAILWIND" == true ]] && echo -e "  Tailwind:    ${GREEN}Yes${NC}"
+  echo ""
+  echo -e "${CYAN}Preserved:${NC}"
+  echo -e "  .claude/agents/     (your customizations)"
+  echo -e "  .claude/commands/   (your customizations)"
+  echo -e "  .claude/rules/      (your customizations)"
+  echo -e "  .claude/skills/     (your customizations)"
+  echo -e "  .vscode/            (not modified)"
+  if [[ "$WITH_MCP" == true ]]; then
+    echo ""
+    echo -e "${CYAN}MCP configuration deployed:${NC}"
+    echo -e "  .mcp.json — EE MCP + Context7 servers"
+    echo ""
+    echo -e "${YELLOW}Note:${NC} Restart Claude Code to activate MCP tools"
+  fi
+  exit 0
+fi
+
+# Check for existing configuration (skip if --clean or --force)
+if [[ -d "$PROJECT_DIR/.claude" ]] && [[ "$FORCE" != true ]] && [[ "$CLEAN" != true ]] && [[ "$DRY_RUN" != true ]]; then
+  echo -e "${YELLOW}Warning: .claude/ directory already exists in project${NC}"
+  read -p "Overwrite? (y/N) " -n 1 -r
+  echo
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "Aborted."
+    exit 0
+  fi
+fi
+
+echo -e "${BLUE}Deploying configuration...${NC}"
+echo ""
+
+# 1. Create .claude directory structure
+do_mkdir "$PROJECT_DIR/.claude"
+
+# 2. Copy agents, commands, rules, skills
+for subdir in agents commands rules skills; do
+  if [[ -d "$STACK_DIR/$subdir" ]]; then
+    do_mkdir "$PROJECT_DIR/.claude/$subdir"
+    for file in "$STACK_DIR/$subdir"/*; do
+      if [[ -e "$file" ]]; then
+        do_copy "$file" "$PROJECT_DIR/.claude/$subdir/"
+      fi
+    done
+  fi
+done
+
+# 3. Copy settings.local.json
+if [[ -f "$STACK_DIR/settings.local.json" ]]; then
+  do_copy "$STACK_DIR/settings.local.json" "$PROJECT_DIR/.claude/"
+fi
+
+# 4. Copy VSCode settings (unless skipped)
+if [[ "$SKIP_VSCODE" != true ]] && [[ -d "$STACK_DIR/.vscode" ]]; then
+  echo ""
+  echo -e "${CYAN}Copying VSCode settings...${NC}"
+  
+  # Check if .vscode exists and is not empty
+  if [[ -d "$PROJECT_DIR/.vscode" ]] && [[ "$(ls -A "$PROJECT_DIR/.vscode" 2>/dev/null)" ]]; then
+    if [[ "$FORCE" != true ]] && [[ "$DRY_RUN" != true ]]; then
+      echo -e "${YELLOW}Warning: .vscode/ directory already has files${NC}"
+      read -p "Merge/overwrite VSCode settings? (y/N) " -n 1 -r
+      echo
+      if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo -e "  ${YELLOW}○${NC} Skipped VSCode settings"
+      else
+        do_mkdir "$PROJECT_DIR/.vscode"
+        for file in "$STACK_DIR/.vscode"/*; do
+          if [[ -e "$file" ]]; then
+            do_copy "$file" "$PROJECT_DIR/.vscode/"
+          fi
+        done
+      fi
+    else
+      do_mkdir "$PROJECT_DIR/.vscode"
+      for file in "$STACK_DIR/.vscode"/*; do
+        if [[ -e "$file" ]]; then
+          do_copy "$file" "$PROJECT_DIR/.vscode/"
+        fi
+      done
+    fi
+  else
+    do_mkdir "$PROJECT_DIR/.vscode"
+    for file in "$STACK_DIR/.vscode"/*; do
+      if [[ -e "$file" ]]; then
+        do_copy "$file" "$PROJECT_DIR/.vscode/"
+      fi
+    done
+  fi
+fi
+
+# 5. Copy MCP configuration (if requested)
+if [[ "$WITH_MCP" == true ]] && [[ -f "$STACK_DIR/.mcp.json" ]]; then
+  echo ""
+  echo -e "${CYAN}Deploying MCP configuration...${NC}"
+  
+  if [[ -f "$PROJECT_DIR/.mcp.json" ]] && [[ "$FORCE" != true ]]; then
+    echo -e "${YELLOW}Warning: .mcp.json already exists${NC}"
+    read -p "Overwrite? (y/N) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+      do_copy "$STACK_DIR/.mcp.json" "$PROJECT_DIR/"
+    else
+      echo -e "  ${YELLOW}○${NC} Skipped .mcp.json"
+    fi
+  else
+    do_copy "$STACK_DIR/.mcp.json" "$PROJECT_DIR/"
+  fi
+fi
+
+# 6. Create CLAUDE.md from template
+echo ""
+if [[ -f "$STACK_DIR/CLAUDE.md.template" ]]; then
+  do_template "$STACK_DIR/CLAUDE.md.template" "$PROJECT_DIR/CLAUDE.md"
+elif [[ -f "$STACK_DIR/CLAUDE.md" ]]; then
+  do_copy "$STACK_DIR/CLAUDE.md" "$PROJECT_DIR/"
+fi
+
+# 7. Create AGENTS.md symlink
+do_symlink "CLAUDE.md" "$PROJECT_DIR/AGENTS.md"
+
+# 8. Generate analysis prompt if requested
+if [[ "$ANALYZE" == true ]] && [[ "$DRY_RUN" != true ]]; then
+  echo ""
+  echo -e "${CYAN}Generating analysis prompt...${NC}"
+  
+  cat > "$PROJECT_DIR/.claude/ANALYZE_PROJECT.md" << 'ANALYSIS_EOF'
+# Project Analysis Request
+
+Please run the `/project-analyze` command to scan this project and customize the configuration.
+
+## What to Analyze
+
+1. **DDEV Configuration** (`.ddev/config.yaml`)
+   - Verify project name, URLs, PHP version
+   - Check database type and version
+   - Note any custom configuration
+
+2. **Template Structure** (`system/user/templates/`)
+   - Identify template group name
+   - Document layout and partial organization
+   - Check for bilingual patterns
+
+3. **Frontend Build** (`public/` or project root)
+   - Find `package.json` and document npm scripts
+   - Check Tailwind config for brand colors
+   - Note build tool (PostCSS, Vite, Webpack, etc.)
+
+4. **Add-ons** (`system/user/addons/`)
+   - List installed add-ons
+   - Note any custom add-ons
+
+5. **Update Configuration**
+   - Customize CLAUDE.md with detected values
+   - Update brand colors in Tailwind rules
+   - Adjust commands for this project's paths
+
+## After Analysis
+
+Update these files with project-specific information:
+- `CLAUDE.md` - Project overview, URLs, commands
+- `.claude/rules/tailwind-css.md` - Brand colors
+- `.claude/skills/tailwind-utility-finder/BRAND_COLORS.md` - Color reference
+ANALYSIS_EOF
+
+  echo -e "  ${GREEN}✓${NC} Created .claude/ANALYZE_PROJECT.md"
+fi
+
+echo ""
+echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+if [[ "$DRY_RUN" == true ]]; then
+  echo -e "${YELLOW}  Dry run complete. No changes made.${NC}"
+else
+  echo -e "${GREEN}  Configuration deployed successfully!${NC}"
+fi
+echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+echo -e "${CYAN}Next steps:${NC}"
+echo "  1. Open the project in Claude Code"
+echo "  2. Run: /project-analyze"
+echo "     This will scan the codebase and customize the configuration"
+echo ""
+echo "  Or manually review and customize:"
+echo "  - CLAUDE.md — Project overview and commands"
+echo "  - .claude/rules/ — Project-specific constraints"
+echo "  - .claude/agents/ — Custom agent personas"
+echo ""
+if [[ "$SKIP_VSCODE" != true ]]; then
+  echo -e "${CYAN}VSCode settings deployed:${NC}"
+  echo "  - .vscode/settings.json — Editor + Emmet config"
+  echo "  - .vscode/launch.json — Xdebug configuration"
+  echo "  - .vscode/tasks.json — DDEV Xdebug tasks"
+  echo "  - .vscode/tailwind.json — Tailwind CSS IntelliSense"
+  echo ""
+fi
+if [[ "$WITH_MCP" == true ]]; then
+  echo -e "${CYAN}MCP configuration deployed:${NC}"
+  echo "  - .mcp.json — ExpressionEngine MCP server config"
+  echo "  - .claude/rules/mcp-workflow.md — MCP usage rules"
+  echo ""
+  echo -e "${YELLOW}Note:${NC} Restart Claude Code to activate MCP tools"
+  echo ""
+fi
+echo -e "${CYAN}Gitignore reminder:${NC}"
+echo "  Ensure .gitignore includes:"
+echo "    CLAUDE.md"
+echo "    AGENTS.md"
+echo "    .claude/"
+echo ""

@@ -1,0 +1,227 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Stack Configuration
+
+@~/.claude/stacks/expressionengine.md
+@~/.claude/libraries/tailwind.md
+@~/.claude/libraries/html5.md
+@~/.claude/libraries/vanilla-js.md
+
+## Project Overview
+
+{{PROJECT_NAME}} is an ExpressionEngine 7.x website. Managed by the Canadian Paediatric Society.
+
+- **CMS**: ExpressionEngine 7.x
+- **CSS**: Tailwind CSS (via PostCSS)
+- **Environment**: DDEV (Docker-based local dev)
+- **Database**: {{DDEV_DB_TYPE}}/{{DDEV_DB_VERSION}}
+- **PHP**: {{DDEV_PHP}}+
+
+## Local Development URLs
+
+- **Primary**: {{DDEV_PRIMARY_URL}}
+- **Control Panel**: {{DDEV_PRIMARY_URL}}/eecp.php
+
+## Directory Structure
+
+```
+{{PROJECT_SLUG}}/
+├── {{DDEV_DOCROOT}}/                  # Document root
+│   ├── assets/                # Compiled CSS/JS
+│   ├── images/                # Static images
+│   ├── uploads/               # User uploads
+│   ├── themes/                # EE themes
+│   ├── src/                   # Source CSS/JS
+│   ├── tailwind.config.js     # Tailwind configuration
+│   ├── postcss.config.js      # PostCSS configuration
+│   ├── package.json           # Frontend dependencies
+│   ├── index.php              # Frontend entry
+│   └── eecp.php               # Control panel entry
+├── system/
+│   ├── ee/                    # EE core (don't modify)
+│   └── user/
+│       ├── addons/            # Third-party and custom add-ons
+│       ├── config/            # EE configuration
+│       │   └── config.php
+│       └── templates/{{TEMPLATE_GROUP}}/   # Site templates
+│           ├── _layouts/      # Base layouts
+│           ├── _partials/     # Reusable partials
+│           ├── stash/         # Stash template partials
+│           └── [groups]/      # Page template groups
+├── .ddev/                     # DDEV configuration
+├── .env.php                   # Environment variables
+└── .github/workflows/         # CI/CD pipelines
+```
+
+## Common Commands
+
+### Local Development
+```bash
+ddev start                     # Start DDEV containers
+ddev stop                      # Stop DDEV containers
+ddev ssh                       # SSH into web container
+ddev describe                  # Show project info and URLs
+```
+
+### Frontend Build
+```bash
+cd {{DDEV_DOCROOT}}
+npm install                    # Install dependencies
+npm run dev                    # Development build with watch
+npm run build                  # Production build
+```
+
+### ExpressionEngine CLI
+```bash
+ddev exec php system/ee/eecli.php cache:clear        # Clear all caches
+ddev exec php system/ee/eecli.php cache:clear/tag    # Clear template caches
+ddev exec php system/ee/eecli.php update             # Run EE updates
+```
+
+### Database
+```bash
+ddev export-db > backup.sql.gz   # Export database
+ddev import-db < backup.sql.gz   # Import database
+ddev mysql                       # MySQL CLI
+```
+
+### Xdebug
+```bash
+ddev xdebug on                 # Enable Xdebug
+ddev xdebug off                # Disable Xdebug
+```
+
+## ExpressionEngine MCP Server
+
+This project uses an ExpressionEngine MCP (Model Context Protocol) server for direct access to EE functionality.
+
+### Available Tools
+| Tool | Description |
+|------|-------------|
+| `database_query` | Execute read-only SQL queries |
+| `database_schema` | Get database schema information |
+| `clear_cache` | Clear ExpressionEngine caches |
+| `backup_database` | Backup the database |
+| `eecli` | Execute EE CLI commands |
+| `get_field_template_tags` | Get template tag information for fields |
+
+### Available Resources
+| Resource | Description |
+|----------|-------------|
+| `ee://channels` | Access channel information |
+| `ee://channels/{id}` | Get specific channel |
+| `ee://fields` | Access custom fields |
+| `ee://templates` | Access templates |
+| `ee://system/info` | System information |
+
+### Available Prompts
+| Prompt | Description |
+|--------|-------------|
+| `build_channel_template` | Generate complete channel templates |
+| `convert_html_to_channel` | Convert static HTML to EE templates |
+
+**Important**: Always use MCP tools over direct commands. See `.claude/rules/mcp-workflow.md` for required workflow rules.
+
+## Deployment
+
+- **Automatic**: Push to `main` triggers GitHub Actions deployment
+- **Manual**: Run workflow from GitHub Actions tab
+- **Rollback**: Use workflow with specific commit hash
+
+## Template Patterns
+
+### Layouts
+Templates use Stash-based layouts. Base layout in `stash/_layouts/`.
+
+### Partials
+Reusable components in `stash/partials/`. Include with:
+```html
+{exp:stash:embed name="partials:component-name"}
+```
+
+### Channel Entries
+```html
+{exp:channel:entries 
+    channel="resources" 
+    limit="10" 
+    dynamic="no"
+    disable="categories|member_data"
+}
+    {!-- entry content --}
+{/exp:channel:entries}
+```
+
+## Bilingual Considerations
+
+This site may have bilingual content (EN/FR). When working with templates:
+- Check for language-specific variables (`{lv_*_en}` / `{lv_*_fr}`)
+- Domain-based language detection may be in use
+- Respect existing translation patterns
+
+## Security Requirements
+
+- Never commit `.env.php` or database credentials
+- Use parameterized queries for any custom SQL
+- Sanitize all user input before output
+- All forms must include CSRF tokens via `{csrf_token}`
+
+## Performance Guidelines
+
+- Use `disable="categories|member_data|pagination"` when not needed
+- Use `dynamic="no"` when URL segments shouldn't affect queries  
+- Cache heavy queries appropriately
+- Lazy load images below the fold
+- Keep Tailwind purge configuration updated
+
+## Code Style
+
+- PHP: PSR-12, 4-space indentation
+- HTML/CSS/JS: 2-space indentation
+- Use semantic HTML5 elements
+- Follow BEM for any custom CSS classes
+- Prefer Tailwind utilities over custom CSS
+
+## Context7 Integration
+
+Use the Context7 MCP server for up-to-date library documentation and code examples.
+
+### Usage
+1. First call `resolve-library-id` with the library name
+2. Then call `get-library-docs` with the resolved ID
+
+### Example
+```
+resolve-library-id("tailwindcss")
+→ Returns: /tailwindcss/tailwindcss
+
+get-library-docs("/tailwindcss/tailwindcss", topic="configuration")
+→ Returns: Current documentation
+```
+
+## Workflow Guidelines
+
+### Documentation
+- When writing documentation, create a `Docs/` folder and organize by topic
+- Keep a `SETUP_GUIDE.md` for complex features or add-ons
+
+### Git Workflow
+- When finishing a feature branch: merge to `staging` first, then to `main`
+- Delete the feature branch after successful merge to `main`
+- Always pull latest before starting new work
+
+## Before Making Changes
+
+1. Run `ddev start` and verify the site loads
+2. Check existing patterns in similar templates
+3. Test in both languages if applicable
+4. Clear caches after template changes: `ddev exec php system/ee/eecli.php cache:clear`
+
+## First-Time Setup
+
+After running the setup script, use the `/project-analyze` command to have Claude scan this specific codebase and customize the configuration for:
+- Brand colors from tailwind.config.js
+- Actual npm scripts from package.json
+- Specific add-ons in use
+- Template organization patterns
