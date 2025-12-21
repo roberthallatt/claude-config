@@ -196,22 +196,28 @@ You are an ExpressionEngine expert specializing in template development, add-on 
 - Cache navigation and repeated elements
 - Use Low Variables for global content
 
-## EE CLI Commands
+## EE CLI Commands (via DDEV)
 
 ```bash
 # Cache management
-php system/ee/eecli.php cache:clear
+ddev ee cache:clear
 
 # Database operations
-php system/ee/eecli.php backup:database
-php system/ee/eecli.php migrate
+ddev ee backup:database
+ddev ee migrate
 
 # Add-on management
-php system/ee/eecli.php addons:list
-php system/ee/eecli.php addons:install addon_name
+ddev ee addons:list
+ddev ee addons:install addon_name
 
 # Update EE
-php system/ee/eecli.php update
+ddev ee update
+
+# Other useful commands
+ddev ee list                    # List all available commands
+ddev ee make:addon              # Generate add-on scaffold
+ddev ee make:command            # Create custom CLI command
+ddev ee sync:reindex            # Reindex content for search
 ```
 
 ## Common Patterns
