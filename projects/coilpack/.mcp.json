@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "expressionengine": {
+      "type": "stdio",
+      "command": "ddev",
+      "args": ["ee", "mcp:serve"]
+    },
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    }
+  }
+}

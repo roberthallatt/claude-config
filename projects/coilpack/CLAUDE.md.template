@@ -1,0 +1,276 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Stack Configuration
+
+@~/.claude/stacks/expressionengine.md
+@~/.claude/libraries/tailwind.md
+@~/.claude/libraries/twig.md
+@~/.claude/libraries/laravel.md
+
+## Project Overview
+
+{{PROJECT_NAME}} is an ExpressionEngine site running on **Coilpack** (Laravel + EE integration) with Twig templates. Managed by the Canadian Paediatric Society.
+
+- **CMS**: ExpressionEngine 7.x + Coilpack
+- **Framework**: Laravel 10.x
+- **Templating**: Twig (via TwigBridge)
+- **CSS**: Tailwind CSS
+- **Build Tool**: Vite
+- **Environment**: DDEV (Docker-based local dev)
+- **Database**: {{DDEV_DB_TYPE}}/{{DDEV_DB_VERSION}}
+- **PHP**: {{DDEV_PHP}}+
+
+**Coilpack Documentation**: https://expressionengine.github.io/coilpack-docs/
+
+## Local Development URLs
+
+- **Primary**: {{DDEV_PRIMARY_URL}}
+- **Control Panel**: {{DDEV_PRIMARY_URL}}/eecp
+
+## Directory Structure
+
+```
+{{PROJECT_SLUG}}/
+├── app/                       # Laravel application
+│   ├── Console/
+│   ├── Http/Controllers/
+│   ├── Models/
+│   ├── Providers/
+│   ├── Services/
+│   └── Twig/                  # Custom Twig extensions
+├── config/
+│   ├── coilpack.php           # Coilpack configuration
+│   ├── twigbridge.php         # TwigBridge settings
+│   └── ...                    # Laravel configs
+├── ee/                        # ExpressionEngine
+│   ├── system/user/
+│   │   ├── addons/            # EE add-ons
+│   │   ├── config/            # EE configuration
+│   │   └── templates/default_site/  # Twig templates
+│   │       ├── layout.group/  # Base layouts
+│   │       ├── partials.group/# Reusable partials
+│   │       ├── builder.group/ # Fluid field blocks
+│   │       ├── site.group/    # Page templates
+│   │       └── home.group/    # Homepage templates
+│   └── eecp.php               # Control panel entry
+├── {{DDEV_DOCROOT}}/          # Web root
+│   ├── index.php              # Laravel entry point
+│   ├── assets/
+│   └── uploads/
+├── resources/
+│   ├── views/                 # Blade templates (for Laravel features)
+│   ├── css/
+│   └── js/
+├── routes/
+│   └── web.php                # Laravel routes
+├── lang/                      # Translation files
+│   ├── en/
+│   └── fr/
+├── .ddev/                     # DDEV configuration
+├── .env                       # Environment variables
+├── vite.config.js             # Vite build config
+└── tailwind.config.js         # Tailwind configuration
+```
+
+## Common Commands
+
+### Local Development
+```bash
+ddev start                     # Start DDEV containers
+ddev stop                      # Stop DDEV containers
+ddev ssh                       # SSH into web container
+ddev describe                  # Show project info and URLs
+```
+
+### Laravel Artisan
+```bash
+ddev artisan route:list        # List all routes
+ddev artisan cache:clear       # Clear Laravel cache
+ddev artisan view:clear        # Clear compiled views
+ddev artisan config:clear      # Clear config cache
+ddev artisan optimize:clear    # Clear all caches
+```
+
+### ExpressionEngine CLI
+```bash
+ddev ee cache:clear            # Clear all EE caches
+ddev ee list                   # List all EE commands
+ddev ee backup:database        # Backup database
+```
+
+### Frontend Build
+```bash
+ddev npm install               # Install dependencies
+ddev npm run dev               # Development build with watch
+ddev npm run build             # Production build
+```
+
+### Database
+```bash
+ddev export-db > backup.sql.gz # Export database
+ddev import-db < backup.sql.gz # Import database
+ddev mysql                     # MySQL CLI
+```
+
+## Twig Template Patterns
+
+### Template Location
+All Twig templates are in `ee/system/user/templates/default_site/` with `.html.twig` extension.
+
+### Layout Extension
+```twig
+{# layout.group/_layout.html.twig - Base layout #}
+<!DOCTYPE html>
+<html lang="{{ app.getLocale }}">
+<head>
+  {% block head %}{% include 'ee::partials/_head' %}{% endblock %}
+</head>
+<body>
+  {% block content %}{% endblock %}
+</body>
+</html>
+
+{# site.group/index.html.twig - Page template #}
+{% extends 'ee::layout/_layout' %}
+
+{% block content %}
+  <h1>{{ entry.title }}</h1>
+{% endblock %}
+```
+
+### Including Partials
+```twig
+{% include 'ee::partials/_header' %}
+{% include 'ee::builder/_video' with {block: block} %}
+```
+
+### Accessing EE Data
+```twig
+{# Channel entries #}
+{% for entry in exp.channel.entries({channel: 'pages', limit: 10}) %}
+  <h2>{{ entry.title }}</h2>
+  {{ entry.page_content|raw }}
+{% endfor %}
+
+{# Global variables #}
+{{ global.site_name }}
+{{ segment_1 }}
+{{ segment_2 }}
+
+{# Member data #}
+{% if logged_in %}
+  Welcome, {{ screen_name }}
+{% endif %}
+```
+
+### Fluid Field (Page Builder)
+```twig
+{% for block in entry.page_builder %}
+  {% if block.type == 'text_block' %}
+    {{ block.content|raw }}
+  {% elseif block.type == 'image_block' %}
+    {% include 'ee::builder/_image' with {block: block} %}
+  {% endif %}
+{% endfor %}
+```
+
+## Laravel Integration
+
+### Livewire Components
+```twig
+{{ livewireStyles() }}
+@livewire('search-component')
+{{ livewireScripts() }}
+```
+
+### Translations
+```twig
+{{ 'messages.welcome'|trans }}
+{{ trans('nav.home') }}
+```
+
+### Routes & URLs
+```twig
+{{ url('home.index') }}
+{{ route('blog.show', {slug: entry.url_title}) }}
+```
+
+## ExpressionEngine MCP Server
+
+This project uses an ExpressionEngine MCP (Model Context Protocol) server for direct access to EE functionality.
+
+### Available Tools
+| Tool | Description |
+|------|-------------|
+| `database_query` | Execute read-only SQL queries |
+| `database_schema` | Get database schema information |
+| `clear_cache` | Clear ExpressionEngine caches |
+| `backup_database` | Backup the database |
+| `eecli` | Execute EE CLI commands |
+| `get_field_template_tags` | Get template tag information for fields |
+
+### Available Resources
+| Resource | Description |
+|----------|-------------|
+| `ee://channels` | Access channel information |
+| `ee://channels/{id}` | Get specific channel |
+| `ee://fields` | Access custom fields |
+| `ee://templates` | Access templates |
+| `ee://system/info` | System information |
+
+**Important**: Always use MCP tools over direct commands. See `.claude/rules/mcp-workflow.md` for required workflow rules.
+
+## Bilingual Considerations
+
+This site supports bilingual content (EN/FR):
+- Language detection via Laravel localization
+- Translation files in `lang/en/` and `lang/fr/`
+- Locale accessible via `{{ app.getLocale }}`
+- URL-based language switching
+
+## Security Requirements
+
+- Never commit `.env` or database credentials
+- Use parameterized queries for any custom SQL
+- Sanitize all user input before output
+- Use `{{ var }}` for escaped output, `{{ var|raw }}` only for trusted HTML
+- All forms must include CSRF tokens via `{{ csrf_field() }}`
+
+## Performance Guidelines
+
+- Always specify `channel` and `limit` in entry queries
+- Use Twig's `{% cache %}` for expensive template sections
+- Eager load relationships when possible
+- Clear caches after template changes: `ddev ee cache:clear && ddev artisan view:clear`
+
+## Code Style
+
+- PHP: PSR-12, 4-space indentation
+- Twig: 2-space indentation
+- HTML/CSS/JS: 2-space indentation
+- Use semantic HTML5 elements
+- Follow BEM for any custom CSS classes
+- Prefer Tailwind utilities over custom CSS
+
+## Context7 Integration
+
+Use the Context7 MCP server for up-to-date library documentation.
+
+### Example
+```
+resolve-library-id("twig")
+get-library-docs("/twig/twig", topic="templates")
+```
+
+## Before Making Changes
+
+1. Run `ddev start` and verify the site loads
+2. Check existing patterns in similar templates
+3. Test in both languages
+4. Clear caches after template changes:
+   ```bash
+   ddev ee cache:clear
+   ddev artisan view:clear
+   ```
