@@ -75,9 +75,11 @@ npm run build                  # Production build
 
 ### ExpressionEngine CLI
 ```bash
-ddev exec php system/ee/eecli.php cache:clear        # Clear all caches
-ddev exec php system/ee/eecli.php cache:clear/tag    # Clear template caches
-ddev exec php system/ee/eecli.php update             # Run EE updates
+ddev ee cache:clear             # Clear all caches
+ddev ee cache:clear/tag         # Clear template caches
+ddev ee update                  # Run EE updates
+ddev ee list                    # List all available commands
+ddev ee backup:database         # Backup database
 ```
 
 ### Database
@@ -216,7 +218,7 @@ get-library-docs("/tailwindcss/tailwindcss", topic="configuration")
 1. Run `ddev start` and verify the site loads
 2. Check existing patterns in similar templates
 3. Test in both languages if applicable
-4. Clear caches after template changes: `ddev exec php system/ee/eecli.php cache:clear`
+4. Clear caches after template changes: `ddev ee cache:clear`
 
 ## First-Time Setup
 

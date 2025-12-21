@@ -4,7 +4,7 @@ description: Manage DDEV local development environment for ExpressionEngine
 
 # DDEV Helper
 
-Manage your DDEV Docker-based development environment for the Kids New To Canada ExpressionEngine site.
+Manage your DDEV Docker-based development environment for ExpressionEngine projects.
 
 ## Available Operations
 
@@ -111,33 +111,36 @@ ddev mysql
 
 **Access EE CLI:**
 ```bash
-ddev exec php system/ee/eecli.php
+ddev ee
 ```
 - Access ExpressionEngine command line
 - Run EE management commands
 
 **List Available EE Commands:**
 ```bash
-ddev exec php system/ee/eecli.php list
+ddev ee list
 ```
 
 **Common EE CLI Commands:**
 ```bash
 # Clear caches
-ddev exec php system/ee/eecli.php cache:clear
+ddev ee cache:clear
 
 # Update database
-ddev exec php system/ee/eecli.php update
+ddev ee update
 
 # Backup database
-ddev exec php system/ee/eecli.php backup:database
+ddev ee backup:database
+
+# Run migrations
+ddev ee migrate
 ```
 
 ### Create Add-on Skeleton
 
 **Generate New Add-on:**
 ```bash
-ddev exec php system/ee/eecli.php make:addon
+ddev ee make:addon
 ```
 - Interactive prompts for add-on details
 - Creates directory structure
@@ -160,7 +163,7 @@ system/user/addons/custom_module/
 ├── mcp.custom_module.php    # Control panel
 ├── mod.custom_module.php    # Module tags
 ├── upd.custom_module.php    # Installer/updater
-└── views/                    # Control panel views
+└── views/                   # Control panel views
 ```
 
 ### Composer Operations
@@ -184,16 +187,16 @@ ddev composer require vendor/package
 
 **Install npm Packages:**
 ```bash
-ddev exec npm install
+ddev npm install
 ```
 
 **Run Build Commands:**
 ```bash
-ddev exec npm run dev
-ddev exec npm run build
+ddev npm run dev
+ddev npm run build
 ```
 
-**Note:** For this project, npm commands should be run **outside** DDEV since package.json is in `public/` directory and uses Browser-Sync which needs host network access.
+**Note:** For projects with package.json in the docroot (e.g., `public/`), you may need to run npm commands from the host for Browser-Sync network access.
 
 ### View Logs
 
@@ -226,7 +229,7 @@ ddev logs -s db
 ```bash
 ddev start
 # Wait for containers to start
-# Visit https://cyntc.ddev.site (or your configured URL)
+# Visit your project URL (shown in output)
 ```
 
 **Work Session:**
@@ -235,7 +238,7 @@ ddev start
 # Changes reflect immediately (no restart needed)
 
 # If needed, clear EE cache:
-ddev exec php system/ee/eecli.php cache:clear
+ddev ee cache:clear
 ```
 
 **End of Day:**
@@ -254,7 +257,7 @@ ddev export-db --file=backup-$(date +%Y%m%d).sql.gz
 **Import Fresh Database:**
 ```bash
 ddev import-db --src=/path/to/production-backup.sql.gz
-ddev exec php system/ee/eecli.php cache:clear
+ddev ee cache:clear
 ```
 
 ### Troubleshooting
@@ -280,9 +283,9 @@ ddev describe  # Check database credentials
 **Clear All Caches:**
 ```bash
 # EE cache
-ddev exec php system/ee/eecli.php cache:clear
+ddev ee cache:clear
 
-# Template cache (if using)
+# Template cache (if using file-based)
 ddev exec rm -rf system/user/cache/*
 ```
 
@@ -291,13 +294,13 @@ ddev exec rm -rf system/user/cache/*
 DDEV configuration is in `.ddev/config.yaml`:
 
 ```yaml
-name: cyntc
+name: projectname
 type: php
 docroot: public
-php_version: "8.1"  # Adjust based on EE requirements
+php_version: "8.2"
 database:
   type: mariadb
-  version: "10.6"
+  version: "10.11"
 ```
 
 ## Common Issues
@@ -314,7 +317,7 @@ ddev describe
 **Solution:**
 ```bash
 # Clear EE cache
-ddev exec php system/ee/eecli.php cache:clear
+ddev ee cache:clear
 
 # Clear browser cache
 # Hard reload in browser (Cmd+Shift+R or Ctrl+Shift+R)
@@ -352,7 +355,7 @@ sudo service apache2 stop  # Linux
 
 3. **Use DDEV for all server commands**
    - Don't mix local PHP and DDEV PHP
-   - Run EE CLI through DDEV
+   - Run EE CLI through `ddev ee`
    - Use `ddev composer` not local composer
 
 4. **Monitor logs when debugging**
@@ -362,18 +365,20 @@ sudo service apache2 stop  # Linux
 
 5. **Clear caches after template changes**
    ```bash
-   ddev exec php system/ee/eecli.php cache:clear
+   ddev ee cache:clear
    ```
 
-## Project-Specific URLs
+## Project URLs
 
-After `ddev start`, your project is available at:
-- **Web**: https://cyntc.ddev.site (or your configured domain)
-- **Database**: Direct connection via `ddev mysql`
-- **Mailhog**: https://cyntc.ddev.site:8026 (catches all emails)
-- **PHPMyAdmin**: Can be added via `ddev get ddev/ddev-phpmyadmin`
+After `ddev start`, your project is available at the URLs shown in output.
 
-Check exact URLs with:
+Check URLs anytime with:
 ```bash
 ddev describe
 ```
+
+Common services:
+- **Web**: https://projectname.ddev.site (or custom domain)
+- **Database**: Direct connection via `ddev mysql`
+- **Mailpit**: https://projectname.ddev.site:8026 (catches all emails)
+- **PHPMyAdmin**: Add via `ddev get ddev/ddev-phpmyadmin`

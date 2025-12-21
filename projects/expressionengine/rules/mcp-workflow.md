@@ -38,8 +38,10 @@ Example workflow:
 
 ## 5. CLI Operations
 
-- **ALWAYS** use `eecli` MCP tool instead of running commands via Bash
-- This ensures proper error handling and logging
+- **ALWAYS** use `eecli` MCP tool when available instead of running commands via Bash
+- If MCP is unavailable, use `ddev ee [command]` format (e.g., `ddev ee cache:clear`)
+- **NEVER** use `php system/ee/eecli.php` directly - always use DDEV wrapper
+- This ensures proper error handling and consistent environment
 
 ## 6. Self-Enforcement Checklist
 
