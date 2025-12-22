@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "mindpixel-labs.expressionengine",
+    "onecentlin.laravel-blade",
+    "whatwedo.twig",
+    "bradlc.vscode-tailwindcss",
+    "bmewburn.vscode-intelephense-client",
+    "editorconfig.editorconfig"
+  ]
+}

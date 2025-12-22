@@ -1,0 +1,38 @@
+{
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.formatOnSave": false,
+  "editor.wordWrap": "on",
+  "editor.linkedEditing": true,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+
+  "files.exclude": {
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/.git": true,
+    "**/build": true,
+    "**/.docusaurus": true
+  },
+
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/build": true,
+    "**/.docusaurus": true
+  },
+
+  "[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": true
+  },
+
+  "git.ignoreLimitWarning": true,
+
+  "gemini.mcpServers": {
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    }
+  }
+}

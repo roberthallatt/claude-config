@@ -1,0 +1,22 @@
+# Gemini CLI Custom Command: Configuration Sync
+# Invoked as: /config:sync
+
+description = "Synchronize Gemini configuration with Claude configuration"
+
+prompt = """
+Synchronize this project's Gemini and Claude configurations.
+
+## Tasks
+
+1. Compare CLAUDE.md and GEMINI.md
+2. Compare .claude/rules/*.md with .gemini/styleguide.md
+3. Check .gemini/instructions.md matches CLAUDE.md commands
+
+## Output
+
+1. Sync status table
+2. Update plan
+3. Diff preview
+
+Offer to apply updates to keep both configurations consistent.
+"""

@@ -1,40 +1,25 @@
-# Gemini CLI Custom Command: Project Analysis
+# Gemini CLI Custom Command: Project Analysis & Configuration Sync
 # Invoked as: /project:analyze
 
-description = "Analyze the Craft CMS project structure and provide an overview"
+description = "Analyze Craft CMS project and sync both Claude and Gemini configurations"
 
 prompt = """
-Analyze this Craft CMS project and provide a comprehensive overview:
+Analyze this Craft CMS project and sync AI configurations.
 
-1. **Project Structure**
-   - Examine the directory layout
-   - Identify key configuration files
-   - Note any custom modules or plugins
+## Analysis Tasks
 
-2. **Craft Configuration**
-   - Check DDEV configuration (.ddev/config.yaml)
-   - Review config/general.php settings
-   - Check project config (config/project/)
+1. **Environment**: DDEV config, PHP version, database
+2. **Templates**: templates/, layouts, partials
+3. **Frontend**: Tailwind, Alpine.js, Vite
+4. **Plugins**: composer.json plugins
+5. **Config Sync**: Compare CLAUDE.md and GEMINI.md
 
-3. **Content Model**
-   - Identify sections and entry types
-   - Note field layouts and relationships
-   - Document asset volumes
+## Output
 
-4. **Template Structure**
-   - Review templates/ organization
-   - Identify layouts and partials
-   - Note component patterns
+1. Detected configuration table
+2. Structure overview  
+3. Sync recommendations
+4. Missing components
 
-5. **Frontend Stack**
-   - Check package.json for dependencies
-   - Identify CSS framework (Tailwind, etc.)
-   - Note build configuration (vite.config.js)
-
-6. **Recommendations**
-   - Suggest improvements
-   - Note any potential issues
-   - Performance optimization opportunities
-
-Please be thorough but concise.
+Be thorough but concise.
 """

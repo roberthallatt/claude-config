@@ -1,181 +1,89 @@
 ---
-description: Analyze this project and customize Claude configuration based on the actual codebase
+description: Analyze project and sync both Claude and Gemini configurations with project-specific details
 ---
 
-# Project Analyzer
+# Project Analyzer & Configuration Sync
 
-Scan the current project directory to detect tools, configurations, and patterns, then customize the Claude configuration files accordingly.
+Comprehensive project analysis that updates both Claude Code and Gemini Code Assist configurations.
 
-## When to Use
+## Purpose
 
-Run this command after initial setup with `setup-project.sh` to:
-- Detect actual DDEV configuration and update CLAUDE.md
-- Find the correct template directory structure
-- Identify CSS framework and build tools
-- Detect bilingual setup patterns
-- Find custom add-ons and their purpose
-- Update commands with project-specific paths
+This command:
+1. Scans the project to detect technologies, patterns, and configurations
+2. Updates CLAUDE.md with accurate project details
+3. Updates GEMINI.md to match (if Gemini is configured)
+4. Syncs .gemini/styleguide.md with detected coding patterns
+5. Identifies missing agents, rules, or skills based on project needs
 
 ## Analysis Steps
 
-### 1. DDEV Configuration
-Read `.ddev/config.yaml` and extract:
-- **name**: DDEV project name (for URLs like `https://{name}.ddev.site`)
-- **docroot**: Document root path (public, web, html, etc.)
-- **php_version**: PHP version in use
-- **database.type/version**: Database engine and version
-- **nodejs_version**: Node.js version
-- **additional_hostnames**: Other hostnames (bilingual domains, etc.)
-- **webserver_type**: Apache or Nginx
+### 1. Package Configuration
 
-Update CLAUDE.md with correct:
-- Local development URLs
-- PHP version requirements
-- Database commands
+Read `package.json` and extract:
+- Next.js version
+- React version
+- Dependencies (Tailwind, etc.)
+- Build scripts
 
-### 2. Template Structure
-Scan `system/user/templates/` to find:
-- Template group name (may not match project slug)
-- Layout structure (_layouts, stash, etc.)
-- Partial organization
-- Bilingual patterns (language conditionals, separate templates)
+### 2. Project Structure
 
-Update CLAUDE.md directory structure section.
+Detect routing approach:
+- App Router: `app/` directory
+- Pages Router: `pages/` directory
+- Components: `components/` or `src/components/`
 
-### 3. Frontend Build Tools
-Check for build configuration:
-- `public/package.json` or `package.json` - npm scripts
-- `public/tailwind.config.js` - Tailwind configuration
-- `public/postcss.config.js` - PostCSS setup
-- `public/vite.config.js` - Vite (if used)
-- `public/webpack.config.js` - Webpack (if used)
-- `gulpfile.js` - Gulp (if used)
+### 3. Configuration Files & Framework Detection
 
-Update:
-- CLAUDE.md build commands section
-- `.claude/commands/tailwind-build.md` with correct paths
+**IMPORTANT: Detect what's actually in use, then remove what's not.**
 
-### 4. ExpressionEngine Add-ons
-Scan `system/user/addons/` for:
-- Stash (caching) - confirm version and usage
-- Structure (navigation) - check if in use
-- Low Variables - language variables
-- Assets or other file management
-- Custom add-ons specific to this project
+Check for:
+- `next.config.js` - Next.js config
+- `tsconfig.json` - TypeScript config
 
-Update:
-- CLAUDE.md with add-on documentation
-- Rules if add-ons have specific patterns
+- **Tailwind CSS**: `tailwind.config.js` exists?
+  - If YES: Keep `.claude/rules/tailwind-css.md`
+  - If NO: Remove `.claude/rules/tailwind-css.md` (not in use)
 
-### 5. Brand Colors (if Tailwind)
-Read `tailwind.config.js` to extract:
-- Custom color definitions
-- Brand color names and values
+- **Foundation**: Check `package.json` for "foundation-sites" OR find `foundation.css`
+  - If YES: Keep Foundation-related files
+  - If NO: Remove Foundation files (not in use)
 
-Update:
-- `.claude/skills/tailwind-utility-finder/BRAND_COLORS.md`
-- `.claude/rules/tailwind-css.md` with actual colors
+- **SCSS/Sass**: Check `package.json` for "sass"/"node-sass" OR find `.scss`/`.sass` files
+  - If YES: Keep SCSS-related files
+  - If NO: Remove SCSS files (not in use)
 
-### 6. Bilingual Detection
-Look for patterns:
-- Language conditionals in templates: `{if lang == 'en'}`
-- Separate template groups per language
-- Low Variables with `_en` / `_fr` suffixes
-- Multiple domains in DDEV config
+### 4. Clean Up Unused Files
 
-Update:
-- `.claude/rules/bilingual-content.md` if patterns differ
-- CLAUDE.md bilingual section
+**After detection, remove files for technologies NOT in use:**
+- Delete `.claude/rules/*.md` for undetected frameworks
+- Delete `.claude/commands/*.md` for undetected technologies
+- Report what was removed to keep configuration clean
 
-### 7. GitHub Workflows
-Check `.github/workflows/` for:
-- Deployment workflow (branch triggers, servers)
-- Build steps
-- Environment variables needed
+### 5. Detect Missing Components
 
-Update CLAUDE.md deployment section.
+Recommend:
+- API routes detected → suggest api-design-specialist
+- No security agent → suggest security-expert
+- Complex state → suggest patterns for state management
 
-## Output Format
+## Sync Actions
 
-After analysis, provide:
+**IMPORTANT: Update BOTH CLAUDE.md and GEMINI.md with identical values**
 
-```markdown
-## Project Analysis: {project-name}
+### Update CLAUDE.md
+- Replace `{{PROJECT_NAME}}` and placeholders with detected values
+- Update directory structure (App Router vs Pages Router)
+- Update development commands from package.json
+- Update detected technologies (Tailwind, SCSS, TypeScript)
+- Document Next.js version and React version
 
-### Detected Configuration
+### Update GEMINI.md (must match CLAUDE.md)
+- Apply ALL the same updates as CLAUDE.md
+- Keep content identical to CLAUDE.md (except Gemini-specific sections)
+- Update project name, routing approach, technologies
+- **Both files should have the same detected values**
 
-| Setting | Value |
-|---------|-------|
-| DDEV Name | {name} |
-| Local URL | https://{name}.ddev.site |
-| PHP Version | {php_version} |
-| Database | {db_type} {db_version} |
-| Node.js | {nodejs_version} |
-| Docroot | {docroot} |
-
-### Template Structure
-- Template Group: `{group_name}`
-- Layouts: `{layout_path}`
-- Partials: `{partials_path}`
-
-### Build Tools
-- Package Manager: npm/yarn
-- CSS Framework: Tailwind {version}
-- Build Command: `{build_command}`
-
-### Add-ons Detected
-- Stash {version}
-- Structure {version}
-- {other add-ons}
-
-### Bilingual Setup
-- Pattern: {conditional/separate/none}
-- Languages: EN, FR
-
-### Recommended Updates
-
-1. **CLAUDE.md**: Update local URLs, PHP version, build commands
-2. **rules/tailwind-css.md**: Add brand colors: {colors}
-3. **commands/ddev-helper.md**: Update project name references
-
-### Files to Modify
-{list of files with specific changes}
-```
-
-## Auto-Apply Option
-
-After showing the analysis, ask:
-1. Show the changes (diff view)
-2. Apply all changes automatically
-3. Apply changes interactively (one by one)
-4. Save analysis report only
-
-## Example Usage
-
-```
-User: /project-analyze
-
-Claude: I'll scan this project to customize the configuration...
-
-[Reads .ddev/config.yaml]
-[Scans system/user/templates/]
-[Reads public/tailwind.config.js]
-[Checks system/user/addons/]
-
-## Project Analysis: cpsp
-
-### Detected Configuration
-| Setting | Value |
-|---------|-------|
-| DDEV Name | cpsp |
-| Local URL | https://cpsp.ddev.site |
-| PHP Version | 8.2 |
-| Database | MariaDB 10.11 |
-...
-
-Would you like me to:
-1. Show the specific changes I'll make
-2. Apply all changes automatically
-3. Apply changes one by one
-4. Save this report only
-```
+### Update .gemini/styleguide.md (if exists)
+- Add detected brand colors from tailwind.config.js
+- Update React/TypeScript conventions
+- Document detected patterns (Server Components, etc.)

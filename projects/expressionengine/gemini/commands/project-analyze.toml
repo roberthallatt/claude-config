@@ -1,40 +1,64 @@
-# Gemini CLI Custom Command: Project Analysis
+# Gemini CLI Custom Command: Project Analysis & Configuration Sync
 # Invoked as: /project:analyze
 
-description = "Analyze the ExpressionEngine project structure and provide an overview"
+description = "Analyze project and sync both Claude and Gemini configurations with project-specific details"
 
 prompt = """
-Analyze this ExpressionEngine project and provide a comprehensive overview:
+Perform a comprehensive analysis of this project to optimize AI assistant configurations.
 
-1. **Project Structure**
-   - Examine the directory layout
-   - Identify key configuration files
-   - Note any custom add-ons or packages
+## Analysis Tasks
 
-2. **DDEV Configuration** (.ddev/config.yaml)
-   - Project name and URLs
-   - PHP version
-   - Database type
+### 1. Environment Detection
+Scan and report:
+- DDEV configuration (.ddev/config.yaml)
+- PHP version, database type/version
+- Node.js version, package manager
+- Local development URLs
 
-3. **Template Structure** (system/user/templates/)
-   - Identify template groups
-   - Document layout and embed organization
-   - Check for Stash usage patterns
+### 2. Project Structure
+Identify:
+- Template locations (system/user/templates/)
+- Template group names
+- Layout and partial organization
+- Bilingual patterns
 
-4. **Add-ons** (system/user/addons/)
-   - List installed add-ons
-   - Note any custom add-ons
-   - Check for Stash, Structure, etc.
+### 3. Frontend Stack
+Detect:
+- CSS framework (Tailwind, Bootstrap, custom)
+- JavaScript framework (Alpine, jQuery)
+- Build tools (Vite, Webpack, PostCSS)
+- Brand colors from config files
 
-5. **Frontend Stack**
-   - Check package.json for dependencies
-   - Identify CSS framework (Tailwind, etc.)
-   - Note build configuration
+### 4. Add-ons
+Identify:
+- Installed add-ons in system/user/addons/
+- Stash, Structure, Low Variables
+- MCP addon presence
+- Custom add-ons
 
-6. **Recommendations**
-   - Suggest improvements or missing configurations
-   - Note any potential issues
-   - Performance optimization suggestions
+### 5. Configuration Sync Check
+Compare:
+- CLAUDE.md settings
+- GEMINI.md settings (if present)
+- .gemini/styleguide.md conventions
 
-Please be thorough but concise.
+## Output Required
+
+Provide:
+1. **Detected Configuration Table** - All environment settings
+2. **Structure Overview** - Directory layout and patterns
+3. **Technology Stack** - Complete list of detected technologies
+4. **Brand Colors** - If Tailwind, extract custom colors
+5. **Sync Recommendations** - What needs updating in both Claude and Gemini configs
+6. **Missing Components** - Suggested agents/rules to add
+
+## Action Items
+
+After analysis, offer to:
+1. Update CLAUDE.md with detected project details
+2. Update GEMINI.md to match (if present)
+3. Sync styleguide.md with coding conventions
+4. Create any recommended missing components
+
+Be thorough but concise. Focus on actionable improvements.
 """

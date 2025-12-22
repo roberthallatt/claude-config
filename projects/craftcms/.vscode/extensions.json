@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "craftcms.craft-cms-twig",
+    "whatwedo.twig",
+    "bradlc.vscode-tailwindcss",
+    "bmewburn.vscode-intelephense-client",
+    "editorconfig.editorconfig"
+  ]
+}

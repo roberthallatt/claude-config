@@ -13,7 +13,9 @@
   },
 
   "files.associations": {
-    "*.html": "ExpressionEngine",
+    "**/templates/**/*.twig": "twig",
+    "**/templates/**/*.html": "twig",
+    "*.twig": "twig",
     ".env.php": "php",
     ".env.*.php": "php"
   },
@@ -22,17 +24,19 @@
     "**/.DS_Store": true,
     "**/node_modules": true,
     "**/.git": true,
-    "system/ee": true
+    "**/storage": true,
+    "**/vendor": true
   },
 
   "search.exclude": {
     "**/node_modules": true,
-    "**/public/assets": true,
-    "system/ee": true
+    "**/storage": true,
+    "**/vendor": true,
+    "**/web/cpresources": true
   },
 
   "emmet.includeLanguages": {
-    "ExpressionEngine": "html"
+    "twig": "html"
   },
   "emmet.triggerExpansionOnTab": true,
   "emmet.showSuggestionsAsSnippets": true,
@@ -43,7 +47,7 @@
   ],
   "scss.lint.unknownAtRules": "ignore",
   "tailwindCSS.includeLanguages": {
-    "ExpressionEngine": "html"
+    "twig": "html"
   },
   "tailwindCSS.emmetCompletions": true,
 
@@ -51,5 +55,13 @@
   "dotenv.enableAutocloaking": false,
 
   "terminal.integrated.env.osx": {},
-  "livePreview.defaultPreviewPath": "/"
+  "livePreview.defaultPreviewPath": "/",
+
+  "gemini.mcpServers": {
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    }
+  }
 }

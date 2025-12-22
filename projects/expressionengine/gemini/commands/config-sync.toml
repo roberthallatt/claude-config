@@ -1,0 +1,47 @@
+# Gemini CLI Custom Command: Configuration Sync
+# Invoked as: /config:sync
+
+description = "Synchronize Gemini configuration with Claude configuration for consistent AI assistance"
+
+prompt = """
+Synchronize this project's Gemini and Claude configurations to ensure both AI assistants have consistent context.
+
+## Analysis Tasks
+
+1. **Compare CLAUDE.md and GEMINI.md**
+   - Check project information matches
+   - Verify tech stack details are consistent
+   - Ensure directory structures align
+   - Confirm development URLs match
+
+2. **Compare Coding Standards**
+   - Review .claude/rules/*.md files
+   - Compare with .gemini/styleguide.md
+   - Identify missing standards in either
+
+3. **Compare Commands**
+   - List Claude commands in .claude/commands/
+   - List Gemini commands in .gemini/commands/
+   - Identify missing equivalents
+
+4. **Check Instructions**
+   - Compare .gemini/instructions.md with CLAUDE.md
+   - Ensure development commands match
+
+## Output Required
+
+Provide:
+
+1. **Sync Status Table** showing what matches and what differs
+2. **Update Plan** listing specific changes needed
+3. **Diff Preview** for files that need updating
+
+## Actions
+
+After analysis, offer to:
+1. Update GEMINI.md to match CLAUDE.md
+2. Update styleguide.md with missing standards
+3. Update instructions.md with correct commands
+
+Ensure both configurations provide consistent context for optimal code generation.
+"""

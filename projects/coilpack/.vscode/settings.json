@@ -1,0 +1,79 @@
+{
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.formatOnSave": false,
+  "editor.wordWrap": "on",
+  "editor.linkedEditing": true,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+
+  "[php]": {
+    "editor.tabSize": 4,
+    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+  },
+
+  "files.associations": {
+    "**/resources/views/**/*.blade.php": "blade",
+    "**/resources/views/**/*.twig": "twig",
+    "**/system/user/templates/**/*.html": "ExpressionEngine",
+    "**/templates/**/*.html": "ExpressionEngine",
+    "*.blade.php": "blade",
+    "*.twig": "twig",
+    "*.html": "ExpressionEngine",
+    ".env.php": "php",
+    ".env.*.php": "php"
+  },
+
+  "files.exclude": {
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/.git": true,
+    "system/ee": true
+  },
+
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/public/assets": true,
+    "system/ee": true
+  },
+
+  "emmet.includeLanguages": {
+    "blade": "html",
+    "twig": "html",
+    "ExpressionEngine": "html"
+  },
+  "emmet.triggerExpansionOnTab": true,
+  "emmet.showSuggestionsAsSnippets": true,
+  "emmet.showExpandedAbbreviation": "always",
+
+  "css.customData": [
+    ".vscode/tailwind.json"
+  ],
+  "scss.lint.unknownAtRules": "ignore",
+  "tailwindCSS.includeLanguages": {
+    "blade": "html",
+    "twig": "html",
+    "ExpressionEngine": "html"
+  },
+  "tailwindCSS.emmetCompletions": true,
+
+  "git.ignoreLimitWarning": true,
+  "dotenv.enableAutocloaking": false,
+
+  "terminal.integrated.env.osx": {},
+  "livePreview.defaultPreviewPath": "/",
+
+  "gemini.mcpServers": {
+    "expressionengine": {
+      "type": "stdio",
+      "command": "ddev",
+      "args": ["ee", "mcp:serve"],
+      "cwd": "${workspaceFolder}"
+    },
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    }
+  }
+}

@@ -1,38 +1,44 @@
-# Gemini CLI Custom Command: Project Analysis
+# Gemini CLI Custom Command: Project Analysis & Configuration Sync
 # Invoked as: /project:analyze
 
-description = "Analyze the Coilpack project structure and provide an overview"
+description = "Analyze Coilpack project and sync both Claude and Gemini configurations"
 
 prompt = """
-Analyze this Coilpack project and provide a comprehensive overview:
+Perform a comprehensive analysis of this Coilpack (EE + Laravel) project.
 
-1. **Project Structure**
-   - Examine the directory layout
-   - Identify key configuration files
-   - Note any custom add-ons or packages
+## Analysis Tasks
 
-2. **ExpressionEngine Configuration**
-   - Check DDEV configuration (.ddev/config.yaml)
-   - Identify installed add-ons (ee/system/user/addons/)
-   - Review template structure (ee/system/user/templates/)
+### 1. Environment Detection
+- DDEV configuration (.ddev/config.yaml)
+- PHP version, database type/version
+- Node.js version
+- Local development URLs
 
-3. **Laravel Integration**
-   - Check routes (routes/)
-   - Identify controllers (app/Http/Controllers/)
-   - Note any Livewire components (app/Livewire/)
+### 2. Project Structure
+- ExpressionEngine: ee/system/user/templates/
+- Laravel: app/, resources/views/
+- Livewire components: app/Livewire/
 
-4. **Frontend Stack**
-   - Check package.json for dependencies
-   - Identify CSS framework (Tailwind, etc.)
-   - Note build configuration (vite.config.js)
+### 3. Frontend Stack
+- Tailwind configuration and brand colors
+- Alpine.js usage
+- Vite build setup
 
-5. **Localization**
-   - Check for translation files (lang/)
-   - Identify supported languages
+### 4. Add-ons & Packages
+- EE add-ons: ee/system/user/addons/
+- Laravel packages: composer.json
+- MCP addon presence
 
-6. **Recommendations**
-   - Suggest improvements or missing configurations
-   - Note any potential issues
+### 5. Configuration Sync Check
+Compare CLAUDE.md and GEMINI.md settings.
 
-Please be thorough but concise.
+## Output Required
+
+1. Detected configuration table
+2. Structure overview
+3. Technology stack
+4. Sync recommendations
+5. Missing components to add
+
+Be thorough but concise.
 """

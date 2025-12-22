@@ -1,0 +1,260 @@
+# Updating Projects
+
+Guide to updating existing project configurations.
+
+## Quick Update
+
+Update an existing project with the latest configuration:
+
+```bash
+./setup-project.sh --refresh --project=/path/to/project
+```
+
+This will:
+- Auto-detect your stack from `CLAUDE.md`
+- Re-scan for technology changes
+- Update all configuration files
+- Preserve `.claude/` customizations
+
+## Update With Extensions
+
+Install new extensions when updating:
+
+```bash
+./setup-project.sh --refresh --install-extensions --project=/path/to/project
+```
+
+## Scenarios
+
+### Technology Added to Project
+
+You added Tailwind CSS to your ExpressionEngine project:
+
+```bash
+./setup-project.sh --refresh --project=/path/to/project
+```
+
+**Result:**
+- Detects Tailwind CSS
+- Adds `tailwind-css.md` rule
+- Updates VSCode settings for Tailwind IntelliSense
+- Regenerates `CLAUDE.md` with Tailwind context
+
+### VSCode Settings Changed
+
+Repository updated VSCode settings and you want the latest:
+
+```bash
+./setup-project.sh --refresh --project=/path/to/project
+```
+
+**Result:**
+- Updates `.vscode/settings.json`
+- Updates `.vscode/extensions.json`
+- Preserves your custom settings (if any)
+
+### New Extensions Available
+
+New extension added to stack template:
+
+```bash
+./setup-project.sh --refresh --install-extensions --project=/path/to/project
+```
+
+**Result:**
+- Updates extension recommendations
+- Installs new extensions automatically
+
+### Gemini Config Added
+
+Add Gemini configuration to existing Claude project:
+
+```bash
+./setup-project.sh \
+  --refresh \
+  --with-gemini \
+  --project=/path/to/project
+```
+
+**Result:**
+- Keeps existing Claude configuration
+- Adds Gemini configuration files
+
+## Update Strategies
+
+### Refresh (Recommended)
+
+```bash
+--refresh
+```
+
+**Behavior:**
+- Re-scans project
+- Updates templates
+- Preserves `.claude/` customizations
+- Safe for regular updates
+
+### Force
+
+```bash
+--refresh --force
+```
+
+**Behavior:**
+- Overwrites all files
+- No prompts
+- **Loses customizations**
+
+**Use when:**
+- You want a clean slate
+- Templates significantly changed
+- Troubleshooting issues
+
+### Clean + Force
+
+```bash
+--clean --force --stack=expressionengine --project=/path/to/project
+```
+
+**Behavior:**
+- Deletes ALL Claude/Gemini config
+- Fresh deployment
+- **Complete reset**
+
+**Use when:**
+- Switching stacks (not recommended)
+- Complete reconfiguration needed
+- Major version upgrade
+
+## Dry Run First
+
+Always preview changes:
+
+```bash
+./setup-project.sh --refresh --dry-run --project=/path/to/project
+```
+
+Review output before committing to changes.
+
+## What Happens to Customizations
+
+### Preserved During --refresh
+
+`.claude/` directory contents are not regenerated. Your custom:
+- Rules
+- Agents
+- Commands
+
+All stay intact.
+
+### Regenerated During --refresh
+
+- `CLAUDE.md` - Regenerated from template
+- `.vscode/` - Updated with latest settings
+- `GEMINI.md` - Regenerated from template
+- `.gemini/settings.json` - Updated with MCP config
+
+### Lost During --clean
+
+Everything is deleted:
+- `CLAUDE.md`, `.claude/`
+- `GEMINI.md`, `.gemini/`, `.geminiignore`
+
+## Updating Multiple Projects
+
+Update all your projects:
+
+```bash
+for project in ~/projects/*/; do
+  ./setup-project.sh --refresh --project="$project"
+done
+```
+
+With confirmation:
+
+```bash
+for project in ~/projects/*/; do
+  echo "Update $project? (y/n)"
+  read -r response
+  if [[ "$response" == "y" ]]; then
+    ./setup-project.sh --refresh --project="$project"
+  fi
+done
+```
+
+## After Updating
+
+1. **Review changes**
+   ```bash
+   cd /path/to/project
+   git diff
+   ```
+
+2. **Test with Claude Code**
+   - Open Claude Code in project
+   - Verify CLAUDE.md loads
+   - Test commands
+
+3. **Reload VSCode** (if settings changed)
+   - `Cmd+Shift+P` → "Developer: Reload Window"
+
+4. **Install new extensions**
+   ```bash
+   ./install-vscode-extensions.sh /path/to/project
+   ```
+
+## Version Tracking
+
+The configuration doesn't include version numbers. Track updates via:
+
+1. **Git in claude-config-repo**
+   ```bash
+   cd claude-config-repo
+   git log --oneline
+   ```
+
+2. **Project git history**
+   ```bash
+   cd /path/to/project
+   git log CLAUDE.md
+   ```
+
+## Troubleshooting
+
+### Stack Not Auto-Detected
+
+**Problem:** `--refresh` says "stack is required"
+
+**Solution:** Your `CLAUDE.md` might be old format. Manually specify:
+```bash
+./setup-project.sh --refresh --stack=expressionengine --project=/path/to/project
+```
+
+### Files Not Updating
+
+**Problem:** Expected files aren't changing.
+
+**Possible causes:**
+1. Using `--skip-vscode` flag
+2. Files don't exist in source template
+3. Detection logic doesn't match (e.g., Tailwind not detected)
+
+**Solution:**
+1. Check source template exists
+2. Use `--dry-run` to see detection results
+3. Ensure technology files are in expected locations
+
+### Extensions Not Installing
+
+**Problem:** `--install-extensions` doesn't work.
+
+**Solution:**
+1. Check `code` command: `code --version`
+2. Manually run: `./install-vscode-extensions.sh /path/to/project`
+3. See [VSCode Extensions Guide](vscode-extensions.md)
+
+## Next Steps
+
+- **[Setup Script](setup-script.md)** - All options detailed
+- **[Conditional Deployment](conditional-deployment.md)** - Detection logic
+- **[VSCode Extensions](vscode-extensions.md)** - Extension management

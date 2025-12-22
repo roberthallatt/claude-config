@@ -1,7 +1,14 @@
 {
   "$schema": "https://google-gemini.github.io/gemini-cli/schemas/settings.json",
+  "mcpServers": {
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    }
+  },
   "context": {
-    "fileName": ["GEMINI.md", "AGENT.md"],
+    "fileName": ["GEMINI.md"],
     "maxDirectoryDepth": 5
   },
   "tools": {

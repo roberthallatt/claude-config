@@ -13,6 +13,8 @@
   },
 
   "files.associations": {
+    "**/system/user/templates/**/*.html": "ExpressionEngine",
+    "**/templates/**/*.html": "ExpressionEngine",
     "*.html": "ExpressionEngine",
     ".env.php": "php",
     ".env.*.php": "php"
@@ -51,5 +53,19 @@
   "dotenv.enableAutocloaking": false,
 
   "terminal.integrated.env.osx": {},
-  "livePreview.defaultPreviewPath": "/"
+  "livePreview.defaultPreviewPath": "/",
+
+  "gemini.mcpServers": {
+    "expressionengine": {
+      "type": "stdio",
+      "command": "ddev",
+      "args": ["ee", "mcp:serve"],
+      "cwd": "${workspaceFolder}"
+    },
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    }
+  }
 }

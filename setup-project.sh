@@ -13,12 +13,13 @@
 #   --slug        Project slug for templates (optional, derived from directory if not provided)
 #   --dry-run     Show what would be done without making changes
 #   --force       Overwrite existing configuration without prompting
-#   --clean       Remove existing Claude/AI config before deploying (CLAUDE.md, AGENTS.md, .claude/)
+#   --clean       Remove existing Claude/AI config before deploying (CLAUDE.md, .claude/, GEMINI.md, .gemini/)
 #   --refresh     Re-scan project and regenerate CLAUDE.md only (preserves .claude/ customizations)
-#   --skip-vscode Skip VSCode settings (if you manage them separately)
-#   --with-mcp    Deploy .mcp.json for ExpressionEngine MCP server integration
-#   --with-gemini Deploy .gemini/ configuration for Gemini Code Assist
-#   --analyze     Generate analysis prompt for Claude to customize config
+#   --skip-vscode       Skip VSCode settings (if you manage them separately)
+#   --install-extensions Install recommended VSCode extensions automatically
+#   --with-mcp          Deploy .mcp.json for ExpressionEngine MCP server integration
+#   --with-gemini       Deploy .gemini/ configuration for Gemini Code Assist
+#   --analyze           Generate analysis prompt for Claude to customize config
 #
 
 set -e
@@ -44,6 +45,7 @@ FORCE=false
 CLEAN=false
 REFRESH=false
 SKIP_VSCODE=false
+INSTALL_EXTENSIONS=false
 WITH_MCP=false
 WITH_GEMINI=false
 ANALYZE=false
@@ -57,8 +59,13 @@ DDEV_DB_VERSION=""
 DDEV_NODEJS=""
 TEMPLATE_GROUP=""
 HAS_TAILWIND=false
+HAS_ALPINE=false
+HAS_FOUNDATION=false
+HAS_SCSS=false
+HAS_VANILLA_JS=false
 HAS_STASH=false
 HAS_STRUCTURE=false
+HAS_BILINGUAL=false
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -99,6 +106,10 @@ while [[ $# -gt 0 ]]; do
       SKIP_VSCODE=true
       shift
       ;;
+    --install-extensions)
+      INSTALL_EXTENSIONS=true
+      shift
+      ;;
     --with-mcp)
       WITH_MCP=true
       shift
@@ -115,15 +126,16 @@ while [[ $# -gt 0 ]]; do
       echo "Usage: $0 --stack=<stack> --project=<path> [options]"
       echo ""
       echo "Options:"
-      echo "  --stack=<n>       Stack template (required)"
+      echo "  --stack=<n>       Stack template (auto-detected with --refresh)"
       echo "  --project=<path>  Target project directory (required)"
       echo "  --name=<n>        Human-readable project name"
       echo "  --slug=<slug>     Project slug for templates"
       echo "  --dry-run         Preview changes without applying"
       echo "  --force           Overwrite existing config without prompting"
       echo "  --clean           Remove existing config before deploying (fresh start)"
-      echo "  --refresh         Re-scan and regenerate CLAUDE.md only (keeps .claude/)"
+      echo "  --refresh         Update config files (auto-detects stack from CLAUDE.md)"
       echo "  --skip-vscode     Do not copy VSCode settings"
+      echo "  --install-extensions Install recommended VSCode extensions automatically"
       echo "  --with-mcp        Deploy .mcp.json for EE MCP server integration"
       echo "  --with-gemini     Deploy .gemini/ for Gemini Code Assist"
       echo "  --analyze         Generate analysis prompt for Claude"
@@ -139,14 +151,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Validation
-if [[ -z "$STACK" ]]; then
-  echo -e "${RED}Error: --stack is required${NC}"
-  echo "Available stacks:"
-  ls -1 "$SCRIPT_DIR/projects/" 2>/dev/null | sed 's/^/  - /'
-  exit 1
-fi
-
+# Validation and auto-detection
 if [[ -z "$PROJECT_DIR" ]]; then
   echo -e "${RED}Error: --project is required${NC}"
   exit 1
@@ -157,6 +162,25 @@ PROJECT_DIR="$(cd "$PROJECT_DIR" 2>/dev/null && pwd)" || {
   echo -e "${RED}Error: Project directory does not exist: $PROJECT_DIR${NC}"
   exit 1
 }
+
+# Auto-detect stack when using --refresh
+if [[ -z "$STACK" ]] && [[ "$REFRESH" == true ]]; then
+  if [[ -f "$PROJECT_DIR/CLAUDE.md" ]]; then
+    DETECTED_STACK=$(grep '@~/.claude/stacks/' "$PROJECT_DIR/CLAUDE.md" 2>/dev/null | head -1 | sed -E 's|.*@~/.claude/stacks/([^.]+)\.md.*|\1|')
+    if [[ -n "$DETECTED_STACK" ]]; then
+      STACK="$DETECTED_STACK"
+      echo -e "${CYAN}Auto-detected stack: ${GREEN}$STACK${NC}"
+    fi
+  fi
+fi
+
+# Validate stack is specified or detected
+if [[ -z "$STACK" ]]; then
+  echo -e "${RED}Error: --stack is required${NC}"
+  echo "Available stacks:"
+  ls -1 "$SCRIPT_DIR/projects/" 2>/dev/null | sed 's/^/  - /'
+  exit 1
+fi
 
 # Check stack exists
 STACK_DIR="$SCRIPT_DIR/projects/$STACK"
@@ -251,6 +275,39 @@ detect_frontend_tools() {
   if [[ -f "$PROJECT_DIR/$DDEV_DOCROOT/tailwind.config.js" ]] || [[ -f "$PROJECT_DIR/tailwind.config.js" ]]; then
     HAS_TAILWIND=true
   fi
+
+  # Check for Foundation
+  if [[ -f "$PROJECT_DIR/package.json" ]] && grep -q "foundation-sites" "$PROJECT_DIR/package.json" 2>/dev/null; then
+    HAS_FOUNDATION=true
+  elif find "$PROJECT_DIR" -name "foundation.min.css" -o -name "foundation.css" 2>/dev/null | head -1 | grep -q .; then
+    HAS_FOUNDATION=true
+  fi
+
+  # Check for SCSS/Sass
+  if [[ -f "$PROJECT_DIR/package.json" ]] && grep -q '"sass"\|"node-sass"' "$PROJECT_DIR/package.json" 2>/dev/null; then
+    HAS_SCSS=true
+  elif find "$PROJECT_DIR" -name "*.scss" -o -name "*.sass" 2>/dev/null | head -1 | grep -q .; then
+    HAS_SCSS=true
+  fi
+
+  # Check for Alpine.js (in package.json or templates)
+  if [[ -f "$PROJECT_DIR/package.json" ]] && grep -q "alpinejs" "$PROJECT_DIR/package.json" 2>/dev/null; then
+    HAS_ALPINE=true
+  elif find "$PROJECT_DIR" -path "*/node_modules" -prune -o -path "*/vendor" -prune -o -path "*/.git" -prune -o \( -name "*.html" -o -name "*.twig" -o -name "*.blade.php" \) -type f -exec grep -lq "x-data\|@click" {} \; 2>/dev/null | head -1 | grep -q .; then
+    HAS_ALPINE=true
+  fi
+
+  # Check for bilingual content patterns (user_language compared to 'en'/'fr' or lang variables)
+  if find "$PROJECT_DIR" -path "*/node_modules" -prune -o -path "*/vendor" -prune -o -path "*/.git" -prune -o \( -name "*.html" -o -name "*.twig" -o -name "*.blade.php" \) -type f -exec grep -lq "user_language.*['\"]en['\"]\\|user_language.*['\"]fr['\"]\\|{lang:\\|{% if.*lang\\|@lang" {} \; 2>/dev/null | head -1 | grep -q .; then
+    HAS_BILINGUAL=true
+  fi
+
+  # Detect vanilla JS/HTML (no major framework detected)
+  # If no Tailwind, Foundation, or Alpine, assume vanilla JS/HTML is being used
+  if [[ "$HAS_TAILWIND" == false ]] && [[ "$HAS_FOUNDATION" == false ]] && [[ "$HAS_ALPINE" == false ]]; then
+    HAS_VANILLA_JS=true
+  fi
+
   return 0
 }
 
@@ -287,26 +344,17 @@ do_mkdir() {
   fi
 }
 
-do_symlink() {
-  local target="$1"
-  local link="$2"
-  if [[ "$DRY_RUN" == true ]]; then
-    echo -e "  ${YELLOW}[DRY-RUN]${NC} ln -sf $target → $link"
-  else
-    ln -sf "$target" "$link"
-    echo -e "  ${GREEN}✓${NC} Created symlink AGENTS.md → CLAUDE.md"
-  fi
-}
-
 do_template() {
   local src="$1"
   local dest="$2"
+  local dest_file=$(basename "$dest")
   if [[ "$DRY_RUN" == true ]]; then
     echo -e "  ${YELLOW}[DRY-RUN]${NC} Template $src → $dest"
     echo -e "           Substitutions: {{PROJECT_NAME}}=$PROJECT_NAME, {{PROJECT_SLUG}}=$PROJECT_SLUG"
   else
     sed -e "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" \
         -e "s/{{PROJECT_SLUG}}/$PROJECT_SLUG/g" \
+        -e "s|{{PROJECT_PATH}}|${PROJECT_DIR}|g" \
         -e "s/{{DDEV_NAME}}/${DDEV_NAME:-$PROJECT_SLUG}/g" \
         -e "s/{{DDEV_DOCROOT}}/${DDEV_DOCROOT:-public}/g" \
         -e "s/{{DDEV_PHP}}/${DDEV_PHP:-8.1}/g" \
@@ -316,20 +364,22 @@ do_template() {
         -e "s|{{DDEV_PRIMARY_URL}}|${DDEV_PRIMARY_URL:-https://${DDEV_NAME:-$PROJECT_SLUG}.ddev.site}|g" \
         -e "s/{{TEMPLATE_GROUP}}/${TEMPLATE_GROUP:-$PROJECT_SLUG}/g" \
         "$src" > "$dest"
-    echo -e "  ${GREEN}✓${NC} Created CLAUDE.md from template"
+    echo -e "  ${GREEN}✓${NC} Created $dest_file from template"
   fi
 }
 
 do_clean() {
-  # Remove existing Claude/AI configuration files
+  # Remove existing Claude/AI and Gemini configuration files
   local files_to_clean=(
     "$PROJECT_DIR/CLAUDE.md"
-    "$PROJECT_DIR/AGENTS.md"
     "$PROJECT_DIR/.claude"
+    "$PROJECT_DIR/GEMINI.md"
+    "$PROJECT_DIR/.gemini"
+    "$PROJECT_DIR/.geminiignore"
   )
-  
+
   echo -e "${CYAN}Cleaning existing configuration...${NC}"
-  
+
   for item in "${files_to_clean[@]}"; do
     if [[ -e "$item" ]] || [[ -L "$item" ]]; then
       if [[ "$DRY_RUN" == true ]]; then
@@ -352,6 +402,11 @@ echo -e "${BLUE}  Claude Code Configuration Setup${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
+# Clean existing configuration if --clean flag is set (do this FIRST before scanning)
+if [[ "$CLEAN" == true ]]; then
+  do_clean
+fi
+
 # Run detection
 echo -e "${CYAN}Scanning project...${NC}"
 detect_ddev_config && echo -e "  ${GREEN}✓${NC} Found DDEV config" || echo -e "  ${YELLOW}○${NC} No DDEV config found"
@@ -362,7 +417,12 @@ else
   echo -e "  ${YELLOW}○${NC} No template group detected"
 fi
 detect_frontend_tools
-[[ "$HAS_TAILWIND" == true ]] && echo -e "  ${GREEN}✓${NC} Tailwind CSS detected" || echo -e "  ${YELLOW}○${NC} No Tailwind config found"
+[[ "$HAS_TAILWIND" == true ]] && echo -e "  ${GREEN}✓${NC} Tailwind CSS detected" || echo -e "  ${YELLOW}○${NC} No Tailwind detected"
+[[ "$HAS_FOUNDATION" == true ]] && echo -e "  ${GREEN}✓${NC} Foundation framework detected" || echo -e "  ${YELLOW}○${NC} No Foundation detected"
+[[ "$HAS_SCSS" == true ]] && echo -e "  ${GREEN}✓${NC} SCSS/Sass detected" || echo -e "  ${YELLOW}○${NC} No SCSS/Sass detected"
+[[ "$HAS_ALPINE" == true ]] && echo -e "  ${GREEN}✓${NC} Alpine.js detected" || echo -e "  ${YELLOW}○${NC} No Alpine.js detected"
+[[ "$HAS_VANILLA_JS" == true ]] && echo -e "  ${GREEN}✓${NC} Vanilla JS/HTML detected (no frameworks)" || true
+[[ "$HAS_BILINGUAL" == true ]] && echo -e "  ${GREEN}✓${NC} Bilingual content detected" || echo -e "  ${YELLOW}○${NC} No bilingual patterns detected"
 detect_addons
 [[ "$HAS_STASH" == true ]] && echo -e "  ${GREEN}✓${NC} Stash add-on detected" || true
 [[ "$HAS_STRUCTURE" == true ]] && echo -e "  ${GREEN}✓${NC} Structure add-on detected" || true
@@ -383,11 +443,6 @@ echo -e "  Clean:       ${YELLOW}$CLEAN${NC}"
 echo -e "  Refresh:     ${YELLOW}$REFRESH${NC}"
 echo ""
 
-# Clean existing configuration if --clean flag is set
-if [[ "$CLEAN" == true ]]; then
-  do_clean
-fi
-
 # Refresh mode: only regenerate CLAUDE.md, skip everything else
 if [[ "$REFRESH" == true ]]; then
   echo -e "${BLUE}Refreshing CLAUDE.md...${NC}"
@@ -399,12 +454,7 @@ if [[ "$REFRESH" == true ]]; then
   elif [[ -f "$STACK_DIR/CLAUDE.md" ]]; then
     do_copy "$STACK_DIR/CLAUDE.md" "$PROJECT_DIR/"
   fi
-  
-  # Ensure AGENTS.md symlink exists
-  if [[ ! -L "$PROJECT_DIR/AGENTS.md" ]]; then
-    do_symlink "CLAUDE.md" "$PROJECT_DIR/AGENTS.md"
-  fi
-  
+
   # Deploy MCP if requested (even in refresh mode)
   if [[ "$WITH_MCP" == true ]] && [[ -f "$STACK_DIR/.mcp.json" ]]; then
     echo ""
@@ -450,15 +500,6 @@ if [[ "$REFRESH" == true ]]; then
     # Generate GEMINI.md from template
     if [[ -f "$STACK_DIR/gemini/GEMINI.md.template" ]]; then
       do_template "$STACK_DIR/gemini/GEMINI.md.template" "$PROJECT_DIR/GEMINI.md"
-    fi
-    
-    # Create AGENT.md symlink
-    if [[ ! -L "$PROJECT_DIR/AGENT.md" ]]; then
-      if [[ -e "$PROJECT_DIR/AGENT.md" ]]; then
-        rm -f "$PROJECT_DIR/AGENT.md"
-      fi
-      ln -s "GEMINI.md" "$PROJECT_DIR/AGENT.md"
-      echo -e "  ${GREEN}✓${NC} Created symlink: AGENT.md -> GEMINI.md"
     fi
   fi
   
@@ -518,17 +559,220 @@ echo ""
 # 1. Create .claude directory structure
 do_mkdir "$PROJECT_DIR/.claude"
 
-# 2. Copy agents, commands, rules, skills
-for subdir in agents commands rules skills; do
-  if [[ -d "$STACK_DIR/$subdir" ]]; then
-    do_mkdir "$PROJECT_DIR/.claude/$subdir"
-    for file in "$STACK_DIR/$subdir"/*; do
-      if [[ -e "$file" ]]; then
-        do_copy "$file" "$PROJECT_DIR/.claude/$subdir/"
-      fi
-    done
+# 2. Copy agents with smart filtering
+if [[ -d "$STACK_DIR/agents" ]]; then
+  echo ""
+  echo -e "${CYAN}Copying agents (conditional based on stack)...${NC}"
+  do_mkdir "$PROJECT_DIR/.claude/agents"
+
+  # Universal agents - ALWAYS copy these
+  universal_agents=(
+    "backend-architect.md"
+    "frontend-architect.md"
+    "devops-engineer.md"
+    "security-expert.md"
+    "performance-auditor.md"
+    "data-migration-specialist.md"
+    "server-admin.md"
+    "code-quality-specialist.md"
+  )
+
+  for agent in "${universal_agents[@]}"; do
+    if [[ -f "$STACK_DIR/agents/$agent" ]]; then
+      do_copy "$STACK_DIR/agents/$agent" "$PROJECT_DIR/.claude/agents/"
+    fi
+  done
+
+  # Stack-specific agents - conditional copy
+  # Coilpack specialist
+  if [[ "$STACK" == "coilpack" ]] && [[ -f "$STACK_DIR/agents/coilpack-specialist.md" ]]; then
+    do_copy "$STACK_DIR/agents/coilpack-specialist.md" "$PROJECT_DIR/.claude/agents/"
+  elif [[ "$STACK" != "coilpack" ]] && [[ -f "$STACK_DIR/agents/coilpack-specialist.md" ]]; then
+    echo -e "  ${YELLOW}○${NC} Skipped coilpack-specialist.md (not coilpack stack)"
   fi
-done
+
+  # Craft CMS specialist
+  if [[ "$STACK" == "craftcms" ]] && [[ -f "$STACK_DIR/agents/craftcms-specialist.md" ]]; then
+    do_copy "$STACK_DIR/agents/craftcms-specialist.md" "$PROJECT_DIR/.claude/agents/"
+  elif [[ "$STACK" != "craftcms" ]] && [[ -f "$STACK_DIR/agents/craftcms-specialist.md" ]]; then
+    echo -e "  ${YELLOW}○${NC} Skipped craftcms-specialist.md (not craftcms stack)"
+  fi
+
+  # ExpressionEngine specialist (for expressionengine and coilpack)
+  if [[ "$STACK" == "expressionengine" || "$STACK" == "coilpack" ]] && [[ -f "$STACK_DIR/agents/expressionengine-specialist.md" ]]; then
+    do_copy "$STACK_DIR/agents/expressionengine-specialist.md" "$PROJECT_DIR/.claude/agents/"
+  elif [[ "$STACK" != "expressionengine" && "$STACK" != "coilpack" ]] && [[ -f "$STACK_DIR/agents/expressionengine-specialist.md" ]]; then
+    echo -e "  ${YELLOW}○${NC} Skipped expressionengine-specialist.md (not EE/coilpack stack)"
+  fi
+
+  # EE template expert (expressionengine only)
+  if [[ "$STACK" == "expressionengine" ]] && [[ -f "$STACK_DIR/agents/ee-template-expert.md" ]]; then
+    do_copy "$STACK_DIR/agents/ee-template-expert.md" "$PROJECT_DIR/.claude/agents/"
+  elif [[ "$STACK" != "expressionengine" ]] && [[ -f "$STACK_DIR/agents/ee-template-expert.md" ]]; then
+    echo -e "  ${YELLOW}○${NC} Skipped ee-template-expert.md (not expressionengine stack)"
+  fi
+
+  # Next.js specialist
+  if [[ "$STACK" == "nextjs" ]] && [[ -f "$STACK_DIR/agents/nextjs-specialist.md" ]]; then
+    do_copy "$STACK_DIR/agents/nextjs-specialist.md" "$PROJECT_DIR/.claude/agents/"
+  elif [[ "$STACK" != "nextjs" ]] && [[ -f "$STACK_DIR/agents/nextjs-specialist.md" ]]; then
+    echo -e "  ${YELLOW}○${NC} Skipped nextjs-specialist.md (not nextjs stack)"
+  fi
+
+  # React specialist (nextjs and docusaurus)
+  if [[ "$STACK" == "nextjs" || "$STACK" == "docusaurus" ]] && [[ -f "$STACK_DIR/agents/react-specialist.md" ]]; then
+    do_copy "$STACK_DIR/agents/react-specialist.md" "$PROJECT_DIR/.claude/agents/"
+  elif [[ "$STACK" != "nextjs" && "$STACK" != "docusaurus" ]] && [[ -f "$STACK_DIR/agents/react-specialist.md" ]]; then
+    echo -e "  ${YELLOW}○${NC} Skipped react-specialist.md (not React-based stack)"
+  fi
+
+  # WordPress specialist
+  if [[ "$STACK" == "wordpress-roots" ]] && [[ -f "$STACK_DIR/agents/wordpress-specialist.md" ]]; then
+    do_copy "$STACK_DIR/agents/wordpress-specialist.md" "$PROJECT_DIR/.claude/agents/"
+  elif [[ "$STACK" != "wordpress-roots" ]] && [[ -f "$STACK_DIR/agents/wordpress-specialist.md" ]]; then
+    echo -e "  ${YELLOW}○${NC} Skipped wordpress-specialist.md (not wordpress stack)"
+  fi
+fi
+
+# 2b. Copy commands conditionally
+if [[ -d "$STACK_DIR/commands" ]]; then
+  echo ""
+  echo -e "${CYAN}Copying commands (conditional based on detection)...${NC}"
+  do_mkdir "$PROJECT_DIR/.claude/commands"
+
+  # Core commands - ALWAYS copy if they exist
+  for cmd in project-analyze.md sync-configs.md ddev-helper.md ee-template-scaffold.md ee-check-syntax.md craft-helper.md wordpress-helper.md nextjs-helper.md stash-optimize.md laravel-helper.md twig-helper.md livewire-component.md twig-scaffold.md docusaurus-helper.md; do
+    if [[ -f "$STACK_DIR/commands/$cmd" ]]; then
+      do_copy "$STACK_DIR/commands/$cmd" "$PROJECT_DIR/.claude/commands/"
+    fi
+  done
+
+  # Conditional: Tailwind
+  if [[ -f "$STACK_DIR/commands/tailwind-build.md" ]]; then
+    if [[ "$HAS_TAILWIND" == "true" ]]; then
+      do_copy "$STACK_DIR/commands/tailwind-build.md" "$PROJECT_DIR/.claude/commands/"
+    else
+      if [[ "$DRY_RUN" == true ]]; then
+        echo -e "  ${YELLOW}[SKIP]${NC} tailwind-build.md (not detected)"
+      else
+        echo -e "  ${YELLOW}○${NC} Skipped tailwind-build.md (not detected)"
+      fi
+    fi
+  fi
+
+  # Conditional: Alpine.js
+  if [[ -f "$STACK_DIR/commands/alpine-component-gen.md" ]]; then
+    if [[ "$HAS_ALPINE" == "true" ]]; then
+      do_copy "$STACK_DIR/commands/alpine-component-gen.md" "$PROJECT_DIR/.claude/commands/"
+    else
+      if [[ "$DRY_RUN" == true ]]; then
+        echo -e "  ${YELLOW}[SKIP]${NC} alpine-component-gen.md (not detected)"
+      else
+        echo -e "  ${YELLOW}○${NC} Skipped alpine-component-gen.md (not detected)"
+      fi
+    fi
+  fi
+fi
+
+# 2c. Copy skills conditionally
+if [[ -d "$STACK_DIR/skills" ]]; then
+  echo ""
+  echo -e "${CYAN}Copying skills (conditional based on detection)...${NC}"
+  do_mkdir "$PROJECT_DIR/.claude/skills"
+
+  # Core skills - ALWAYS copy if they exist
+  for skill in ee-stash-optimizer ee-template-assistant; do
+    if [[ -d "$STACK_DIR/skills/$skill" ]]; then
+      do_copy "$STACK_DIR/skills/$skill" "$PROJECT_DIR/.claude/skills/"
+    fi
+  done
+
+  # Conditional: Tailwind
+  if [[ -d "$STACK_DIR/skills/tailwind-utility-finder" ]]; then
+    if [[ "$HAS_TAILWIND" == "true" ]]; then
+      do_copy "$STACK_DIR/skills/tailwind-utility-finder" "$PROJECT_DIR/.claude/skills/"
+    else
+      if [[ "$DRY_RUN" == true ]]; then
+        echo -e "  ${YELLOW}[SKIP]${NC} tailwind-utility-finder (not detected)"
+      else
+        echo -e "  ${YELLOW}○${NC} Skipped tailwind-utility-finder (not detected)"
+      fi
+    fi
+  fi
+
+  # Conditional: Alpine.js
+  if [[ -d "$STACK_DIR/skills/alpine-component-builder" ]]; then
+    if [[ "$HAS_ALPINE" == "true" ]]; then
+      do_copy "$STACK_DIR/skills/alpine-component-builder" "$PROJECT_DIR/.claude/skills/"
+    else
+      if [[ "$DRY_RUN" == true ]]; then
+        echo -e "  ${YELLOW}[SKIP]${NC} alpine-component-builder (not detected)"
+      else
+        echo -e "  ${YELLOW}○${NC} Skipped alpine-component-builder (not detected)"
+      fi
+    fi
+  fi
+fi
+
+# 2d. Copy rules conditionally based on detection
+if [[ -d "$STACK_DIR/rules" ]]; then
+  echo ""
+  echo -e "${CYAN}Copying rules (conditional based on detection)...${NC}"
+  do_mkdir "$PROJECT_DIR/.claude/rules"
+
+  # Core rules - ALWAYS copy if they exist
+  for rule in accessibility.md performance.md; do
+    if [[ -f "$STACK_DIR/rules/$rule" ]]; then
+      do_copy "$STACK_DIR/rules/$rule" "$PROJECT_DIR/.claude/rules/"
+    fi
+  done
+
+  # Stack-specific rules - ALWAYS copy if they exist
+  for rule in expressionengine-templates.md craft-templates.md blade-templates.md nextjs-patterns.md laravel-patterns.md markdown-content.md mcp-workflow.md; do
+    if [[ -f "$STACK_DIR/rules/$rule" ]]; then
+      do_copy "$STACK_DIR/rules/$rule" "$PROJECT_DIR/.claude/rules/"
+    fi
+  done
+
+  # Conditional: Tailwind
+  if [[ -f "$STACK_DIR/rules/tailwind-css.md" ]]; then
+    if [[ "$HAS_TAILWIND" == "true" ]]; then
+      do_copy "$STACK_DIR/rules/tailwind-css.md" "$PROJECT_DIR/.claude/rules/"
+    else
+      if [[ "$DRY_RUN" == true ]]; then
+        echo -e "  ${YELLOW}[SKIP]${NC} tailwind-css.md (not detected)"
+      else
+        echo -e "  ${YELLOW}○${NC} Skipped tailwind-css.md (not detected)"
+      fi
+    fi
+  fi
+
+  # Conditional: Alpine.js
+  if [[ -f "$STACK_DIR/rules/alpinejs.md" ]]; then
+    if [[ "$HAS_ALPINE" == "true" ]]; then
+      do_copy "$STACK_DIR/rules/alpinejs.md" "$PROJECT_DIR/.claude/rules/"
+    else
+      if [[ "$DRY_RUN" == true ]]; then
+        echo -e "  ${YELLOW}[SKIP]${NC} alpinejs.md (not detected)"
+      else
+        echo -e "  ${YELLOW}○${NC} Skipped alpinejs.md (not detected)"
+      fi
+    fi
+  fi
+
+  # Conditional: Bilingual
+  if [[ -f "$STACK_DIR/rules/bilingual-content.md" ]]; then
+    if [[ "$HAS_BILINGUAL" == "true" ]]; then
+      do_copy "$STACK_DIR/rules/bilingual-content.md" "$PROJECT_DIR/.claude/rules/"
+    else
+      if [[ "$DRY_RUN" == true ]]; then
+        echo -e "  ${YELLOW}[SKIP]${NC} bilingual-content.md (not detected)"
+      else
+        echo -e "  ${YELLOW}○${NC} Skipped bilingual-content.md (not detected)"
+      fi
+    fi
+  fi
+fi
 
 # 3. Copy settings.local.json
 if [[ -f "$STACK_DIR/settings.local.json" ]]; then
@@ -634,29 +878,16 @@ if [[ "$WITH_GEMINI" == true ]] && [[ -d "$STACK_DIR/gemini" ]]; then
   if [[ -f "$STACK_DIR/gemini/GEMINI.md.template" ]]; then
     do_template "$STACK_DIR/gemini/GEMINI.md.template" "$PROJECT_DIR/GEMINI.md"
   fi
-  
-  # Create AGENT.md symlink (Gemini also supports AGENT.md)
-  if [[ "$DRY_RUN" == true ]]; then
-    echo -e "  ${BLUE}○${NC} Would create symlink: AGENT.md -> GEMINI.md"
-  else
-    if [[ -e "$PROJECT_DIR/AGENT.md" ]] || [[ -L "$PROJECT_DIR/AGENT.md" ]]; then
-      rm -f "$PROJECT_DIR/AGENT.md"
-    fi
-    ln -s "GEMINI.md" "$PROJECT_DIR/AGENT.md"
-    echo -e "  ${GREEN}✓${NC} Created symlink: AGENT.md -> GEMINI.md"
-  fi
 fi
 
 # 7. Create CLAUDE.md from template
 echo ""
+echo -e "${CYAN}Deploying Claude Code main configuration...${NC}"
 if [[ -f "$STACK_DIR/CLAUDE.md.template" ]]; then
   do_template "$STACK_DIR/CLAUDE.md.template" "$PROJECT_DIR/CLAUDE.md"
 elif [[ -f "$STACK_DIR/CLAUDE.md" ]]; then
   do_copy "$STACK_DIR/CLAUDE.md" "$PROJECT_DIR/"
 fi
-
-# 8. Create AGENTS.md symlink
-do_symlink "CLAUDE.md" "$PROJECT_DIR/AGENTS.md"
 
 # 8. Generate analysis prompt if requested
 if [[ "$ANALYZE" == true ]] && [[ "$DRY_RUN" != true ]]; then
@@ -727,10 +958,15 @@ echo ""
 if [[ "$SKIP_VSCODE" != true ]]; then
   echo -e "${CYAN}VSCode settings deployed:${NC}"
   echo "  - .vscode/settings.json — Editor + Emmet config"
+  echo "  - .vscode/extensions.json — Recommended extensions"
   echo "  - .vscode/launch.json — Xdebug configuration"
   echo "  - .vscode/tasks.json — DDEV Xdebug tasks"
   echo "  - .vscode/tailwind.json — Tailwind CSS IntelliSense"
   echo ""
+  if [[ "$INSTALL_EXTENSIONS" != true ]]; then
+    echo -e "${YELLOW}Tip:${NC} Use --install-extensions to auto-install recommended extensions"
+    echo ""
+  fi
 fi
 if [[ "$WITH_MCP" == true ]]; then
   echo -e "${CYAN}MCP configuration deployed:${NC}"
@@ -743,7 +979,6 @@ fi
 if [[ "$WITH_GEMINI" == true ]]; then
   echo -e "${CYAN}Gemini Code Assist configuration deployed:${NC}"
   echo "  - GEMINI.md — Agent mode context file"
-  echo "  - AGENT.md — Symlink to GEMINI.md"
   echo "  - .gemini/config.yaml — GitHub PR review settings"
   echo "  - .gemini/styleguide.md — Code review style guide"
   echo "  - .gemini/settings.json — MCP servers and settings"
@@ -751,13 +986,25 @@ if [[ "$WITH_GEMINI" == true ]]; then
   echo "  - .geminiignore — File exclusion patterns"
   echo ""
 fi
+if [[ "$INSTALL_EXTENSIONS" == true ]] && [[ "$SKIP_VSCODE" != true ]] && [[ "$DRY_RUN" != true ]]; then
+  echo -e "${CYAN}Installing VSCode extensions...${NC}"
+  echo ""
+  if "$SCRIPT_DIR/install-vscode-extensions.sh" "$PROJECT_DIR"; then
+    echo ""
+  else
+    echo -e "${YELLOW}Note: Extension installation requires 'code' command${NC}"
+    echo "To install manually: Open VSCode → Extensions → Install recommendations"
+    echo ""
+  fi
+fi
+
 echo -e "${CYAN}Gitignore reminder:${NC}"
 echo "  Ensure .gitignore includes:"
 echo "    CLAUDE.md"
-echo "    AGENTS.md"
 echo "    .claude/"
 if [[ "$WITH_GEMINI" == true ]]; then
   echo "    GEMINI.md"
   echo "    .gemini/"
+  echo "    .geminiignore"
 fi
 echo ""

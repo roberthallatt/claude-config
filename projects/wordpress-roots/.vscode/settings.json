@@ -13,26 +13,29 @@
   },
 
   "files.associations": {
-    "*.html": "ExpressionEngine",
-    ".env.php": "php",
-    ".env.*.php": "php"
+    "**/resources/views/**/*.blade.php": "blade",
+    "*.blade.php": "blade",
+    ".env": "dotenv",
+    ".env.*": "dotenv"
   },
 
   "files.exclude": {
     "**/.DS_Store": true,
     "**/node_modules": true,
     "**/.git": true,
-    "system/ee": true
+    "**/vendor": true,
+    "**/web/app/uploads": true
   },
 
   "search.exclude": {
     "**/node_modules": true,
-    "**/public/assets": true,
-    "system/ee": true
+    "**/vendor": true,
+    "**/web/app/uploads": true,
+    "**/public/dist": true
   },
 
   "emmet.includeLanguages": {
-    "ExpressionEngine": "html"
+    "blade": "html"
   },
   "emmet.triggerExpansionOnTab": true,
   "emmet.showSuggestionsAsSnippets": true,
@@ -43,7 +46,7 @@
   ],
   "scss.lint.unknownAtRules": "ignore",
   "tailwindCSS.includeLanguages": {
-    "ExpressionEngine": "html"
+    "blade": "html"
   },
   "tailwindCSS.emmetCompletions": true,
 
@@ -51,5 +54,13 @@
   "dotenv.enableAutocloaking": false,
 
   "terminal.integrated.env.osx": {},
-  "livePreview.defaultPreviewPath": "/"
+  "livePreview.defaultPreviewPath": "/",
+
+  "gemini.mcpServers": {
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    }
+  }
 }

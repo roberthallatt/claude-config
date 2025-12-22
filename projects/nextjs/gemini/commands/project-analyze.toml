@@ -1,25 +1,24 @@
-description = "Analyze the Next.js project structure"
+# Gemini CLI Custom Command: Project Analysis & Configuration Sync
+# Invoked as: /project:analyze
+
+description = "Analyze Next.js project and sync both Claude and Gemini configurations"
 
 prompt = """
-Analyze this Next.js project:
+Analyze this Next.js project and sync AI configurations.
 
-1. **Project Structure**
-   - Examine app/ directory
-   - Identify components
-   - Review configuration
+## Analysis Tasks
 
-2. **Tech Stack**
-   - Check package.json
-   - Identify styling approach
-   - Note state management
+1. **Package Config**: package.json, Next.js version, dependencies
+2. **Structure**: App Router vs Pages Router, components
+3. **Frontend**: Tailwind, TypeScript config
+4. **Config Sync**: Compare CLAUDE.md and GEMINI.md
 
-3. **Patterns**
-   - Server vs Client components
-   - Data fetching patterns
-   - API routes
+## Output
 
-4. **Recommendations**
-   - Performance optimizations
-   - Best practices
-   - Potential issues
+1. Detected configuration table
+2. Structure overview
+3. Sync recommendations
+4. Missing components
+
+Be thorough but concise.
 """
