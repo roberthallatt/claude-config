@@ -1,0 +1,64 @@
+# Gemini Code Assist GitHub Configuration
+# Controls PR review behavior and settings
+
+# Fun features (like poems in PR summaries)
+have_fun: false
+
+# Persistent memory settings
+memory_config:
+  disabled: false
+
+# Code review settings
+code_review:
+  # Set to true to disable code review
+  disable: false
+  
+  # Minimum severity to comment on: LOW, MEDIUM, HIGH, CRITICAL
+  comment_severity_threshold: MEDIUM
+  
+  # Maximum number of review comments (-1 for unlimited)
+  max_review_comments: 15
+
+# Behavior when PR is opened
+pull_request_opened:
+  # Show help message on first interaction
+  help: false
+  
+  # Generate PR summary
+  summary: true
+  
+  # Perform code review
+  code_review: true
+  
+  # Include draft PRs
+  include_drafts: false
+
+# Files and directories to ignore (glob patterns)
+ignore_patterns:
+  # Dependencies
+  - "node_modules/**"
+  - "vendor/**"
+  
+  # Build artifacts
+  - "public/build/**"
+  - "public/hot"
+  - "storage/**"
+  
+  # Cache and temp files
+  - "bootstrap/cache/**"
+  - ".phpunit.cache/**"
+  
+  # EE system files (don't review core)
+  - "ee/system/ee/**"
+  
+  # Lock files
+  - "package-lock.json"
+  - "composer.lock"
+  
+  # Environment files
+  - ".env*"
+  
+  # IDE and editor files
+  - ".idea/**"
+  - ".vscode/**"
+  - "*.code-workspace"

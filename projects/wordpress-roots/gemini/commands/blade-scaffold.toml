@@ -1,0 +1,16 @@
+description = "Generate a Blade template scaffold"
+
+prompt = """
+Create a Blade template for Sage based on:
+
+{{args}}
+
+Requirements:
+1. Use proper Blade syntax
+2. Include layout extension
+3. Use Tailwind CSS
+4. Accessibility attributes
+5. WordPress best practices
+
+Provide the complete template file.
+"""

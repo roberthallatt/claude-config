@@ -1,0 +1,90 @@
+# Project: {{PROJECT_NAME}}
+
+## Project Overview
+This is a **WordPress** project using the Roots stack (Bedrock + Sage).
+
+- **Primary URL**: {{PRIMARY_URL}}
+- **Admin URL**: {{PRIMARY_URL}}/wp/wp-admin
+- **Environment**: DDEV local development
+
+## Tech Stack
+
+- **WordPress**: Managed via Bedrock
+- **Theme**: Sage 10 with Blade templates
+- **Build Tool**: Bud.js
+- **CSS**: Tailwind CSS
+- **JavaScript**: Alpine.js
+- **PHP Version**: {{PHP_VERSION}}
+- **Database**: {{DATABASE_TYPE}}
+
+## Directory Structure
+
+```
+{{PROJECT_SLUG}}/
+├── config/                 # WordPress configuration
+├── web/                   # Web root (docroot)
+│   ├── app/               # wp-content equivalent
+│   │   ├── themes/        # Themes
+│   │   ├── plugins/       # Plugins
+│   │   └── uploads/       # Media
+│   └── wp/                # WordPress core
+└── .ddev/                 # DDEV configuration
+```
+
+## Development Commands
+
+```bash
+# DDEV commands
+ddev start              # Start environment
+ddev wp [command]       # Run WP-CLI
+ddev composer [command] # Run Composer
+
+# Theme development (in theme directory)
+ddev npm run dev        # Development
+ddev npm run build      # Production build
+```
+
+### Common Tasks
+```bash
+# Clear caches
+ddev wp cache flush
+ddev wp acorn view:clear
+
+# Database
+ddev wp db export backup.sql
+ddev wp db import backup.sql
+```
+
+## Blade Template Patterns
+
+### Layout
+```blade
+@extends('layouts.app')
+
+@section('content')
+    <h1>{!! $title !!}</h1>
+    @php(the_content())
+@endsection
+```
+
+### ACF Fields
+```blade
+@if($image = get_field('featured_image'))
+    <img src="{{ $image['url'] }}" alt="{{ $image['alt'] }}">
+@endif
+```
+
+## Coding Standards
+
+- Follow WordPress Coding Standards
+- Use Blade templates, not raw PHP
+- Tailwind utility classes
+- Mobile-first responsive design
+- WCAG 2.1 AA accessibility
+
+## Important Notes
+
+1. **Always use `ddev` prefix** for CLI commands
+2. **Composer for plugins** - Use wpackagist.org
+3. **Never edit `web/wp/`** - WordPress core is managed
+4. **Environment variables** - Defined in `.env`

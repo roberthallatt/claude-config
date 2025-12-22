@@ -1,0 +1,25 @@
+description = "Analyze the Next.js project structure"
+
+prompt = """
+Analyze this Next.js project:
+
+1. **Project Structure**
+   - Examine app/ directory
+   - Identify components
+   - Review configuration
+
+2. **Tech Stack**
+   - Check package.json
+   - Identify styling approach
+   - Note state management
+
+3. **Patterns**
+   - Server vs Client components
+   - Data fetching patterns
+   - API routes
+
+4. **Recommendations**
+   - Performance optimizations
+   - Best practices
+   - Potential issues
+"""

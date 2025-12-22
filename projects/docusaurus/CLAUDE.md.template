@@ -1,0 +1,201 @@
+# Project: {{PROJECT_NAME}}
+
+## Overview
+
+This is a **Docusaurus** documentation site.
+
+- **Primary URL**: {{PRIMARY_URL}}
+- **Framework**: Docusaurus 3.x
+
+## Tech Stack
+
+- **Framework**: Docusaurus 3.x
+- **Language**: TypeScript / JavaScript
+- **Content**: Markdown / MDX
+- **Styling**: CSS Modules / Tailwind (optional)
+- **Search**: Algolia DocSearch (if configured)
+
+## Directory Structure
+
+```
+{{PROJECT_SLUG}}/
+├── docs/                   # Documentation pages
+│   ├── intro.md           # Intro page
+│   ├── category/          # Category folder
+│   └── _category_.json    # Category metadata
+├── blog/                  # Blog posts (optional)
+├── src/
+│   ├── components/        # React components
+│   ├── css/               # Custom CSS
+│   └── pages/             # Custom pages
+├── static/                # Static assets
+├── docusaurus.config.js   # Main configuration
+├── sidebars.js            # Sidebar configuration
+└── package.json
+```
+
+## Development Commands
+
+```bash
+# Start development server
+npm run start
+
+# Build for production
+npm run build
+
+# Serve production build locally
+npm run serve
+
+# Clear cache
+npm run clear
+
+# Deploy (if configured)
+npm run deploy
+```
+
+## Content Patterns
+
+### Markdown Front Matter
+```markdown
+---
+id: page-id
+title: Page Title
+sidebar_label: Sidebar Label
+sidebar_position: 1
+tags: [tag1, tag2]
+---
+
+# Page Title
+
+Content goes here...
+```
+
+### Admonitions
+```markdown
+:::note
+This is a note
+:::
+
+:::tip
+This is a tip
+:::
+
+:::info
+This is info
+:::
+
+:::caution
+This is a caution
+:::
+
+:::danger
+This is a danger warning
+:::
+```
+
+### Code Blocks
+````markdown
+```javascript title="example.js"
+function hello() {
+  console.log('Hello, world!');
+}
+```
+
+```jsx live
+function Clock() {
+  const [date, setDate] = useState(new Date());
+  return <div>{date.toLocaleTimeString()}</div>;
+}
+```
+````
+
+### Tabs
+```markdown
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs>
+  <TabItem value="js" label="JavaScript" default>
+    JavaScript code here
+  </TabItem>
+  <TabItem value="py" label="Python">
+    Python code here
+  </TabItem>
+</Tabs>
+```
+
+### MDX Components
+```mdx
+import MyComponent from '@site/src/components/MyComponent';
+
+<MyComponent prop="value" />
+```
+
+## Configuration
+
+### docusaurus.config.js
+```javascript
+module.exports = {
+  title: 'Site Title',
+  tagline: 'Site tagline',
+  url: 'https://yoursite.com',
+  baseUrl: '/',
+  
+  themeConfig: {
+    navbar: {
+      title: 'Site Title',
+      items: [
+        { type: 'doc', docId: 'intro', label: 'Docs' },
+        { to: '/blog', label: 'Blog' },
+      ],
+    },
+    footer: {
+      style: 'dark',
+      links: [/* footer links */],
+    },
+  },
+};
+```
+
+### sidebars.js
+```javascript
+module.exports = {
+  docs: [
+    'intro',
+    {
+      type: 'category',
+      label: 'Getting Started',
+      items: ['installation', 'configuration'],
+    },
+  ],
+};
+```
+
+## Coding Standards
+
+### Markdown
+- Use descriptive front matter
+- Keep headings hierarchical (h2 → h3 → h4)
+- Use admonitions for callouts
+- Include code examples with syntax highlighting
+
+### React Components
+- Use TypeScript for components
+- Keep components focused and reusable
+- Document component props
+
+### Styling
+- Use CSS Modules for component styles
+- Follow consistent naming conventions
+- Support dark mode
+
+## Important Notes
+
+1. **Front matter required** - Every doc needs front matter
+2. **Sidebar position** - Use `sidebar_position` for ordering
+3. **Asset paths** - Use `@site/static/` for static assets
+4. **MDX support** - JSX works in .mdx files
+5. **Versioning** - Use `docusaurus docs:version` for versioned docs
+
+@import ../shared/knowledge/markdown.md
+@import ../shared/knowledge/react-patterns.md

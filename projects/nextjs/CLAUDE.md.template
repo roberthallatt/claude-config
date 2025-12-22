@@ -1,0 +1,163 @@
+# Project: {{PROJECT_NAME}}
+
+## Overview
+
+This is a **Next.js** project with React and TypeScript.
+
+- **Primary URL**: {{PRIMARY_URL}}
+- **Environment**: Node.js development
+
+## Tech Stack
+
+- **Framework**: Next.js 14.x (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: Headless UI / Radix
+- **State Management**: React Context / Zustand
+- **Data Fetching**: React Query / SWR
+
+## Directory Structure
+
+```
+{{PROJECT_SLUG}}/
+├── app/                    # App Router pages
+│   ├── layout.tsx         # Root layout
+│   ├── page.tsx           # Homepage
+│   ├── globals.css        # Global styles
+│   └── [routes]/          # Route segments
+├── components/            # React components
+│   ├── ui/                # UI primitives
+│   └── features/          # Feature components
+├── lib/                   # Utility functions
+├── hooks/                 # Custom React hooks
+├── types/                 # TypeScript types
+├── public/                # Static assets
+├── styles/                # Additional styles
+└── next.config.js         # Next.js configuration
+```
+
+## Development Commands
+
+```bash
+# Development server
+npm run dev
+# or with DDEV
+ddev npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm run start
+
+# Linting
+npm run lint
+
+# Type checking
+npm run type-check
+```
+
+## Component Patterns
+
+### Server Components (default)
+```tsx
+// app/page.tsx
+async function HomePage() {
+  const data = await fetchData();
+  
+  return (
+    <main>
+      <h1>{data.title}</h1>
+    </main>
+  );
+}
+
+export default HomePage;
+```
+
+### Client Components
+```tsx
+'use client';
+
+import { useState } from 'react';
+
+export function Counter() {
+  const [count, setCount] = useState(0);
+  
+  return (
+    <button onClick={() => setCount(c => c + 1)}>
+      Count: {count}
+    </button>
+  );
+}
+```
+
+### Data Fetching
+```tsx
+// Server-side fetching (App Router)
+async function getData() {
+  const res = await fetch('https://api.example.com/data', {
+    next: { revalidate: 3600 } // Revalidate every hour
+  });
+  return res.json();
+}
+
+// Client-side with React Query
+const { data, isLoading } = useQuery({
+  queryKey: ['data'],
+  queryFn: fetchData,
+});
+```
+
+### Dynamic Routes
+```tsx
+// app/posts/[slug]/page.tsx
+interface Props {
+  params: { slug: string };
+}
+
+async function PostPage({ params }: Props) {
+  const post = await getPost(params.slug);
+  return <article>{post.content}</article>;
+}
+
+export default PostPage;
+```
+
+## Coding Standards
+
+### TypeScript
+- Use strict mode
+- Define interfaces for all props
+- Avoid `any` type
+- Use discriminated unions for complex state
+
+### React
+- Prefer Server Components when possible
+- Use `'use client'` only when needed
+- Extract reusable logic into hooks
+- Memoize expensive computations
+
+### Styling
+- Use Tailwind utility classes
+- Create component variants with cva
+- Follow mobile-first responsive design
+
+## Performance
+
+- Use `next/image` for optimized images
+- Use `next/font` for optimized fonts
+- Implement proper loading states
+- Use Suspense for async components
+- Configure proper caching headers
+
+## Important Notes
+
+1. **Server vs Client Components** - Default to server, use client only for interactivity
+2. **Metadata** - Use `generateMetadata` for SEO
+3. **Environment Variables** - Prefix with `NEXT_PUBLIC_` for client access
+4. **API Routes** - Use Route Handlers in `app/api/`
+
+@import ../shared/knowledge/typescript.md
+@import ../shared/knowledge/tailwind-css.md
+@import ../shared/knowledge/react-patterns.md

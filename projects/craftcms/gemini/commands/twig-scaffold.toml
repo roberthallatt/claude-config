@@ -1,0 +1,27 @@
+# Gemini CLI Custom Command: Twig Template Scaffold
+# Invoked as: /twig:scaffold "template description"
+
+description = "Generate a Twig template scaffold for Craft CMS"
+
+prompt = """
+Create a Twig template for this Craft CMS project based on this description:
+
+{{args}}
+
+Requirements:
+1. Use proper Twig syntax with Craft conventions
+2. Use Element Queries (craft.entries(), craft.categories(), etc.)
+3. Include eager loading with .with() for relationships
+4. Use Tailwind CSS for styling
+5. Include accessibility attributes
+6. Add helpful comments
+
+Template should include:
+- Extends or layout reference
+- Block definitions
+- Element queries with eager loading
+- Proper escaping
+- Responsive design considerations
+
+Provide the complete template file content.
+"""

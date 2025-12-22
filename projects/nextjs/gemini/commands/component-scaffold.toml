@@ -1,0 +1,17 @@
+description = "Generate a React component scaffold"
+
+prompt = """
+Create a React component for Next.js based on:
+
+{{args}}
+
+Requirements:
+1. TypeScript with proper types
+2. Tailwind CSS styling
+3. Accessibility attributes
+4. Responsive design
+5. Comments explaining the code
+
+Determine if it should be a Server or Client component.
+Provide the complete component file.
+"""

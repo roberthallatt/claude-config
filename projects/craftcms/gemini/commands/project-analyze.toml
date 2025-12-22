@@ -1,0 +1,40 @@
+# Gemini CLI Custom Command: Project Analysis
+# Invoked as: /project:analyze
+
+description = "Analyze the Craft CMS project structure and provide an overview"
+
+prompt = """
+Analyze this Craft CMS project and provide a comprehensive overview:
+
+1. **Project Structure**
+   - Examine the directory layout
+   - Identify key configuration files
+   - Note any custom modules or plugins
+
+2. **Craft Configuration**
+   - Check DDEV configuration (.ddev/config.yaml)
+   - Review config/general.php settings
+   - Check project config (config/project/)
+
+3. **Content Model**
+   - Identify sections and entry types
+   - Note field layouts and relationships
+   - Document asset volumes
+
+4. **Template Structure**
+   - Review templates/ organization
+   - Identify layouts and partials
+   - Note component patterns
+
+5. **Frontend Stack**
+   - Check package.json for dependencies
+   - Identify CSS framework (Tailwind, etc.)
+   - Note build configuration (vite.config.js)
+
+6. **Recommendations**
+   - Suggest improvements
+   - Note any potential issues
+   - Performance optimization opportunities
+
+Please be thorough but concise.
+"""

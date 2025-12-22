@@ -416,14 +416,49 @@ if [[ "$REFRESH" == true ]]; then
   if [[ "$WITH_GEMINI" == true ]] && [[ -d "$STACK_DIR/gemini" ]]; then
     echo ""
     echo -e "${CYAN}Refreshing Gemini Code Assist configuration...${NC}"
+    
+    # Create directories
     do_mkdir "$PROJECT_DIR/.gemini"
-    for file in config.yaml styleguide.md instructions.md; do
+    do_mkdir "$PROJECT_DIR/.gemini/commands"
+    
+    # Copy static config files
+    for file in config.yaml styleguide.md; do
       if [[ -f "$STACK_DIR/gemini/$file" ]]; then
         do_copy "$STACK_DIR/gemini/$file" "$PROJECT_DIR/.gemini/"
       fi
     done
+    
+    # Deploy settings.json from template
+    if [[ -f "$STACK_DIR/gemini/settings.json.template" ]]; then
+      do_template "$STACK_DIR/gemini/settings.json.template" "$PROJECT_DIR/.gemini/settings.json"
+    fi
+    
+    # Deploy .geminiignore
+    if [[ -f "$STACK_DIR/gemini/geminiignore.template" ]]; then
+      do_copy "$STACK_DIR/gemini/geminiignore.template" "$PROJECT_DIR/.geminiignore"
+    fi
+    
+    # Deploy custom commands
+    if [[ -d "$STACK_DIR/gemini/commands" ]]; then
+      for file in "$STACK_DIR/gemini/commands"/*.toml; do
+        if [[ -e "$file" ]]; then
+          do_copy "$file" "$PROJECT_DIR/.gemini/commands/"
+        fi
+      done
+    fi
+    
+    # Generate GEMINI.md from template
     if [[ -f "$STACK_DIR/gemini/GEMINI.md.template" ]]; then
       do_template "$STACK_DIR/gemini/GEMINI.md.template" "$PROJECT_DIR/GEMINI.md"
+    fi
+    
+    # Create AGENT.md symlink
+    if [[ ! -L "$PROJECT_DIR/AGENT.md" ]]; then
+      if [[ -e "$PROJECT_DIR/AGENT.md" ]]; then
+        rm -f "$PROJECT_DIR/AGENT.md"
+      fi
+      ln -s "GEMINI.md" "$PROJECT_DIR/AGENT.md"
+      echo -e "  ${GREEN}✓${NC} Created symlink: AGENT.md -> GEMINI.md"
     fi
   fi
   

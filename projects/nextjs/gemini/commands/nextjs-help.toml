@@ -1,0 +1,16 @@
+description = "Get help with Next.js development"
+
+prompt = """
+Provide Next.js help for:
+
+{{args}}
+
+Include:
+1. Correct file structure and naming
+2. Server vs Client component guidance
+3. TypeScript types
+4. Performance best practices
+5. App Router patterns
+
+Use Next.js 14+ App Router conventions.
+"""

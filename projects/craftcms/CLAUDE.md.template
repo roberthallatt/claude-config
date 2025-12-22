@@ -1,0 +1,176 @@
+# Project: {{PROJECT_NAME}}
+
+## Overview
+
+This is a **Craft CMS** project using DDEV for local development.
+
+- **Primary URL**: {{PRIMARY_URL}}
+- **Control Panel**: {{PRIMARY_URL}}/admin
+- **Environment**: DDEV local development
+
+## Tech Stack
+
+- **CMS**: Craft CMS 4.x/5.x
+- **Templating**: Twig
+- **PHP Version**: {{PHP_VERSION}}
+- **Database**: {{DATABASE_TYPE}}
+- **Frontend**: Tailwind CSS, Alpine.js
+- **Build Tool**: Vite
+
+## Directory Structure
+
+```
+{{PROJECT_SLUG}}/
+├── config/                 # Craft configuration
+│   ├── general.php        # General settings
+│   ├── db.php             # Database config
+│   ├── app.php            # Application config
+│   └── project/           # Project config (YAML)
+├── modules/               # Custom Yii modules
+├── storage/               # Runtime files (logs, cache)
+├── templates/             # Twig templates
+│   ├── _layouts/          # Base layouts
+│   ├── _partials/         # Reusable partials
+│   ├── _components/       # UI components
+│   └── [sections]/        # Section templates
+├── web/                   # Web root (docroot)
+│   ├── assets/            # Compiled assets
+│   └── uploads/           # User uploads
+├── src/                   # Frontend source
+│   ├── css/
+│   └── js/
+└── .ddev/                 # DDEV configuration
+```
+
+## Development Commands
+
+### DDEV Commands
+```bash
+ddev start              # Start environment
+ddev stop               # Stop environment
+ddev ssh                # Access container shell
+ddev describe           # Show project info
+
+# Craft CLI
+ddev craft [command]    # Run Craft CLI command
+ddev craft clear-caches/all
+ddev craft project-config/apply
+ddev craft migrate/all
+ddev craft resave/entries
+
+# Package managers
+ddev composer [command]
+ddev npm [command]
+```
+
+### Common Tasks
+```bash
+# Clear all caches
+ddev craft clear-caches/all
+
+# Apply project config changes
+ddev craft project-config/apply
+
+# Run migrations
+ddev craft migrate/all
+
+# Rebuild search indexes
+ddev craft resave/entries --update-search-index
+
+# Frontend build
+ddev npm run dev
+ddev npm run build
+```
+
+## Template Patterns
+
+### Layout Structure
+```twig
+{# templates/_layouts/base.twig #}
+<!DOCTYPE html>
+<html lang="{{ currentSite.language }}">
+<head>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    {% block content %}{% endblock %}
+</body>
+</html>
+```
+
+### Entry Queries
+```twig
+{# Single entry by slug #}
+{% set entry = craft.entries()
+    .section('pages')
+    .slug(craft.app.request.getSegment(1))
+    .one() %}
+
+{# Multiple entries #}
+{% set posts = craft.entries()
+    .section('blog')
+    .orderBy('postDate desc')
+    .limit(10)
+    .all() %}
+
+{% for post in posts %}
+    <article>
+        <h2>{{ post.title }}</h2>
+        {{ post.body|raw }}
+    </article>
+{% endfor %}
+```
+
+### Asset Fields
+```twig
+{% set image = entry.featuredImage.one() %}
+{% if image %}
+    <img src="{{ image.url }}" 
+         alt="{{ image.alt ?? entry.title }}"
+         width="{{ image.width }}"
+         height="{{ image.height }}">
+{% endif %}
+```
+
+### Matrix/Entry Types
+```twig
+{% for block in entry.contentBlocks.all() %}
+    {% switch block.type.handle %}
+        {% case 'text' %}
+            {{ block.text|raw }}
+        {% case 'image' %}
+            {% include '_components/image' with { image: block.image.one() } %}
+        {% case 'quote' %}
+            <blockquote>{{ block.quote }}</blockquote>
+    {% endswitch %}
+{% endfor %}
+```
+
+## Coding Standards
+
+### PHP
+- Follow PSR-12 coding standards
+- Use type hints for parameters and return types
+- Use Craft's service pattern for business logic
+
+### Twig Templates
+- Prefix partials/layouts with underscore: `_header.twig`
+- Use `{% include %}` for reusable components
+- Use `{% embed %}` for components with overridable blocks
+- Always escape output unless using `|raw` intentionally
+
+### CSS/JavaScript
+- Use Tailwind utility classes
+- Alpine.js for interactive components
+- Mobile-first responsive design
+
+## Important Notes
+
+1. **Always use `ddev` prefix** for CLI commands
+2. **Project config**: Changes sync via `config/project/` YAML files
+3. **Environment variables**: Defined in `.env` file
+4. **Cache clearing**: Required after config/template changes
+5. **GraphQL**: Available at `/api` if enabled
+
+@import ../shared/knowledge/tailwind-css.md
+@import ../shared/knowledge/alpine-js.md

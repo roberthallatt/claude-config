@@ -1,0 +1,113 @@
+# Project: {{PROJECT_NAME}}
+
+## Project Overview
+This is a **Craft CMS** project using DDEV for local development.
+
+- **Primary URL**: {{PRIMARY_URL}}
+- **Control Panel**: {{PRIMARY_URL}}/admin
+- **Environment**: DDEV local development
+
+## Tech Stack
+
+### Core Technologies
+- **CMS**: Craft CMS 4.x/5.x
+- **Templating**: Twig
+- **PHP Version**: {{PHP_VERSION}}
+- **Database**: {{DATABASE_TYPE}}
+
+### Frontend
+- **CSS Framework**: Tailwind CSS
+- **Build Tool**: Vite
+- **JavaScript**: Alpine.js for interactivity
+
+## Directory Structure
+
+```
+{{PROJECT_SLUG}}/
+├── config/                 # Craft configuration
+│   ├── general.php        # General settings
+│   ├── db.php             # Database config
+│   └── project/           # Project config (YAML)
+├── modules/               # Custom Yii modules
+├── storage/               # Runtime files
+├── templates/             # Twig templates
+│   ├── _layouts/          # Base layouts
+│   ├── _partials/         # Reusable partials
+│   └── _components/       # UI components
+├── web/                   # Web root (docroot)
+├── src/                   # Frontend source
+└── .ddev/                 # DDEV configuration
+```
+
+## Development Commands
+
+### DDEV Commands
+```bash
+ddev start              # Start environment
+ddev craft [command]    # Run Craft CLI
+ddev composer [command] # Run Composer
+ddev npm [command]      # Run NPM
+```
+
+### Common Tasks
+```bash
+# Clear all caches
+ddev craft clear-caches/all
+
+# Apply project config
+ddev craft project-config/apply
+
+# Run migrations
+ddev craft migrate/all
+
+# Build frontend
+ddev npm run dev
+ddev npm run build
+```
+
+## Template Patterns
+
+### Entry Queries
+```twig
+{% set entries = craft.entries()
+    .section('blog')
+    .orderBy('postDate desc')
+    .limit(10)
+    .all() %}
+
+{% for entry in entries %}
+    <h2>{{ entry.title }}</h2>
+{% endfor %}
+```
+
+### Assets
+```twig
+{% set image = entry.featuredImage.one() %}
+{% if image %}
+    <img src="{{ image.url }}" alt="{{ image.alt }}">
+{% endif %}
+```
+
+## Coding Standards
+
+### PHP
+- Follow PSR-12 coding standards
+- Use type hints for all parameters
+- Use Craft's service pattern
+
+### Twig Templates
+- Prefix layouts/partials with underscore: `_header.twig`
+- Use `{% include %}` for reusable components
+- Escape output unless using `|raw`
+
+### CSS/Tailwind
+- Use Tailwind utilities
+- Mobile-first responsive design
+- Follow accessibility guidelines
+
+## Important Notes
+
+1. **Always use `ddev` prefix** for CLI commands
+2. **Project config**: Changes sync via `config/project/`
+3. **Cache clearing**: Required after config changes
+4. **Eager loading**: Use `.with()` for performance

@@ -1,0 +1,37 @@
+# Gemini Code Assist Ignore File
+
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+out/
+build/
+dist/
+
+# Vercel
+.vercel/
+
+# Environment
+.env
+.env.*
+
+# IDE
+.idea/
+.vscode/
+*.code-workspace
+
+# Git
+.git/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Cache
+.cache/
+*.tsbuildinfo

@@ -1,0 +1,30 @@
+# Gemini CLI Custom Command: DDEV Helper
+# Invoked as: /ddev:help "task description"
+
+description = "Get help with DDEV commands for this Craft CMS project"
+
+prompt = """
+Provide DDEV command help for this Craft CMS project:
+
+{{args}}
+
+Include:
+
+1. **Relevant DDEV Commands**
+   - Show the exact commands to run
+   - Explain what each command does
+
+2. **Common DDEV Commands Reference**
+   - ddev start/stop/restart
+   - ddev ssh (access container)
+   - ddev craft (Craft CLI)
+   - ddev composer/npm (package managers)
+   - ddev describe (project info)
+   - ddev logs (view logs)
+
+3. **Troubleshooting**
+   - Common issues and solutions
+   - How to check service status
+
+Always prefix commands with `ddev` - never suggest running php/composer/npm directly.
+"""

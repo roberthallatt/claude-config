@@ -1,0 +1,173 @@
+# Project: {{PROJECT_NAME}}
+
+## Overview
+
+This is a **WordPress** project using the Roots stack (Bedrock + Sage theme).
+
+- **Primary URL**: {{PRIMARY_URL}}
+- **Admin URL**: {{PRIMARY_URL}}/wp/wp-admin
+- **Environment**: DDEV local development
+
+## Tech Stack
+
+- **WordPress**: Managed via Bedrock
+- **Theme**: Sage 10 with Laravel Blade templates
+- **Build Tool**: Bud.js (Laravel Mix alternative)
+- **CSS**: Tailwind CSS
+- **JavaScript**: Alpine.js
+- **PHP Version**: {{PHP_VERSION}}
+- **Database**: {{DATABASE_TYPE}}
+
+## Directory Structure
+
+```
+{{PROJECT_SLUG}}/
+├── config/                 # WordPress configuration
+│   ├── application.php    # Main config
+│   └── environments/      # Environment-specific
+├── web/                   # Web root (docroot)
+│   ├── app/               # wp-content equivalent
+│   │   ├── themes/        # Themes
+│   │   ├── plugins/       # Plugins
+│   │   └── uploads/       # Media uploads
+│   ├── wp/                # WordPress core (gitignored)
+│   └── index.php
+├── vendor/                # Composer dependencies
+└── .ddev/                 # DDEV configuration
+```
+
+### Sage Theme Structure
+
+```
+web/app/themes/{{THEME_NAME}}/
+├── app/                   # Theme application code
+│   ├── Providers/         # Service providers
+│   ├── View/              # View composers
+│   └── filters.php        # WordPress filters
+├── resources/
+│   ├── views/             # Blade templates
+│   │   ├── layouts/       # Base layouts
+│   │   ├── partials/      # Reusable partials
+│   │   ├── components/    # Blade components
+│   │   └── sections/      # ACF sections
+│   ├── styles/            # CSS source
+│   └── scripts/           # JS source
+├── public/                # Compiled assets
+├── bud.config.js          # Build configuration
+└── composer.json          # Theme dependencies
+```
+
+## Development Commands
+
+### DDEV Commands
+```bash
+ddev start              # Start environment
+ddev stop               # Stop environment
+ddev ssh                # Access container
+
+# WordPress CLI
+ddev wp [command]       # Run WP-CLI command
+ddev wp plugin list
+ddev wp cache flush
+ddev wp search-replace 'old' 'new'
+
+# Composer (in project root)
+ddev composer install
+ddev composer require wpackagist-plugin/plugin-name
+
+# Theme development (in theme directory)
+ddev npm run dev        # Development with HMR
+ddev npm run build      # Production build
+```
+
+### Common Tasks
+```bash
+# Clear all caches
+ddev wp cache flush
+ddev wp transient delete --all
+
+# Database operations
+ddev wp db export backup.sql
+ddev wp db import backup.sql
+
+# Search and replace (for migrations)
+ddev wp search-replace 'https://old.com' 'https://new.com' --all-tables
+```
+
+## Blade Template Patterns
+
+### Layout
+```blade
+{{-- resources/views/layouts/app.blade.php --}}
+<!DOCTYPE html>
+<html @php(language_attributes())>
+<head>
+    @include('partials.head')
+</head>
+<body @php(body_class())>
+    @include('partials.header')
+    
+    <main>
+        @yield('content')
+    </main>
+    
+    @include('partials.footer')
+</body>
+</html>
+```
+
+### Page Template
+```blade
+{{-- resources/views/page.blade.php --}}
+@extends('layouts.app')
+
+@section('content')
+    <article @php(post_class())>
+        <h1>{!! $title !!}</h1>
+        <div class="prose">
+            @php(the_content())
+        </div>
+    </article>
+@endsection
+```
+
+### ACF Fields
+```blade
+@if($featured_image = get_field('featured_image'))
+    <img src="{{ $featured_image['url'] }}" alt="{{ $featured_image['alt'] }}">
+@endif
+
+@if(have_rows('content_blocks'))
+    @while(have_rows('content_blocks')) @php(the_row())
+        @include('sections.' . get_row_layout())
+    @endwhile
+@endif
+```
+
+## Coding Standards
+
+### PHP
+- Follow WordPress Coding Standards
+- Use type hints where possible
+- Prefer Blade over raw PHP
+
+### Blade Templates
+- Use layouts and partials
+- Keep logic in View Composers
+- Escape output with `{{ }}` (Blade escapes by default)
+
+### CSS/JavaScript
+- Use Tailwind utility classes
+- Alpine.js for interactivity
+- Mobile-first responsive design
+
+## Important Notes
+
+1. **Always use `ddev` prefix** for CLI commands
+2. **Composer for plugins** - Use wpackagist.org
+3. **Environment variables** - Defined in `.env` file
+4. **Blade caching** - Clear with `ddev wp acorn view:clear`
+5. **WordPress core** - Never edit files in `web/wp/`
+
+@import ../shared/knowledge/tailwind-css.md
+@import ../shared/knowledge/alpine-js.md

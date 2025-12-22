@@ -1,0 +1,14 @@
+description = "Get help with Docusaurus development"
+
+prompt = """
+Provide Docusaurus help for:
+
+{{args}}
+
+Include:
+1. Correct file structure
+2. Front matter configuration
+3. MDX syntax if applicable
+4. Configuration options
+5. Best practices
+"""

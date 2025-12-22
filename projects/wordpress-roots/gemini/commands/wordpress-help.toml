@@ -1,0 +1,15 @@
+description = "Get help with WordPress development"
+
+prompt = """
+Provide WordPress (Bedrock/Sage) help for:
+
+{{args}}
+
+Include:
+1. WP-CLI commands with `ddev wp` prefix
+2. Blade template patterns
+3. Best practices
+4. Security considerations
+
+Use Roots stack conventions.
+"""

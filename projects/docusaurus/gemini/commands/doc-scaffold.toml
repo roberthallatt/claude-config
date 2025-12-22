@@ -1,0 +1,16 @@
+description = "Generate a documentation page scaffold"
+
+prompt = """
+Create a Docusaurus documentation page based on:
+
+{{args}}
+
+Requirements:
+1. Proper front matter (title, sidebar_position, etc.)
+2. Clear heading hierarchy
+3. Use admonitions where appropriate
+4. Include code examples
+5. Good documentation practices
+
+Provide the complete Markdown/MDX file.
+"""

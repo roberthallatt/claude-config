@@ -1,0 +1,16 @@
+{
+  "$schema": "https://google-gemini.github.io/gemini-cli/schemas/settings.json",
+  "context": {
+    "fileName": ["GEMINI.md", "AGENT.md"],
+    "maxDirectoryDepth": 5,
+    "includeDirectories": [],
+    "refreshIncludeDirectories": true
+  },
+  "tools": {
+    "shell": { "enabled": true },
+    "fileSystem": { "enabled": true },
+    "webFetch": { "enabled": true },
+    "webSearch": { "enabled": true }
+  },
+  "ui": { "theme": "default" }
+}
