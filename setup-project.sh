@@ -17,6 +17,7 @@
 #   --refresh     Re-scan project and regenerate CLAUDE.md only (preserves .claude/ customizations)
 #   --skip-vscode Skip VSCode settings (if you manage them separately)
 #   --with-mcp    Deploy .mcp.json for ExpressionEngine MCP server integration
+#   --with-gemini Deploy .gemini/ configuration for Gemini Code Assist
 #   --analyze     Generate analysis prompt for Claude to customize config
 #
 
@@ -44,6 +45,7 @@ CLEAN=false
 REFRESH=false
 SKIP_VSCODE=false
 WITH_MCP=false
+WITH_GEMINI=false
 ANALYZE=false
 
 # Detected values (populated during analysis)
@@ -101,6 +103,10 @@ while [[ $# -gt 0 ]]; do
       WITH_MCP=true
       shift
       ;;
+    --with-gemini)
+      WITH_GEMINI=true
+      shift
+      ;;
     --analyze)
       ANALYZE=true
       shift
@@ -119,6 +125,7 @@ while [[ $# -gt 0 ]]; do
       echo "  --refresh         Re-scan and regenerate CLAUDE.md only (keeps .claude/)"
       echo "  --skip-vscode     Do not copy VSCode settings"
       echo "  --with-mcp        Deploy .mcp.json for EE MCP server integration"
+      echo "  --with-gemini     Deploy .gemini/ for Gemini Code Assist"
       echo "  --analyze         Generate analysis prompt for Claude"
       echo ""
       echo "Available stacks:"
@@ -405,6 +412,21 @@ if [[ "$REFRESH" == true ]]; then
     do_copy "$STACK_DIR/.mcp.json" "$PROJECT_DIR/"
   fi
   
+  # Deploy Gemini if requested (even in refresh mode)
+  if [[ "$WITH_GEMINI" == true ]] && [[ -d "$STACK_DIR/gemini" ]]; then
+    echo ""
+    echo -e "${CYAN}Refreshing Gemini Code Assist configuration...${NC}"
+    do_mkdir "$PROJECT_DIR/.gemini"
+    for file in config.yaml styleguide.md instructions.md; do
+      if [[ -f "$STACK_DIR/gemini/$file" ]]; then
+        do_copy "$STACK_DIR/gemini/$file" "$PROJECT_DIR/.gemini/"
+      fi
+    done
+    if [[ -f "$STACK_DIR/gemini/GEMINI.md.template" ]]; then
+      do_template "$STACK_DIR/gemini/GEMINI.md.template" "$PROJECT_DIR/GEMINI.md"
+    fi
+  fi
+  
   echo ""
   echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
   echo -e "${GREEN}  CLAUDE.md refreshed successfully!${NC}"
@@ -431,6 +453,14 @@ if [[ "$REFRESH" == true ]]; then
     echo -e "  .mcp.json — EE MCP + Context7 servers"
     echo ""
     echo -e "${YELLOW}Note:${NC} Restart Claude Code to activate MCP tools"
+  fi
+  if [[ "$WITH_GEMINI" == true ]]; then
+    echo ""
+    echo -e "${CYAN}Gemini Code Assist configuration deployed:${NC}"
+    echo -e "  .gemini/config.yaml — Code review settings"
+    echo -e "  .gemini/styleguide.md — Code style guide"
+    echo -e "  .gemini/instructions.md — Project instructions"
+    echo -e "  GEMINI.md — Agent mode context"
   fi
   exit 0
 fi
@@ -527,7 +557,28 @@ if [[ "$WITH_MCP" == true ]] && [[ -f "$STACK_DIR/.mcp.json" ]]; then
   fi
 fi
 
-# 6. Create CLAUDE.md from template
+# 6. Deploy Gemini Code Assist configuration (if requested)
+if [[ "$WITH_GEMINI" == true ]] && [[ -d "$STACK_DIR/gemini" ]]; then
+  echo ""
+  echo -e "${CYAN}Deploying Gemini Code Assist configuration...${NC}"
+  
+  # Create .gemini directory
+  do_mkdir "$PROJECT_DIR/.gemini"
+  
+  # Copy static config files
+  for file in config.yaml styleguide.md instructions.md; do
+    if [[ -f "$STACK_DIR/gemini/$file" ]]; then
+      do_copy "$STACK_DIR/gemini/$file" "$PROJECT_DIR/.gemini/"
+    fi
+  done
+  
+  # Generate GEMINI.md from template
+  if [[ -f "$STACK_DIR/gemini/GEMINI.md.template" ]]; then
+    do_template "$STACK_DIR/gemini/GEMINI.md.template" "$PROJECT_DIR/GEMINI.md"
+  fi
+fi
+
+# 7. Create CLAUDE.md from template
 echo ""
 if [[ -f "$STACK_DIR/CLAUDE.md.template" ]]; then
   do_template "$STACK_DIR/CLAUDE.md.template" "$PROJECT_DIR/CLAUDE.md"
@@ -535,7 +586,7 @@ elif [[ -f "$STACK_DIR/CLAUDE.md" ]]; then
   do_copy "$STACK_DIR/CLAUDE.md" "$PROJECT_DIR/"
 fi
 
-# 7. Create AGENTS.md symlink
+# 8. Create AGENTS.md symlink
 do_symlink "CLAUDE.md" "$PROJECT_DIR/AGENTS.md"
 
 # 8. Generate analysis prompt if requested
@@ -620,9 +671,21 @@ if [[ "$WITH_MCP" == true ]]; then
   echo -e "${YELLOW}Note:${NC} Restart Claude Code to activate MCP tools"
   echo ""
 fi
+if [[ "$WITH_GEMINI" == true ]]; then
+  echo -e "${CYAN}Gemini Code Assist configuration deployed:${NC}"
+  echo "  - .gemini/config.yaml — Code review settings"
+  echo "  - .gemini/styleguide.md — Code style guide"
+  echo "  - .gemini/instructions.md — Project instructions"
+  echo "  - GEMINI.md — Agent mode context"
+  echo ""
+fi
 echo -e "${CYAN}Gitignore reminder:${NC}"
 echo "  Ensure .gitignore includes:"
 echo "    CLAUDE.md"
 echo "    AGENTS.md"
 echo "    .claude/"
+if [[ "$WITH_GEMINI" == true ]]; then
+  echo "    GEMINI.md"
+  echo "    .gemini/"
+fi
 echo ""

@@ -1,0 +1,192 @@
+# {{PROJECT_NAME}} - Gemini Agent Context
+
+## Project Overview
+
+This is a **Coilpack** project - ExpressionEngine CMS integrated with Laravel framework using Twig templates.
+
+| Attribute | Value |
+|-----------|-------|
+| **Project** | {{PROJECT_NAME}} |
+| **URL** | {{PRIMARY_URL}} |
+| **Control Panel** | {{CONTROL_PANEL_URL}} |
+| **Stack** | ExpressionEngine + Laravel + Twig |
+| **PHP Version** | {{PHP_VERSION}} |
+| **Database** | {{DATABASE_TYPE}} |
+
+## Tech Stack
+
+- **CMS**: ExpressionEngine with Coilpack
+- **Framework**: Laravel
+- **Templates**: Twig (`.html.twig` files)
+- **Frontend**: Tailwind CSS, Alpine.js, Vite
+- **Environment**: DDEV
+- **Languages**: English, French (bilingual)
+
+## Directory Structure
+
+```
+{{PROJECT_ROOT}}/
+├── app/                    # Laravel application
+│   ├── Http/Controllers/
+│   ├── Models/
+│   ├── Livewire/          # Livewire components
+│   └── Services/
+├── ee/system/user/
+│   ├── addons/            # EE add-ons
+│   └── templates/         # Twig templates
+│       └── default_site/
+│           ├── _layouts/
+│           ├── _partials/
+│           └── [groups]/
+├── resources/
+│   ├── views/             # Blade views (Livewire)
+│   ├── css/
+│   ├── js/
+│   └── lang/              # Translations (en/, fr/)
+├── routes/
+├── public/
+└── config/
+```
+
+## Essential Commands
+
+### DDEV Environment
+```bash
+ddev start              # Start environment
+ddev stop               # Stop environment
+ddev restart            # Restart environment
+ddev ssh                # SSH into container
+```
+
+### Laravel / Artisan
+```bash
+ddev artisan migrate              # Run migrations
+ddev artisan cache:clear          # Clear application cache
+ddev artisan config:clear         # Clear config cache
+ddev artisan view:clear           # Clear view cache
+ddev artisan make:controller Name # Generate controller
+ddev artisan make:model Name      # Generate model
+ddev artisan make:livewire Name   # Generate Livewire component
+ddev artisan route:list           # List all routes
+```
+
+### ExpressionEngine CLI
+```bash
+ddev ee cache:clear       # Clear EE cache
+ddev ee sync:template     # Sync templates
+ddev ee addons:list       # List add-ons
+ddev ee update            # Run EE updates
+```
+
+### Frontend Build
+```bash
+ddev npm install          # Install dependencies
+ddev npm run dev          # Development build with HMR
+ddev npm run build        # Production build
+```
+
+### Database
+```bash
+ddev mysql                # MySQL CLI
+ddev sequelace            # Open Sequel Ace (macOS)
+```
+
+## Twig Template Patterns
+
+### Layout Inheritance
+```twig
+{# Page template #}
+{% extends '_layouts/base.html.twig' %}
+
+{% block content %}
+    {# Page content #}
+{% endblock %}
+```
+
+### EE Channel Entries
+```twig
+{% for entry in exp.channel.entries({
+    channel: 'pages',
+    limit: 10,
+    status: 'open'
+}) %}
+    <h2>{{ entry.title }}</h2>
+    {{ entry.body }}
+{% endfor %}
+```
+
+### Single Entry by URL
+```twig
+{% set entry = exp.channel.entries({
+    channel: 'pages',
+    url_title: segment_2,
+    limit: 1
+}).first() %}
+
+{% if entry %}
+    <h1>{{ entry.title }}</h1>
+{% endif %}
+```
+
+### Categories
+```twig
+{% for cat in exp.category.entries({group_id: 1}) %}
+    {{ cat.cat_name }}
+{% endfor %}
+```
+
+### Bilingual Content
+```twig
+{# Current locale #}
+{{ app.getLocale() }}
+
+{# Translation #}
+{{ __('messages.welcome') }}
+
+{# Conditional by language #}
+{% if app.getLocale() == 'fr' %}
+    {# French content #}
+{% endif %}
+```
+
+## Livewire Components
+
+### Creating Components
+```bash
+ddev artisan make:livewire SearchFilter
+```
+
+### Files Created
+- `app/Livewire/SearchFilter.php` - Component class
+- `resources/views/livewire/search-filter.blade.php` - Blade view
+
+### Using in Twig
+```twig
+@livewire('search-filter')
+```
+
+## Code Standards
+
+- **PHP**: PSR-12 coding standard
+- **JavaScript**: ES6+ with const/let
+- **CSS**: Tailwind utilities, mobile-first
+- **HTML**: Semantic markup, WCAG 2.1 AA
+- **Translations**: No hardcoded strings
+
+## Important Rules
+
+1. **Always use DDEV** - Prefix commands with `ddev`
+2. **Bilingual support** - Use translation files, never hardcode text
+3. **Accessibility** - All images need alt text, forms need labels
+4. **Security** - Escape output, validate input, no credentials in code
+5. **Performance** - Use caching, optimize queries, lazy load images
+
+## Resources
+
+- [ExpressionEngine Docs](https://docs.expressionengine.com)
+- [Laravel Docs](https://laravel.com/docs)
+- [Twig Docs](https://twig.symfony.com/doc)
+- [Coilpack Docs](https://docs.coilpack.co)
+- [Tailwind CSS](https://tailwindcss.com/docs)
+- [Alpine.js](https://alpinejs.dev)
+- [Livewire](https://livewire.laravel.com/docs)

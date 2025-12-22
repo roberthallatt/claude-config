@@ -1,0 +1,71 @@
+# Gemini Code Assist Configuration
+# https://developers.google.com/gemini-code-assist/docs/customize-gemini-behavior-github
+
+# Fun features (e.g., poems in PR summaries)
+have_fun: false
+
+# Persistent memory for improved responses
+memory_config:
+  disabled: false
+
+# Code review settings
+code_review:
+  # Enable/disable code reviews
+  disable: false
+  
+  # Minimum severity for comments: LOW, MEDIUM, HIGH, CRITICAL
+  comment_severity_threshold: MEDIUM
+  
+  # Maximum review comments (-1 for unlimited)
+  max_review_comments: -1
+
+# Pull request behavior when opened
+pull_request_opened:
+  # Show help message
+  help: false
+  
+  # Generate PR summary
+  summary: true
+  
+  # Perform code review
+  code_review: true
+  
+  # Include draft PRs
+  include_drafts: false
+
+# Files and directories to ignore (glob patterns)
+ignore_patterns:
+  # Dependencies
+  - "node_modules/**"
+  - "vendor/**"
+  
+  # Build artifacts
+  - "public/build/**"
+  - "public/dist/**"
+  
+  # Cache and logs
+  - "system/user/cache/**"
+  - "*.log"
+  
+  # IDE and system files
+  - ".idea/**"
+  - ".vscode/**"
+  - ".cursor/**"
+  - ".DS_Store"
+  
+  # Lock files
+  - "package-lock.json"
+  - "composer.lock"
+  - "yarn.lock"
+  
+  # Environment files
+  - ".env*"
+  - "!.env.example"
+  
+  # ExpressionEngine cache and system
+  - "system/ee/**"
+  
+  # Compiled assets
+  - "*.min.js"
+  - "*.min.css"
+  - "*.map"

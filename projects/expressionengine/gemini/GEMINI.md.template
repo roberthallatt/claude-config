@@ -1,0 +1,159 @@
+# {{PROJECT_NAME}} - Gemini Agent Context
+
+## Project Overview
+
+This is an **ExpressionEngine** CMS project using native EE templates.
+
+| Attribute | Value |
+|-----------|-------|
+| **Project** | {{PROJECT_NAME}} |
+| **URL** | {{PRIMARY_URL}} |
+| **Control Panel** | {{CONTROL_PANEL_URL}} |
+| **Stack** | ExpressionEngine + Native Templates |
+| **PHP Version** | {{PHP_VERSION}} |
+| **Database** | {{DATABASE_TYPE}} |
+
+## Tech Stack
+
+- **CMS**: ExpressionEngine
+- **Templates**: Native EE templates (`.html` files)
+- **Frontend**: Tailwind CSS, Alpine.js
+- **Caching**: Stash add-on
+- **Environment**: DDEV
+- **Languages**: English, French (bilingual)
+
+## Directory Structure
+
+```
+{{PROJECT_ROOT}}/
+├── system/
+│   ├── ee/                    # EE core (don't modify)
+│   └── user/
+│       ├── addons/            # Third-party & custom add-ons
+│       ├── cache/             # Template cache
+│       ├── config/            # Configuration files
+│       └── templates/         # EE templates
+│           └── default_site/
+│               ├── _layouts/
+│               ├── _partials/
+│               └── [groups]/
+├── public/                    # Web root
+│   ├── index.php
+│   └── themes/
+└── src/                       # Source CSS/JS
+```
+
+## Essential Commands
+
+### DDEV Environment
+```bash
+ddev start              # Start environment
+ddev stop               # Stop environment
+ddev restart            # Restart environment
+ddev ssh                # SSH into container
+```
+
+### ExpressionEngine CLI
+```bash
+ddev ee cache:clear       # Clear EE cache
+ddev ee sync:template     # Sync templates
+ddev ee addons:list       # List add-ons
+ddev ee addons:install X  # Install add-on
+ddev ee update            # Run EE updates
+```
+
+### Frontend Build
+```bash
+ddev npm install          # Install dependencies
+ddev npm run dev          # Development build with watch
+ddev npm run build        # Production build
+```
+
+### Database
+```bash
+ddev mysql                # MySQL CLI
+ddev sequelace            # Open Sequel Ace (macOS)
+```
+
+## Template Patterns
+
+### Layout Inheritance
+```ee
+{!-- Page template --}
+{layout="_layouts/main"}
+
+{layout:set name="title"}{title} | {site_name}{/layout:set}
+{layout:set name="content"}
+    {!-- Page content --}
+{/layout:set}
+```
+
+### Channel Entries
+```ee
+{exp:channel:entries channel="pages" limit="10" status="open"}
+    <h2>{title}</h2>
+    {body}
+{/exp:channel:entries}
+```
+
+### Single Entry by URL
+```ee
+{exp:channel:entries channel="pages" url_title="{segment_2}" limit="1" require_entry="yes"}
+    <h1>{title}</h1>
+    {page_content}
+{if no_results}
+    {redirect="404"}
+{/if}
+{/exp:channel:entries}
+```
+
+### Categories
+```ee
+{exp:channel:categories channel="blog" style="linear"}
+    <a href="{path='blog/category/{category_url_title}'}">{category_name}</a>
+{/exp:channel:categories}
+```
+
+### Stash Caching
+```ee
+{exp:stash:set name="nav" save="yes" refresh="60" scope="site"}
+    {exp:channel:entries channel="nav"}...{/exp:channel:entries}
+{/exp:stash:set}
+
+{exp:stash:get name="nav" scope="site"}
+```
+
+### Bilingual Content
+```ee
+{if segment_1 == "fr"}
+    {title_fr}
+    {body_fr}
+{if:else}
+    {title}
+    {body}
+{/if}
+```
+
+## Code Standards
+
+- **PHP**: PSR-12 coding standard
+- **JavaScript**: ES6+ with const/let
+- **CSS**: Tailwind utilities, mobile-first
+- **HTML**: Semantic markup, WCAG 2.1 AA
+- **Templates**: Cache expensive queries with Stash
+
+## Important Rules
+
+1. **Always use DDEV** - Prefix commands with `ddev`
+2. **Bilingual support** - No hardcoded text strings
+3. **Accessibility** - All images need alt text, forms need labels
+4. **Security** - Escape output, validate input
+5. **Performance** - Use Stash caching for expensive queries
+
+## Resources
+
+- [ExpressionEngine Docs](https://docs.expressionengine.com)
+- [EE Template Language](https://docs.expressionengine.com/latest/templates/overview.html)
+- [Stash Docs](https://github.com/croxton/Stash)
+- [Tailwind CSS](https://tailwindcss.com/docs)
+- [Alpine.js](https://alpinejs.dev)
