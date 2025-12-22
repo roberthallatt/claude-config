@@ -1,0 +1,56 @@
+# Gemini Code Assist Ignore File
+# Files and directories that Gemini should not access or index
+
+# Dependencies
+node_modules/
+vendor/
+
+# Build artifacts
+public/build/
+public/hot
+public/storage
+storage/
+
+# Cache directories
+bootstrap/cache/
+.phpunit.cache/
+
+# ExpressionEngine core (don't modify)
+ee/system/ee/
+
+# Environment and secrets
+.env
+.env.*
+*.pem
+*.key
+
+# IDE and editor
+.idea/
+.vscode/
+*.code-workspace
+.cursor/
+
+# Git
+.git/
+
+# Logs
+*.log
+storage/logs/
+
+# Database
+*.sql
+*.sqlite
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~
+
+# Lock files (read-only reference)
+# package-lock.json
+# composer.lock

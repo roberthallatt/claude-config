@@ -457,10 +457,11 @@ if [[ "$REFRESH" == true ]]; then
   if [[ "$WITH_GEMINI" == true ]]; then
     echo ""
     echo -e "${CYAN}Gemini Code Assist configuration deployed:${NC}"
-    echo -e "  .gemini/config.yaml — Code review settings"
-    echo -e "  .gemini/styleguide.md — Code style guide"
-    echo -e "  .gemini/instructions.md — Project instructions"
-    echo -e "  GEMINI.md — Agent mode context"
+    echo -e "  GEMINI.md — Agent mode context file"
+    echo -e "  .gemini/config.yaml — GitHub PR review settings"
+    echo -e "  .gemini/styleguide.md — Code review style guide"
+    echo -e "  .gemini/settings.json — MCP servers and settings"
+    echo -e "  .gemini/commands/*.toml — Custom Gemini commands"
   fi
   exit 0
 fi
@@ -562,19 +563,52 @@ if [[ "$WITH_GEMINI" == true ]] && [[ -d "$STACK_DIR/gemini" ]]; then
   echo ""
   echo -e "${CYAN}Deploying Gemini Code Assist configuration...${NC}"
   
-  # Create .gemini directory
+  # Create .gemini directory structure
   do_mkdir "$PROJECT_DIR/.gemini"
+  do_mkdir "$PROJECT_DIR/.gemini/commands"
   
   # Copy static config files
-  for file in config.yaml styleguide.md instructions.md; do
+  for file in config.yaml styleguide.md; do
     if [[ -f "$STACK_DIR/gemini/$file" ]]; then
       do_copy "$STACK_DIR/gemini/$file" "$PROJECT_DIR/.gemini/"
     fi
   done
   
+  # Deploy settings.json from template (handles MCP config)
+  if [[ -f "$STACK_DIR/gemini/settings.json.template" ]]; then
+    do_template "$STACK_DIR/gemini/settings.json.template" "$PROJECT_DIR/.gemini/settings.json"
+  elif [[ -f "$STACK_DIR/gemini/settings.json" ]]; then
+    do_copy "$STACK_DIR/gemini/settings.json" "$PROJECT_DIR/.gemini/"
+  fi
+  
+  # Deploy .geminiignore
+  if [[ -f "$STACK_DIR/gemini/geminiignore.template" ]]; then
+    do_copy "$STACK_DIR/gemini/geminiignore.template" "$PROJECT_DIR/.geminiignore"
+  fi
+  
+  # Deploy custom commands (TOML format)
+  if [[ -d "$STACK_DIR/gemini/commands" ]]; then
+    for file in "$STACK_DIR/gemini/commands"/*.toml; do
+      if [[ -e "$file" ]]; then
+        do_copy "$file" "$PROJECT_DIR/.gemini/commands/"
+      fi
+    done
+  fi
+  
   # Generate GEMINI.md from template
   if [[ -f "$STACK_DIR/gemini/GEMINI.md.template" ]]; then
     do_template "$STACK_DIR/gemini/GEMINI.md.template" "$PROJECT_DIR/GEMINI.md"
+  fi
+  
+  # Create AGENT.md symlink (Gemini also supports AGENT.md)
+  if [[ "$DRY_RUN" == true ]]; then
+    echo -e "  ${BLUE}○${NC} Would create symlink: AGENT.md -> GEMINI.md"
+  else
+    if [[ -e "$PROJECT_DIR/AGENT.md" ]] || [[ -L "$PROJECT_DIR/AGENT.md" ]]; then
+      rm -f "$PROJECT_DIR/AGENT.md"
+    fi
+    ln -s "GEMINI.md" "$PROJECT_DIR/AGENT.md"
+    echo -e "  ${GREEN}✓${NC} Created symlink: AGENT.md -> GEMINI.md"
   fi
 fi
 
@@ -673,10 +707,13 @@ if [[ "$WITH_MCP" == true ]]; then
 fi
 if [[ "$WITH_GEMINI" == true ]]; then
   echo -e "${CYAN}Gemini Code Assist configuration deployed:${NC}"
-  echo "  - .gemini/config.yaml — Code review settings"
-  echo "  - .gemini/styleguide.md — Code style guide"
-  echo "  - .gemini/instructions.md — Project instructions"
-  echo "  - GEMINI.md — Agent mode context"
+  echo "  - GEMINI.md — Agent mode context file"
+  echo "  - AGENT.md — Symlink to GEMINI.md"
+  echo "  - .gemini/config.yaml — GitHub PR review settings"
+  echo "  - .gemini/styleguide.md — Code review style guide"
+  echo "  - .gemini/settings.json — MCP servers and settings"
+  echo "  - .gemini/commands/*.toml — Custom Gemini commands"
+  echo "  - .geminiignore — File exclusion patterns"
   echo ""
 fi
 echo -e "${CYAN}Gitignore reminder:${NC}"

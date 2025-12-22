@@ -1,0 +1,30 @@
+# Gemini CLI Custom Command: EE Template Scaffold
+# Invoked as: /ee:scaffold "template description"
+
+description = "Generate an ExpressionEngine template scaffold based on description"
+
+prompt = """
+Create an ExpressionEngine template for this project based on this description:
+
+{{args}}
+
+Requirements:
+1. Use proper EE native template syntax
+2. Include Stash caching for expensive queries
+3. Use {layout=""} for template inheritance
+4. Include proper variable escaping
+5. Use Tailwind CSS for styling
+6. Include accessibility attributes
+
+Template should include:
+- Layout reference if needed
+- Channel entries loop (if applicable)
+- Stash set/get for caching
+- Proper conditionals
+- Embed references for partials
+
+Provide the complete template file content with:
+- Clear comments explaining each section
+- Responsive design considerations
+- SEO meta tag handling
+"""

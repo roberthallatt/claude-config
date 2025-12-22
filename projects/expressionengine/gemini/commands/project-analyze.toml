@@ -1,0 +1,40 @@
+# Gemini CLI Custom Command: Project Analysis
+# Invoked as: /project:analyze
+
+description = "Analyze the ExpressionEngine project structure and provide an overview"
+
+prompt = """
+Analyze this ExpressionEngine project and provide a comprehensive overview:
+
+1. **Project Structure**
+   - Examine the directory layout
+   - Identify key configuration files
+   - Note any custom add-ons or packages
+
+2. **DDEV Configuration** (.ddev/config.yaml)
+   - Project name and URLs
+   - PHP version
+   - Database type
+
+3. **Template Structure** (system/user/templates/)
+   - Identify template groups
+   - Document layout and embed organization
+   - Check for Stash usage patterns
+
+4. **Add-ons** (system/user/addons/)
+   - List installed add-ons
+   - Note any custom add-ons
+   - Check for Stash, Structure, etc.
+
+5. **Frontend Stack**
+   - Check package.json for dependencies
+   - Identify CSS framework (Tailwind, etc.)
+   - Note build configuration
+
+6. **Recommendations**
+   - Suggest improvements or missing configurations
+   - Note any potential issues
+   - Performance optimization suggestions
+
+Please be thorough but concise.
+"""

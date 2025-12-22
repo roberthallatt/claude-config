@@ -1,157 +1,134 @@
-# Coilpack Project Style Guide
+# CPS Coilpack Code Style Guide
 
-This style guide defines coding standards for ExpressionEngine + Laravel + Twig (Coilpack) projects.
+## Introduction
 
-## General Principles
+This style guide outlines coding conventions for Coilpack projects at the Canadian Paediatric Society. These projects combine ExpressionEngine CMS with Laravel framework using Twig templating.
 
-- **Readability**: Code should be clear and self-documenting
-- **Consistency**: Follow established patterns within the codebase
-- **Security**: Never expose credentials, sanitize all user input
-- **Performance**: Consider caching, eager loading, and query optimization
-- **Accessibility**: Follow WCAG 2.1 AA standards for all frontend code
-- **Bilingual**: Support English and French where applicable
+## Key Principles
+
+- **Readability**: Code should be easy to understand for all team members
+- **Maintainability**: Code should be easy to modify and extend
+- **Consistency**: Adhere to consistent style across all projects
+- **Security**: Always validate and sanitize user input
+- **Accessibility**: Follow WCAG 2.1 AA guidelines
+- **Bilingual**: Support English and French content
 
 ## PHP Standards
 
-### PSR Compliance
-- Follow PSR-12 coding style
-- Use PSR-4 autoloading
-- Prefer typed properties and return types (PHP 8.0+)
+### General
+- Follow PSR-12 coding standards
+- Use PHP 8.2+ features where appropriate
+- Always use strict types: `declare(strict_types=1);`
+
+### Type Hints
+- All function parameters must have type hints
+- All functions must have return type declarations
+- Use nullable types (`?string`) rather than union with null
 
 ### Naming Conventions
-- Classes: `PascalCase`
-- Methods/Functions: `camelCase`
-- Variables: `camelCase`
-- Constants: `SCREAMING_SNAKE_CASE`
-- Database columns: `snake_case`
+- Classes: PascalCase (`UserController`)
+- Methods/Functions: camelCase (`getUserById`)
+- Variables: camelCase (`$userId`)
+- Constants: SCREAMING_SNAKE_CASE (`MAX_UPLOAD_SIZE`)
 
-### Laravel Patterns
-- Use dependency injection over facades where practical
-- Prefer Eloquent over raw queries
+### Laravel Specific
+- Use dependency injection over facades when possible
 - Use form requests for validation
-- Keep controllers thin, move logic to services
-- Use resource classes for API responses
-
-### Security
-- Always validate and sanitize user input
-- Use Laravel's CSRF protection
-- Escape output in Blade/Twig templates
-- Use parameterized queries (Eloquent handles this)
-- Never commit secrets or credentials
+- Use resource controllers for CRUD operations
+- Use Eloquent relationships, avoid raw queries
 
 ## Twig Templates
 
-### File Organization
-```
-ee/system/user/templates/default_site/
-├── _layouts/           # Base layouts
-├── _partials/          # Reusable components
-├── _includes/          # Small snippets
-└── [template_group]/   # Page templates
-```
-
-### Naming
-- Use lowercase with underscores for files: `my_template.html.twig`
+### File Naming
+- Use snake_case for template files: `blog_listing.html.twig`
 - Prefix partials with underscore: `_header.html.twig`
-- Use descriptive, semantic names
+- Use descriptive names that indicate purpose
 
-### Best Practices
-- Keep logic minimal in templates
-- Use `{% include %}` for reusable components
+### Structure
 - Use `{% extends %}` for layout inheritance
-- Escape user content: `{{ variable|e }}`
-- Use translation functions for bilingual: `{{ __('messages.key') }}`
+- Use `{% include %}` for reusable partials
+- Use `{% block %}` for overridable sections
+- Keep templates focused and single-purpose
 
 ### ExpressionEngine Data Access
 ```twig
-{# Prefer explicit parameters #}
-{% for entry in exp.channel.entries({
-    channel: 'blog',
-    limit: 10,
-    status: 'open',
-    orderby: 'entry_date',
-    sort: 'desc'
-}) %}
+{# CORRECT: Use Coilpack syntax #}
+{% for entry in exp.channel.entries({channel: 'blog'}) %}
+
+{# INCORRECT: Don't use legacy EE tags #}
+{exp:channel:entries channel="blog"}
 ```
 
-## JavaScript Standards
+### Bilingual Patterns
+- Always provide both language versions
+- Use Laravel's `__()` helper for UI strings
+- Use field suffixes for content: `body_en`, `body_fr`
 
-### ES6+ Features
-- Use `const` by default, `let` when reassignment needed
-- Use arrow functions for callbacks
-- Use template literals for string interpolation
-- Use destructuring where appropriate
-- Use async/await over .then() chains
+## CSS/Tailwind
 
-### Alpine.js
-- Keep components small and focused
-- Use `x-data` for component state
-- Prefer `x-on:` over `@` for clarity in templates
-- Use `$refs` sparingly
+### Utility Classes
+- Prefer Tailwind utilities over custom CSS
+- Use responsive prefixes: `md:`, `lg:`
+- Use state variants: `hover:`, `focus:`
 
-### Tailwind CSS
-- Use utility classes over custom CSS
-- Extract components for repeated patterns
-- Follow mobile-first responsive design
-- Use `@apply` sparingly in CSS files
-
-## HTML Standards
-
-### Semantic Markup
-- Use appropriate HTML5 elements (`<article>`, `<nav>`, `<aside>`)
-- One `<h1>` per page
-- Logical heading hierarchy (h1 → h2 → h3)
-- Use `<button>` for actions, `<a>` for navigation
+### Custom Components
+- Use `@apply` sparingly, prefer utility classes
+- Document custom component classes
+- Follow BEM naming if custom classes needed
 
 ### Accessibility
-- All images must have `alt` attributes
-- Form inputs must have associated `<label>` elements
-- Interactive elements must be keyboard accessible
-- Color contrast must meet WCAG AA (4.5:1 for text)
-- Use ARIA attributes appropriately
+- Ensure sufficient color contrast
+- Use `focus:` states for keyboard navigation
+- Test with screen readers
 
-### Bilingual Considerations
-- Use `lang` attribute on `<html>` and content switches
-- Ensure proper text direction support
-- Test layouts with both languages (French often 20% longer)
+## JavaScript
 
-## ExpressionEngine
+### Alpine.js
+- Prefer Alpine.js for simple interactivity
+- Use `x-data` for component state
+- Use `x-on` for event handling
+- Keep components small and focused
 
-### Add-on Development
-- Follow EE coding guidelines
-- Use `ee()` service container
-- Implement proper installation/uninstallation
-- Use language files for all user-facing strings
+### Livewire
+- Use Livewire for complex server interactions
+- Prefer wire:model.lazy for forms
+- Use loading states for better UX
 
-### Template Tags
-- Document all parameters
-- Handle empty results gracefully
-- Provide sensible defaults
-- Support pagination where appropriate
+## Security
 
-### Database
-- Use EE's Query Builder or Eloquent
-- Never modify core EE tables directly
-- Create migrations for schema changes
-- Index frequently queried columns
+### Input Validation
+- Never trust user input
+- Use Laravel validation rules
+- Sanitize output with Twig's `|e` filter
 
-## Git Practices
+### SQL Injection
+- Use Eloquent or query builder
+- Never concatenate user input into queries
+- Use parameterized queries
+
+### XSS Prevention
+- Escape output by default
+- Use `|raw` filter only when necessary
+- Sanitize HTML content before storage
+
+## Git Commits
 
 ### Commit Messages
 - Use present tense: "Add feature" not "Added feature"
-- Keep subject line under 50 characters
-- Reference issue numbers where applicable
+- Be descriptive but concise
+- Reference issue numbers when applicable
 
 ### Branch Naming
-- `feature/description` for new features
-- `fix/description` for bug fixes
-- `hotfix/description` for urgent fixes
+- Feature: `feature/description`
+- Bugfix: `fix/description`
+- Hotfix: `hotfix/description`
 
 ## Code Review Focus Areas
 
 When reviewing code, prioritize:
-1. **Security vulnerabilities** (SQL injection, XSS, CSRF)
-2. **Accessibility issues** (missing alt text, keyboard traps)
-3. **Performance concerns** (N+1 queries, missing indexes)
-4. **Bilingual support** (hardcoded strings, missing translations)
-5. **Code maintainability** (complexity, documentation)
+1. Security vulnerabilities
+2. Accessibility issues
+3. Bilingual support
+4. Performance concerns
+5. Code clarity and maintainability
+6. Test coverage

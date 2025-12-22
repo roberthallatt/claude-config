@@ -1,27 +1,27 @@
-# Gemini Code Assist Configuration
-# https://developers.google.com/gemini-code-assist/docs/customize-gemini-behavior-github
+# Gemini Code Assist GitHub Configuration
+# Controls PR review behavior and settings
 
-# Fun features (e.g., poems in PR summaries)
+# Fun features (like poems in PR summaries)
 have_fun: false
 
-# Persistent memory for improved responses
+# Persistent memory settings
 memory_config:
   disabled: false
 
 # Code review settings
 code_review:
-  # Enable/disable code reviews
+  # Set to true to disable code review
   disable: false
   
-  # Minimum severity for comments: LOW, MEDIUM, HIGH, CRITICAL
+  # Minimum severity to comment on: LOW, MEDIUM, HIGH, CRITICAL
   comment_severity_threshold: MEDIUM
   
-  # Maximum review comments (-1 for unlimited)
-  max_review_comments: -1
+  # Maximum number of review comments (-1 for unlimited)
+  max_review_comments: 15
 
-# Pull request behavior when opened
+# Behavior when PR is opened
 pull_request_opened:
-  # Show help message
+  # Show help message on first interaction
   help: false
   
   # Generate PR summary
@@ -41,31 +41,24 @@ ignore_patterns:
   
   # Build artifacts
   - "public/build/**"
-  - "public/dist/**"
+  - "public/hot"
+  - "storage/**"
   
-  # Cache and logs
-  - "system/user/cache/**"
-  - "*.log"
+  # Cache and temp files
+  - "bootstrap/cache/**"
+  - ".phpunit.cache/**"
   
-  # IDE and system files
-  - ".idea/**"
-  - ".vscode/**"
-  - ".cursor/**"
-  - ".DS_Store"
+  # EE system files (don't review core)
+  - "ee/system/ee/**"
   
   # Lock files
   - "package-lock.json"
   - "composer.lock"
-  - "yarn.lock"
   
   # Environment files
   - ".env*"
-  - "!.env.example"
   
-  # ExpressionEngine cache and system
-  - "system/ee/**"
-  
-  # Compiled assets
-  - "*.min.js"
-  - "*.min.css"
-  - "*.map"
+  # IDE and editor files
+  - ".idea/**"
+  - ".vscode/**"
+  - "*.code-workspace"

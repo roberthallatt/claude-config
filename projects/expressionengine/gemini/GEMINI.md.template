@@ -1,159 +1,148 @@
-# {{PROJECT_NAME}} - Gemini Agent Context
+# Project: {{PROJECT_NAME}}
 
 ## Project Overview
-
 This is an **ExpressionEngine** CMS project using native EE templates.
 
-| Attribute | Value |
-|-----------|-------|
-| **Project** | {{PROJECT_NAME}} |
-| **URL** | {{PRIMARY_URL}} |
-| **Control Panel** | {{CONTROL_PANEL_URL}} |
-| **Stack** | ExpressionEngine + Native Templates |
-| **PHP Version** | {{PHP_VERSION}} |
-| **Database** | {{DATABASE_TYPE}} |
+- **Primary URL**: {{PRIMARY_URL}}
+- **Control Panel**: {{CONTROL_PANEL_URL}}
+- **Environment**: DDEV local development
 
 ## Tech Stack
 
-- **CMS**: ExpressionEngine
-- **Templates**: Native EE templates (`.html` files)
-- **Frontend**: Tailwind CSS, Alpine.js
-- **Caching**: Stash add-on
-- **Environment**: DDEV
-- **Languages**: English, French (bilingual)
+### Core Technologies
+- **CMS**: ExpressionEngine 7.x
+- **Templating**: Native EE templates (`.html` files)
+- **PHP Version**: {{PHP_VERSION}}
+- **Database**: {{DATABASE_TYPE}}
+
+### Frontend
+- **CSS Framework**: Tailwind CSS
+- **Build Tool**: PostCSS / Vite
+- **JavaScript**: Alpine.js for interactivity
+
+### Key Add-ons
+- **Stash**: Template caching and data sharing
+- **Structure**: Page hierarchy management (if installed)
 
 ## Directory Structure
 
 ```
-{{PROJECT_ROOT}}/
+{{PROJECT_NAME}}/
 ├── system/
-│   ├── ee/                    # EE core (don't modify)
 │   └── user/
-│       ├── addons/            # Third-party & custom add-ons
-│       ├── cache/             # Template cache
-│       ├── config/            # Configuration files
-│       └── templates/         # EE templates
+│       ├── addons/         # Third-party add-ons
+│       ├── config/         # EE configuration
+│       └── templates/      # EE templates
 │           └── default_site/
-│               ├── _layouts/
-│               ├── _partials/
-│               └── [groups]/
-├── public/                    # Web root
-│   ├── index.php
-│   └── themes/
-└── src/                       # Source CSS/JS
+│               └── {{TEMPLATE_GROUP}}.group/
+├── public/                 # Web root (docroot)
+│   ├── themes/
+│   ├── images/
+│   └── index.php
+├── .ddev/                  # DDEV configuration
+├── package.json            # Frontend dependencies
+└── tailwind.config.js      # Tailwind configuration
 ```
 
-## Essential Commands
+## Coding Standards
 
-### DDEV Environment
+### PHP
+- Follow PSR-12 coding standards
+- Use type hints for all function parameters and return types
+- Prefer meaningful variable and method names
+
+### EE Templates
+- Use `.html` extension for templates
+- Prefix partials/embeds with underscore: `_header`
+- Use Stash for caching and data passing
+- Keep templates focused and single-purpose
+
+### CSS/Tailwind
+- Use Tailwind utility classes, avoid custom CSS when possible
+- Follow mobile-first responsive design
+- Use semantic class names for custom components
+
+### JavaScript
+- Use Alpine.js for simple interactivity
+- Prefer `x-data` components over vanilla JS
+
+## Development Commands
+
+### DDEV Commands
 ```bash
-ddev start              # Start environment
-ddev stop               # Stop environment
-ddev restart            # Restart environment
-ddev ssh                # SSH into container
+# Start environment
+ddev start
+
+# Access container shell
+ddev ssh
+
+# Run EE CLI commands
+ddev ee <command>
+
+# Build frontend assets
+ddev npm run dev
+ddev npm run build
 ```
 
-### ExpressionEngine CLI
+### Common Tasks
 ```bash
-ddev ee cache:clear       # Clear EE cache
-ddev ee sync:template     # Sync templates
-ddev ee addons:list       # List add-ons
-ddev ee addons:install X  # Install add-on
-ddev ee update            # Run EE updates
-```
+# Clear all caches
+ddev ee cache:clear
 
-### Frontend Build
-```bash
-ddev npm install          # Install dependencies
-ddev npm run dev          # Development build with watch
-ddev npm run build        # Production build
-```
+# Sync templates to database
+ddev ee sync:template
 
-### Database
-```bash
-ddev mysql                # MySQL CLI
-ddev sequelace            # Open Sequel Ace (macOS)
+# List installed add-ons
+ddev ee addons:list
+
+# Install an add-on
+ddev ee addons:install addon_name
 ```
 
 ## Template Patterns
 
-### Layout Inheritance
-```ee
-{!-- Page template --}
-{layout="_layouts/main"}
-
-{layout:set name="title"}{title} | {site_name}{/layout:set}
-{layout:set name="content"}
-    {!-- Page content --}
-{/layout:set}
-```
-
 ### Channel Entries
-```ee
-{exp:channel:entries channel="pages" limit="10" status="open"}
-    <h2>{title}</h2>
+```html
+{exp:channel:entries channel="pages" url_title="{segment_2}"}
+    <h1>{title}</h1>
     {body}
 {/exp:channel:entries}
-```
-
-### Single Entry by URL
-```ee
-{exp:channel:entries channel="pages" url_title="{segment_2}" limit="1" require_entry="yes"}
-    <h1>{title}</h1>
-    {page_content}
-{if no_results}
-    {redirect="404"}
-{/if}
-{/exp:channel:entries}
-```
-
-### Categories
-```ee
-{exp:channel:categories channel="blog" style="linear"}
-    <a href="{path='blog/category/{category_url_title}'}">{category_name}</a>
-{/exp:channel:categories}
 ```
 
 ### Stash Caching
-```ee
-{exp:stash:set name="nav" save="yes" refresh="60" scope="site"}
-    {exp:channel:entries channel="nav"}...{/exp:channel:entries}
+```html
+{exp:stash:set name="page_content" save="yes" scope="site" replace="no"}
+    {exp:channel:entries channel="news" limit="10"}
+        <article>{title}</article>
+    {/exp:channel:entries}
 {/exp:stash:set}
 
-{exp:stash:get name="nav" scope="site"}
+{exp:stash:get name="page_content"}
 ```
 
-### Bilingual Content
-```ee
-{if segment_1 == "fr"}
-    {title_fr}
-    {body_fr}
-{if:else}
-    {title}
-    {body}
-{/if}
+### Embeds/Partials
+```html
+{embed="_partials/_header"}
+{embed="_partials/_footer"}
 ```
 
-## Code Standards
+### Layouts (EE Layout system)
+```html
+{!-- In layout template --}
+{layout:set name="page_title"}{title}{/layout:set}
 
-- **PHP**: PSR-12 coding standard
-- **JavaScript**: ES6+ with const/let
-- **CSS**: Tailwind utilities, mobile-first
-- **HTML**: Semantic markup, WCAG 2.1 AA
-- **Templates**: Cache expensive queries with Stash
+{!-- In child template --}
+{layout="layouts/_main"}
+```
 
-## Important Rules
+## Important Notes
 
-1. **Always use DDEV** - Prefix commands with `ddev`
-2. **Bilingual support** - No hardcoded text strings
-3. **Accessibility** - All images need alt text, forms need labels
-4. **Security** - Escape output, validate input
-5. **Performance** - Use Stash caching for expensive queries
+1. **Always use `ddev` prefix** for CLI commands (ee, npm, composer)
+2. **Template location**: `system/user/templates/default_site/`
+3. **Cache clearing**: Clear EE caches after template changes
+4. **URL Structure**: EE handles routing via template groups
 
-## Resources
+## External Resources
 
-- [ExpressionEngine Docs](https://docs.expressionengine.com)
-- [EE Template Language](https://docs.expressionengine.com/latest/templates/overview.html)
-- [Stash Docs](https://github.com/croxton/Stash)
-- [Tailwind CSS](https://tailwindcss.com/docs)
-- [Alpine.js](https://alpinejs.dev)
+@./docs/ee-field-types.md
+@./docs/stash-reference.md

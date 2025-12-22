@@ -1,182 +1,138 @@
-# ExpressionEngine Project Style Guide
+# CPS ExpressionEngine Code Style Guide
 
-This style guide defines coding standards for ExpressionEngine CMS projects using native EE templates.
+## Introduction
 
-## General Principles
+This style guide outlines coding conventions for ExpressionEngine projects at the Canadian Paediatric Society. These projects use EE's native template engine with HTML-based templates.
 
-- **Readability**: Code should be clear and self-documenting
-- **Consistency**: Follow established patterns within the codebase
-- **Security**: Never expose credentials, sanitize all user input
-- **Performance**: Consider caching (Stash), optimize queries
-- **Accessibility**: Follow WCAG 2.1 AA standards for all frontend code
-- **Bilingual**: Support English and French where applicable
+## Key Principles
 
-## ExpressionEngine Templates
-
-### File Organization
-```
-system/user/templates/default_site/
-├── _layouts/               # Layout templates
-├── _partials/              # Reusable components
-├── _snippets/              # Small reusable code
-├── _globals/               # Global variables
-└── [template_group]/       # Page templates
-    ├── index.html          # Default template
-    └── [template].html     # Named templates
-```
-
-### Naming Conventions
-- Template groups: lowercase with underscores `template_group`
-- Templates: lowercase with underscores `template_name.html`
-- Prefix layouts/partials with underscore: `_header.html`
-- Use `.html` extension for all templates
-
-### Tag Syntax Best Practices
-```ee
-{!-- Always use the full syntax for complex tags --}
-{exp:channel:entries channel="blog" limit="10" status="open"}
-    {title}
-    {body}
-{/exp:channel:entries}
-
-{!-- Use shorthand for simple tags --}
-{site_name}
-{current_url}
-
-{!-- Always escape user-generated content --}
-{title:url_title}
-{body:html_entity_decode}
-```
-
-### Stash Caching
-```ee
-{!-- Cache expensive operations --}
-{exp:stash:set name="nav_data" save="yes" refresh="60"}
-    {exp:channel:entries channel="navigation"}
-        ...
-    {/exp:channel:entries}
-{/exp:stash:set}
-
-{!-- Retrieve cached data --}
-{exp:stash:get name="nav_data"}
-```
-
-### Layout Pattern
-```ee
-{!-- In page template --}
-{layout="_layouts/main"}
-
-{layout:set name="title"}{title} | {site_name}{/layout:set}
-{layout:set name="content"}
-    {!-- Page content here --}
-{/layout:set}
-```
+- **Readability**: Code should be easy to understand for all team members
+- **Maintainability**: Code should be easy to modify and extend
+- **Consistency**: Adhere to consistent style across all projects
+- **Performance**: Use Stash caching for optimal performance
+- **Security**: Always escape user input
+- **Accessibility**: Follow WCAG 2.1 AA guidelines
 
 ## PHP Standards
 
-### PSR Compliance
-- Follow PSR-12 coding style
-- Use PSR-4 autoloading for custom add-ons
-- Prefer typed properties and return types (PHP 8.0+)
+### General
+- Follow PSR-12 coding standards
+- Use PHP 8.1+ features where appropriate
+
+### Type Hints
+- All function parameters must have type hints
+- All functions must have return type declarations
 
 ### Naming Conventions
-- Classes: `PascalCase`
-- Methods/Functions: `camelCase`
-- Variables: `camelCase`
-- Constants: `SCREAMING_SNAKE_CASE`
-- Database columns: `snake_case`
+- Classes: PascalCase (`MyAddon`)
+- Methods/Functions: camelCase (`getUserById`)
+- Variables: camelCase (`$userId`)
+- Constants: SCREAMING_SNAKE_CASE (`MAX_UPLOAD_SIZE`)
 
-### Add-on Development
-```php
-<?php
-// Follow EE coding standards
-// Use ee() service container
-$db = ee('db');
-$query = ee('db')->select('*')->from('exp_channels');
+## EE Templates
 
-// Use language files for strings
-lang('addon.my_string')
+### File Naming
+- Use lowercase for template files: `blog_listing.html`
+- Prefix partials/embeds with underscore: `_header.html`
+- Use descriptive names that indicate purpose
+
+### Template Structure
+- Use EE's `{layout=""}` for inheritance
+- Use `{embed=""}` for reusable partials
+- Use Stash for caching and data passing
+- Keep templates focused and single-purpose
+
+### Tag Syntax
+```html
+{!-- CORRECT: Use proper EE tag syntax --}
+{exp:channel:entries channel="blog" limit="10"}
+    <article>{title}</article>
+{/exp:channel:entries}
+
+{!-- Use conditionals properly --}
+{if logged_in}
+    Welcome, {screen_name}!
+{/if}
 ```
 
-### Security
-- Always validate and sanitize user input
-- Use CSRF tokens for forms
-- Escape output in templates
-- Use parameterized queries
-- Never commit secrets or credentials
+### Stash Usage
+```html
+{!-- Cache expensive queries --}
+{exp:stash:set name="nav" save="yes" scope="site" replace="no" refresh="60"}
+    {exp:channel:entries channel="pages"}
+        <li><a href="{url_title_path='pages'}">{title}</a></li>
+    {/exp:channel:entries}
+{/exp:stash:set}
 
-## JavaScript Standards
+{!-- Use the cached data --}
+{exp:stash:get name="nav"}
+```
 
-### ES6+ Features
-- Use `const` by default, `let` when reassignment needed
-- Use arrow functions for callbacks
-- Use template literals for string interpolation
-- Use destructuring where appropriate
-- Use async/await over .then() chains
+### Avoid
+- Don't nest channel entries tags deeply
+- Don't use `dynamic="no"` unless necessary
+- Don't hardcode URLs, use path variables
 
-### Alpine.js
-- Keep components small and focused
-- Use `x-data` for component state
-- Prefer `x-on:` over `@` for clarity in templates
-- Use `$refs` sparingly
+## CSS/Tailwind
 
-### Tailwind CSS
-- Use utility classes over custom CSS
-- Extract components for repeated patterns
-- Follow mobile-first responsive design
-- Use `@apply` sparingly in CSS files
+### Utility Classes
+- Prefer Tailwind utilities over custom CSS
+- Use responsive prefixes: `md:`, `lg:`
+- Use state variants: `hover:`, `focus:`
 
-## HTML Standards
-
-### Semantic Markup
-- Use appropriate HTML5 elements (`<article>`, `<nav>`, `<aside>`)
-- One `<h1>` per page
-- Logical heading hierarchy (h1 → h2 → h3)
-- Use `<button>` for actions, `<a>` for navigation
+### Custom Components
+- Use `@apply` sparingly, prefer utility classes
+- Document custom component classes
+- Follow BEM naming if custom classes needed
 
 ### Accessibility
-- All images must have `alt` attributes
-- Form inputs must have associated `<label>` elements
-- Interactive elements must be keyboard accessible
-- Color contrast must meet WCAG AA (4.5:1 for text)
-- Use ARIA attributes appropriately
+- Ensure sufficient color contrast
+- Use `focus:` states for keyboard navigation
+- Test with screen readers
 
-### Bilingual Considerations
-- Use `lang` attribute on `<html>` and content switches
-- Ensure proper text direction support
-- Test layouts with both languages (French often 20% longer)
+## JavaScript
 
-## Database Guidelines
+### Alpine.js
+- Prefer Alpine.js for simple interactivity
+- Use `x-data` for component state
+- Use `x-on` for event handling
+- Keep components small and focused
 
-### Query Optimization
-- Use indexes on frequently queried columns
-- Avoid SELECT * in production code
-- Use EE's Query Builder or Active Record
-- Implement pagination for large datasets
+## Security
 
-### ExpressionEngine Data
-- Use channel entries for structured content
-- Use categories for taxonomy
-- Use relationships for content connections
-- Use Grid/Fluid fields for repeating content
+### Input Validation
+- Never trust user input
+- Use EE's XSS filtering
+- Escape output in templates
 
-## Git Practices
+### SQL Injection
+- Never write raw SQL queries
+- Use EE's query builder
+- Use parameterized queries
+
+### XSS Prevention
+- Escape user content by default
+- Use `{variable:attr_safe}` for attributes
+- Be careful with raw HTML output
+
+## Git Commits
 
 ### Commit Messages
 - Use present tense: "Add feature" not "Added feature"
-- Keep subject line under 50 characters
-- Reference issue numbers where applicable
+- Be descriptive but concise
+- Reference issue numbers when applicable
 
 ### Branch Naming
-- `feature/description` for new features
-- `fix/description` for bug fixes
-- `hotfix/description` for urgent fixes
+- Feature: `feature/description`
+- Bugfix: `fix/description`
+- Hotfix: `hotfix/description`
 
 ## Code Review Focus Areas
 
 When reviewing code, prioritize:
-1. **Security vulnerabilities** (SQL injection, XSS, CSRF)
-2. **Accessibility issues** (missing alt text, keyboard traps)
-3. **Performance concerns** (N+1 queries, missing indexes, uncached loops)
-4. **Bilingual support** (hardcoded strings, missing translations)
-5. **Code maintainability** (complexity, documentation)
+1. Security vulnerabilities
+2. Accessibility issues
+3. Performance (Stash caching)
+4. Code clarity and maintainability
+5. Template organization
+6. Proper use of EE patterns

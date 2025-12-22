@@ -1,0 +1,38 @@
+# Gemini CLI Custom Command: Project Analysis
+# Invoked as: /project:analyze
+
+description = "Analyze the Coilpack project structure and provide an overview"
+
+prompt = """
+Analyze this Coilpack project and provide a comprehensive overview:
+
+1. **Project Structure**
+   - Examine the directory layout
+   - Identify key configuration files
+   - Note any custom add-ons or packages
+
+2. **ExpressionEngine Configuration**
+   - Check DDEV configuration (.ddev/config.yaml)
+   - Identify installed add-ons (ee/system/user/addons/)
+   - Review template structure (ee/system/user/templates/)
+
+3. **Laravel Integration**
+   - Check routes (routes/)
+   - Identify controllers (app/Http/Controllers/)
+   - Note any Livewire components (app/Livewire/)
+
+4. **Frontend Stack**
+   - Check package.json for dependencies
+   - Identify CSS framework (Tailwind, etc.)
+   - Note build configuration (vite.config.js)
+
+5. **Localization**
+   - Check for translation files (lang/)
+   - Identify supported languages
+
+6. **Recommendations**
+   - Suggest improvements or missing configurations
+   - Note any potential issues
+
+Please be thorough but concise.
+"""
