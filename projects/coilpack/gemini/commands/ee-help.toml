@@ -1,0 +1,53 @@
+# Gemini CLI Custom Command: ExpressionEngine Helper
+# Invoked as: /ee:help "task description"
+
+description = "Get help with ExpressionEngine CLI commands and content management"
+
+prompt = """
+Provide ExpressionEngine help for this Coilpack project:
+
+{{args}}
+
+Include:
+
+1. **Relevant EE CLI Commands**
+   - Show the exact commands using `ddev ee` prefix
+   - Explain what each command does
+   - Include any required arguments
+
+2. **Common EE CLI Commands Reference**
+   ```bash
+   ddev ee cache:clear        # Clear all caches
+   ddev ee addons:list        # List installed add-ons
+   ddev ee addons:install X   # Install an add-on
+   ddev ee sync:template      # Sync file templates to DB
+   ddev ee channel:list       # List channels
+   ddev ee member:list        # List members
+   ddev ee update             # Run EE updates
+   ```
+
+3. **Content Structure** (if relevant)
+   - Channels and their fields
+   - Category groups
+   - Template organization
+   - File upload directories
+
+4. **Accessing EE Data in Twig**
+   ```twig
+   {# Channel entries #}
+   {% for entry in exp.channel.entries({channel: 'name'}) %}
+   
+   {# Categories #}  
+   {% for cat in exp.category.entries({group_id: 1}) %}
+   
+   {# Global variables #}
+   {{ global.site_name }}
+   ```
+
+5. **Best Practices**
+   - Always use `ddev ee` - never run PHP CLI directly
+   - Clear caches after content/template changes
+   - Use template sync for file-based templates
+
+Note: This is a Coilpack project using Twig templating, not native EE templates.
+"""
