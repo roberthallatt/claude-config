@@ -1,0 +1,85 @@
+# Cursor Rules for {{PROJECT_NAME}}
+
+You are working on an ExpressionEngine 7.x CMS website.
+
+## Tech Stack
+
+- CMS: ExpressionEngine 7.x
+- CSS: Tailwind CSS via PostCSS
+- JavaScript: Alpine.js
+- Environment: DDEV (Docker)
+- Database: {{DDEV_DB_TYPE}} {{DDEV_DB_VERSION}}
+- PHP: {{DDEV_PHP}}+
+
+## Project URLs
+
+- Primary: {{DDEV_PRIMARY_URL}}
+- Control Panel: {{DDEV_PRIMARY_URL}}/eecp.php
+
+## Key Directories
+
+- Templates: `system/user/templates/{{TEMPLATE_GROUP}}/`
+- Add-ons: `system/user/addons/`
+- Frontend: `{{DDEV_DOCROOT}}/`
+
+## Coding Standards
+
+### PHP
+- PSR-12 with 4-space indentation
+- Type hints for parameters and return types
+- Early returns to reduce nesting
+
+### HTML/Templates
+- 2-space indentation
+- Semantic HTML5 elements
+- EE templates use `.html` extension
+- Prefix partials with underscore: `_header`
+
+### CSS
+- Prefer Tailwind utility classes
+- Mobile-first responsive design
+- BEM naming for custom CSS
+
+### JavaScript
+- ES6+ with 2-space indentation
+- Prefer Alpine.js `x-data` components
+
+## ExpressionEngine Patterns
+
+### Channel Entries
+```html
+{exp:channel:entries channel="pages" limit="10" dynamic="no" disable="categories|member_data"}
+    <article>{title}</article>
+{/exp:channel:entries}
+```
+
+### Stash Caching
+```html
+{exp:stash:set name="content" save="yes" scope="site"}
+    {!-- expensive query --}
+{/exp:stash:set}
+{exp:stash:get name="content"}
+```
+
+### Embeds
+```html
+{embed="_partials/_header"}
+{embed="_partials/_footer"}
+```
+
+## Commands
+
+- `ddev start` - Start environment
+- `ddev ee cache:clear` - Clear caches
+- `npm run dev` - Dev build
+- `npm run build` - Production build
+
+## Security
+
+- Never commit `.env.php` or credentials
+- Use `{csrf_token}` in forms
+- Sanitize user input before output
+
+## Bilingual
+
+Site may have EN/FR content. Check for `{lv_*_en}` / `{lv_*_fr}` variables.

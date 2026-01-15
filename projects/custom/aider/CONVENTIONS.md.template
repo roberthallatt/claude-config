@@ -1,0 +1,48 @@
+# CONVENTIONS.md
+
+Coding conventions for {{PROJECT_NAME}}.
+
+This project was set up using AI-powered discovery mode. Run `/project-discover` to generate stack-specific conventions.
+
+## Project Path
+{{PROJECT_PATH}}
+
+## General Conventions
+
+### Code Style
+- Follow existing patterns in the codebase
+- Use consistent indentation
+- Write clear, readable code
+- Prefer explicit over implicit
+
+### Naming
+- Use descriptive variable and function names
+- Follow language-specific naming conventions
+- Be consistent with existing codebase
+
+### Documentation
+- Comment the "why," not the "what"
+- Document non-obvious logic
+- Keep documentation current
+
+### Security
+- Never commit credentials or secrets
+- Sanitize user input
+- Use parameterized queries
+
+### Testing
+- Write tests for new functionality
+- Follow existing test patterns
+
+### Git
+- Use conventional commits: type(scope): description
+- Keep commits atomic
+- Write clear commit messages
+
+## Next Steps
+
+Run `/project-discover` to analyze this codebase and generate:
+- Language-specific coding standards
+- Framework-specific patterns
+- Testing conventions
+- Security requirements

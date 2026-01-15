@@ -1,0 +1,37 @@
+# Project: {{PROJECT_NAME}}
+
+## Overview
+
+This project was set up using AI-powered discovery mode. Full configuration will be generated after running `/project-discover`.
+
+**Project Path**: {{PROJECT_PATH}}
+
+## Temporary Guidelines
+
+### Code Style
+- Follow existing patterns in the codebase
+- Use consistent formatting
+- Write clear, self-documenting code
+
+### Security
+- Never commit credentials or secrets
+- Sanitize all user input
+- Use parameterized database queries
+
+### Testing
+- Write tests for new functionality
+- Follow existing test patterns
+
+## Next Steps
+
+Run `/project-discover` in Claude Code (or similar) to:
+1. Analyze this codebase
+2. Detect frameworks and libraries in use
+3. Research best practices for your stack
+4. Generate comprehensive configuration
+
+This file will be updated with:
+- Detected tech stack details
+- Directory structure
+- Development commands
+- Framework-specific patterns

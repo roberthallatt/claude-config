@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Config - Documentation</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --text: #c9d1d9;
+            --link: #58a6ff;
+            --border: #30363d;
+            --code-bg: #161b22;
+            --heading: #f0f6fc;
+            --table-border: #30363d;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--code-bg);
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            color: var(--heading);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 20px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar h2:first-child {
+            margin-top: 0;
+        }
+
+        .sidebar a {
+            display: block;
+            color: var(--text);
+            text-decoration: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            margin: 2px 0;
+        }
+
+        .sidebar a:hover {
+            background: var(--border);
+            color: var(--link);
+        }
+
+        .sidebar a.active {
+            background: var(--link);
+            color: white;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 40px 60px;
+            max-width: 900px;
+        }
+
+        #markdown-content {
+            /* Markdown styles */
+        }
+
+        #markdown-content h1 {
+            color: var(--heading);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            font-size: 2em;
+        }
+
+        #markdown-content h2 {
+            color: var(--heading);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+            margin-top: 40px;
+        }
+
+        #markdown-content h3 {
+            color: var(--heading);
+        }
+
+        #markdown-content a {
+            color: var(--link);
+        }
+
+        #markdown-content code {
+            background: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 0.9em;
+        }
+
+        #markdown-content pre {
+            background: var(--code-bg);
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+        }
+
+        #markdown-content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        #markdown-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        #markdown-content th,
+        #markdown-content td {
+            border: 1px solid var(--table-border);
+            padding: 10px 15px;
+            text-align: left;
+        }
+
+        #markdown-content th {
+            background: var(--code-bg);
+            color: var(--heading);
+        }
+
+        #markdown-content blockquote {
+            border-left: 4px solid var(--link);
+            margin: 20px 0;
+            padding: 10px 20px;
+            background: var(--code-bg);
+            border-radius: 0 8px 8px 0;
+        }
+
+        #markdown-content hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 40px 0;
+        }
+
+        #markdown-content ul, #markdown-content ol {
+            padding-left: 25px;
+        }
+
+        #markdown-content li {
+            margin: 8px 0;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--heading);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo span {
+            color: var(--link);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            .content {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="logo">AI <span>Config</span></div>
+
+            <h2>Overview</h2>
+            <a href="#" data-file="README.md" class="active">Home</a>
+
+            <h2>Getting Started</h2>
+            <a href="#" data-file="docs/getting-started/installation.md">Installation</a>
+            <a href="#" data-file="docs/getting-started/quick-start.md">Quick Start</a>
+            <a href="#" data-file="docs/getting-started/configuration.md">Configuration</a>
+
+            <h2>Guides</h2>
+            <a href="#" data-file="docs/guides/setup-script.md">Setup Script</a>
+            <a href="#" data-file="docs/guides/vscode-extensions.md">VSCode Extensions</a>
+            <a href="#" data-file="docs/guides/conditional-deployment.md">Conditional Deployment</a>
+            <a href="#" data-file="docs/guides/updating-projects.md">Updating Projects</a>
+
+            <h2>Reference</h2>
+            <a href="#" data-file="docs/reference/stacks.md">Stacks</a>
+            <a href="#" data-file="docs/reference/file-structure.md">File Structure</a>
+            <a href="#" data-file="docs/reference/commands.md">Commands</a>
+
+            <h2>Development</h2>
+            <a href="#" data-file="docs/development/project-status.md">Project Status</a>
+            <a href="#" data-file="docs/development/contributing.md">Contributing</a>
+        </nav>
+
+        <main class="content">
+            <div id="markdown-content">
+                <p>Loading documentation...</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function loadMarkdown(file) {
+            try {
+                const response = await fetch(file);
+                if (!response.ok) {
+                    throw new Error(`File not found: ${file}`);
+                }
+                const text = await response.text();
+                document.getElementById('markdown-content').innerHTML = marked.parse(text);
+
+                // Update active state
+                document.querySelectorAll('.sidebar a').forEach(a => {
+                    a.classList.remove('active');
+                    if (a.dataset.file === file) {
+                        a.classList.add('active');
+                    }
+                });
+
+                // Update URL hash
+                window.location.hash = file;
+
+                // Scroll to top
+                window.scrollTo(0, 0);
+            } catch (error) {
+                document.getElementById('markdown-content').innerHTML = `
+                    <h1>Page Not Found</h1>
+                    <p>The file <code>${file}</code> could not be loaded.</p>
+                    <p><a href="#" data-file="README.md">Return to Home</a></p>
+                `;
+            }
+        }
+
+        // Handle navigation clicks
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('.sidebar a, #markdown-content a')) {
+                const file = e.target.dataset.file;
+                if (file) {
+                    e.preventDefault();
+                    loadMarkdown(file);
+                }
+            }
+        });
+
+        // Load initial page from hash or default to README
+        const initialFile = window.location.hash.slice(1) || 'README.md';
+        loadMarkdown(initialFile);
+    </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code when working with code in this repository.
+
+## Project Overview
+
+**{{PROJECT_NAME}}** is a custom project. This configuration was generated using AI-powered discovery mode.
+
+- **Project Path**: {{PROJECT_PATH}}
+- **Project Slug**: {{PROJECT_SLUG}}
+
+## Detected Technologies
+
+> Run the `/project-discover` command to have Claude analyze this codebase and populate this section with:
+> - Detected frameworks and libraries
+> - Project structure analysis
+> - Coding standards and patterns
+> - Build and development commands
+> - Testing setup
+
+## Directory Structure
+
+```
+{{PROJECT_SLUG}}/
+├── [Your project structure will be documented here]
+└── ...
+```
+
+## Development Commands
+
+```bash
+# Add your development commands here
+# Examples:
+# npm install        # Install dependencies
+# npm run dev        # Start development server
+# npm run build      # Build for production
+# npm test           # Run tests
+```
+
+## Coding Standards
+
+See `.claude/rules/` for project-specific coding standards.
+
+## Security Requirements
+
+- Never commit credentials, API keys, or secrets
+- Sanitize all user input before output
+- Use parameterized queries for database operations
+
+## Before Making Changes
+
+1. Understand existing patterns in the codebase
+2. Check for existing utilities before creating new ones
+3. Follow established conventions
+4. Test your changes
+
+## First-Time Setup
+
+After running the setup script with `--discover`, use the `/project-discover` command to have Claude:
+
+1. Analyze your codebase structure
+2. Detect frameworks and libraries in use
+3. Research best practices for your stack
+4. Generate custom rules, agents, and workflows
+5. Update this file with project-specific information

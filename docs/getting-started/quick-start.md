@@ -1,35 +1,63 @@
 # Quick Start
 
-Deploy Claude Code and Gemini Code Assist configurations to your project in minutes.
+Deploy AI coding assistant configurations to your project in minutes.
 
 ## Basic Deployment
 
-### New Project Setup
+### Auto-Detect Stack (Recommended)
+
+The script automatically detects your project's stack:
 
 ```bash
-./setup-project.sh \
+ai-config --project=/path/to/your/project --with-all
+```
+
+This will:
+1. Auto-detect stack (ExpressionEngine, Craft CMS, WordPress, Next.js, Docusaurus, etc.)
+2. Detect project technologies (Tailwind, Alpine.js, etc.)
+3. Deploy configurations for all 7 AI assistants
+4. Configure VSCode settings with syntax recognition
+
+### New Project Setup (Manual Stack)
+
+If you prefer to specify the stack manually:
+
+```bash
+ai-config \
   --stack=expressionengine \
   --project=/path/to/your/project \
-  --with-gemini \
+  --with-all \
   --install-extensions
 ```
 
 This will:
-1. Detect project technologies (Tailwind, Alpine.js, etc.)
-2. Deploy CLAUDE.md and .claude/ configuration
-3. Deploy GEMINI.md and .gemini/ configuration
+1. Use the specified stack template
+2. Detect project technologies (Tailwind, Alpine.js, etc.)
+3. Deploy configurations for all 7 AI assistants
 4. Configure VSCode settings with syntax recognition
 5. Install recommended VSCode extensions
+
+### Discovery Mode (Unknown Stacks)
+
+For projects that don't match a known stack:
+
+```bash
+ai-config --project=/path/to/project --discover --with-all
+```
+
+This will:
+1. Detect 50+ technologies (React, Vue, Laravel, Django, Express, etc.)
+2. Deploy base configuration for all AI assistants
+3. Generate a discovery prompt for AI analysis
+
+Then open in Claude Code and run `/project-discover` to generate stack-specific rules.
 
 ### Update Existing Project
 
 The script can auto-detect your stack from existing configuration:
 
 ```bash
-./setup-project.sh \
-  --refresh \
-  --project=/path/to/your/project \
-  --install-extensions
+ai-config --refresh --project=/path/to/your/project
 ```
 
 ## Supported Stacks
@@ -45,33 +73,55 @@ The script can auto-detect your stack from existing configuration:
 
 | Flag | Description |
 |------|-------------|
-| `--stack=<name>` | Technology stack (auto-detected with `--refresh`) |
-| `--project=<path>` | Target project directory (required) |
+| `--stack=<name>` | Technology stack (optional - auto-detected if omitted) |
+| `--project=<path>` | Target project directory (required, use `.` for current) |
+| `--discover` | AI-powered discovery mode for unknown stacks |
+| `--with-all` | Deploy all 7 AI assistant configurations |
 | `--with-gemini` | Deploy Gemini Code Assist configuration |
+| `--with-copilot` | Deploy GitHub Copilot configuration |
+| `--with-cursor` | Deploy Cursor AI configuration |
+| `--with-windsurf` | Deploy Windsurf AI configuration |
+| `--with-codex` | Deploy OpenAI Codex configuration |
+| `--with-aider` | Deploy Aider configuration |
 | `--install-extensions` | Auto-install VSCode extensions |
-| `--refresh` | Update existing configuration |
+| `--refresh` | Update existing configuration (auto-detects stack) |
 | `--dry-run` | Preview changes without applying |
 | `--force` | Overwrite without prompting |
 
 ## What Gets Deployed
 
-### Claude Code Configuration
+### Claude Code (Always)
 - `CLAUDE.md` - Project context and overview
 - `.claude/rules/` - Stack-specific coding rules
 - `.claude/agents/` - Custom agent personas
 - `.claude/commands/` - Project-specific commands
 
-### Gemini Code Assist Configuration
+### Gemini Code Assist (`--with-gemini` or `--with-all`)
 - `GEMINI.md` - Agent mode context
 - `.gemini/settings.json` - MCP servers and settings
 - `.gemini/config.yaml` - PR review configuration
 - `.gemini/commands/` - Custom Gemini commands
 
-### VSCode Configuration
+### GitHub Copilot (`--with-copilot` or `--with-all`)
+- `.github/copilot-instructions.md` - Custom instructions
+
+### Cursor AI (`--with-cursor` or `--with-all`)
+- `.cursorrules` - Project rules for Cursor
+
+### Windsurf AI (`--with-windsurf` or `--with-all`)
+- `.windsurfrules` - Project rules for Windsurf
+
+### OpenAI Codex (`--with-codex` or `--with-all`)
+- `AGENTS.md` - Agent instructions
+
+### Aider (`--with-aider` or `--with-all`)
+- `CONVENTIONS.md` - Coding conventions
+
+### VSCode
 - `.vscode/settings.json` - Editor settings with syntax recognition
 - `.vscode/extensions.json` - Recommended extensions
-- `.vscode/launch.json` - Xdebug debugging
-- `.vscode/tasks.json` - DDEV tasks
+- `.vscode/launch.json` - Xdebug debugging (PHP stacks)
+- `.vscode/tasks.json` - Build and DDEV tasks
 
 ## Next Steps
 

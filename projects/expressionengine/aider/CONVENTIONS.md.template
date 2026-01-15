@@ -1,0 +1,90 @@
+# CONVENTIONS.md
+
+Coding conventions for {{PROJECT_NAME}} - an ExpressionEngine 7.x website.
+
+## Project Overview
+
+- **CMS**: ExpressionEngine 7.x
+- **CSS**: Tailwind CSS via PostCSS
+- **JavaScript**: Alpine.js
+- **Environment**: DDEV (PHP {{DDEV_PHP}}+, {{DDEV_DB_TYPE}})
+- **URL**: {{DDEV_PRIMARY_URL}}
+
+## Directory Structure
+
+- Templates: `system/user/templates/{{TEMPLATE_GROUP}}/`
+- Add-ons: `system/user/addons/`
+- Config: `system/user/config/config.php`
+- Frontend: `{{DDEV_DOCROOT}}/`
+
+## PHP Standards
+
+- Follow PSR-12 coding standards
+- Use 4-space indentation
+- Add type hints for all parameters and return types
+- Use early returns to reduce nesting
+- Never commit credentials
+
+## HTML/Template Standards
+
+- Use 2-space indentation
+- Use semantic HTML5 elements
+- EE templates use `.html` extension
+- Prefix partials with underscore: `_header`, `_footer`
+
+## CSS Standards
+
+- Prefer Tailwind utility classes over custom CSS
+- Mobile-first responsive design
+- Use BEM naming for any custom CSS classes
+
+## JavaScript Standards
+
+- Use ES6+ features
+- Use 2-space indentation
+- Prefer Alpine.js `x-data` components over vanilla JS
+
+## ExpressionEngine Patterns
+
+Channel entries with performance optimization:
+```html
+{exp:channel:entries channel="pages" limit="10" dynamic="no" disable="categories|member_data|pagination"}
+    <article>{title}</article>
+{/exp:channel:entries}
+```
+
+Stash caching for expensive queries:
+```html
+{exp:stash:set name="cached_content" save="yes" scope="site"}
+    {!-- query here --}
+{/exp:stash:set}
+{exp:stash:get name="cached_content"}
+```
+
+## Security
+
+- Never commit `.env.php` or database credentials
+- Use `{csrf_token}` in all forms
+- Sanitize user input before output
+- Use parameterized queries for custom SQL
+
+## Git Workflow
+
+- Use conventional commits: `type(scope): description`
+- Imperative mood: "Add feature" not "Added feature"
+- One logical change per commit
+- Merge to `staging` before `main`
+
+## Commands
+
+```bash
+ddev start              # Start environment
+ddev ee cache:clear     # Clear caches
+npm run dev             # Development build
+npm run build           # Production build
+```
+
+## Notes
+
+- Site may have bilingual content (EN/FR)
+- Look for `{lv_*_en}` / `{lv_*_fr}` language variables

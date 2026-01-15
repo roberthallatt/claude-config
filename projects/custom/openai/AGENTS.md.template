@@ -1,0 +1,42 @@
+# AGENTS.md
+
+Instructions for AI coding agents working on {{PROJECT_NAME}}.
+
+## Project Overview
+
+This project was set up using AI-powered discovery mode. Full configuration will be generated after analysis.
+
+**Project Path**: {{PROJECT_PATH}}
+
+## Temporary Instructions
+
+Until the project is fully analyzed:
+
+### General Guidelines
+- Understand existing code patterns before making changes
+- Follow consistent formatting and style
+- Write clear, self-documenting code
+- Comment complex logic
+
+### Security
+- Never commit credentials or secrets
+- Sanitize all user input
+- Use parameterized database queries
+- Validate at system boundaries
+
+### Testing
+- Write tests for new functionality
+- Follow existing test patterns in the codebase
+
+### Git Workflow
+- Use conventional commits
+- Keep commits atomic
+- Write clear commit messages
+
+## Next Steps
+
+Run `/project-discover` in Claude Code to:
+1. Analyze this codebase structure
+2. Detect frameworks and libraries
+3. Research best practices
+4. Generate comprehensive agent instructions

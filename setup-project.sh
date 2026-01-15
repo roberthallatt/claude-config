@@ -1,25 +1,33 @@
 #!/bin/bash
 #
 # setup-project.sh
-# Deploy Claude Code / AI agent configuration to a CPS project
+# Deploy AI coding assistant configuration to any project
 #
 # Usage:
+#   ./setup-project.sh --project=/path/to/project [options]
 #   ./setup-project.sh --stack=expressionengine --project=/path/to/project [options]
 #
 # Options:
-#   --stack       Stack template to use (expressionengine, craftcms, wordpress-roots, nextjs, docusaurus)
+#   --stack       Stack template (auto-detected if not specified)
 #   --project     Target project directory
 #   --name        Human-readable project name (optional, derived from directory if not provided)
 #   --slug        Project slug for templates (optional, derived from directory if not provided)
 #   --dry-run     Show what would be done without making changes
 #   --force       Overwrite existing configuration without prompting
-#   --clean       Remove existing Claude/AI config before deploying (CLAUDE.md, .claude/, GEMINI.md, .gemini/)
+#   --clean       Remove existing Claude/AI config before deploying
 #   --refresh     Re-scan project and regenerate CLAUDE.md only (preserves .claude/ customizations)
 #   --skip-vscode       Skip VSCode settings (if you manage them separately)
 #   --install-extensions Install recommended VSCode extensions automatically
 #   --with-mcp          Deploy .mcp.json for ExpressionEngine MCP server integration
 #   --with-gemini       Deploy .gemini/ configuration for Gemini Code Assist
-#   --analyze           Generate analysis prompt for Claude to customize config
+#   --with-copilot      Deploy .github/copilot-instructions.md for GitHub Copilot
+#   --with-cursor       Deploy .cursorrules for Cursor AI
+#   --with-windsurf     Deploy .windsurfrules for Windsurf AI
+#   --with-codex        Deploy AGENTS.md for OpenAI Codex
+#   --with-aider        Deploy CONVENTIONS.md for Aider
+#   --with-all          Deploy configuration for ALL supported AI assistants
+#   --analyze           Generate analysis prompt for AI to build custom config
+#   --discover          AI-powered analysis mode for unknown/custom stacks
 #
 
 set -e
@@ -48,7 +56,14 @@ SKIP_VSCODE=false
 INSTALL_EXTENSIONS=false
 WITH_MCP=false
 WITH_GEMINI=false
+WITH_COPILOT=false
+WITH_CURSOR=false
+WITH_WINDSURF=false
+WITH_CODEX=false
+WITH_AIDER=false
+WITH_ALL=false
 ANALYZE=false
+DISCOVER=false
 
 # Detected values (populated during analysis)
 DDEV_NAME=""
@@ -118,16 +133,51 @@ while [[ $# -gt 0 ]]; do
       WITH_GEMINI=true
       shift
       ;;
+    --with-copilot)
+      WITH_COPILOT=true
+      shift
+      ;;
+    --with-cursor)
+      WITH_CURSOR=true
+      shift
+      ;;
+    --with-windsurf)
+      WITH_WINDSURF=true
+      shift
+      ;;
+    --with-codex)
+      WITH_CODEX=true
+      shift
+      ;;
+    --with-aider)
+      WITH_AIDER=true
+      shift
+      ;;
+    --with-all)
+      WITH_ALL=true
+      WITH_GEMINI=true
+      WITH_COPILOT=true
+      WITH_CURSOR=true
+      WITH_WINDSURF=true
+      WITH_CODEX=true
+      WITH_AIDER=true
+      shift
+      ;;
     --analyze)
       ANALYZE=true
       shift
       ;;
+    --discover)
+      DISCOVER=true
+      shift
+      ;;
     -h|--help)
-      echo "Usage: $0 --stack=<stack> --project=<path> [options]"
+      echo "Usage: $0 --project=<path> [options]"
       echo ""
       echo "Options:"
-      echo "  --stack=<n>       Stack template (auto-detected with --refresh)"
+      echo "  --stack=<n>       Stack template (auto-detected if not specified)"
       echo "  --project=<path>  Target project directory (required)"
+      echo "  --discover        AI-powered mode: analyze codebase and generate custom config"
       echo "  --name=<n>        Human-readable project name"
       echo "  --slug=<slug>     Project slug for templates"
       echo "  --dry-run         Preview changes without applying"
@@ -136,8 +186,18 @@ while [[ $# -gt 0 ]]; do
       echo "  --refresh         Update config files (auto-detects stack from CLAUDE.md)"
       echo "  --skip-vscode     Do not copy VSCode settings"
       echo "  --install-extensions Install recommended VSCode extensions automatically"
-      echo "  --with-mcp        Deploy .mcp.json for EE MCP server integration"
+      echo ""
+      echo "AI Assistants:"
       echo "  --with-gemini     Deploy .gemini/ for Gemini Code Assist"
+      echo "  --with-copilot    Deploy .github/copilot-instructions.md for GitHub Copilot"
+      echo "  --with-cursor     Deploy .cursorrules for Cursor AI"
+      echo "  --with-windsurf   Deploy .windsurfrules for Windsurf AI"
+      echo "  --with-codex      Deploy AGENTS.md for OpenAI Codex"
+      echo "  --with-aider      Deploy CONVENTIONS.md for Aider"
+      echo "  --with-all        Deploy ALL AI assistant configurations"
+      echo "  --with-mcp        Deploy .mcp.json for EE MCP server integration"
+      echo ""
+      echo "Other:"
       echo "  --analyze         Generate analysis prompt for Claude"
       echo ""
       echo "Available stacks:"
@@ -163,31 +223,81 @@ PROJECT_DIR="$(cd "$PROJECT_DIR" 2>/dev/null && pwd)" || {
   exit 1
 }
 
-# Auto-detect stack when using --refresh
-if [[ -z "$STACK" ]] && [[ "$REFRESH" == true ]]; then
+# Auto-detect stack if not specified
+if [[ -z "$STACK" ]]; then
+  # First try: Check existing CLAUDE.md (for --refresh)
   if [[ -f "$PROJECT_DIR/CLAUDE.md" ]]; then
     DETECTED_STACK=$(grep '@~/.claude/stacks/' "$PROJECT_DIR/CLAUDE.md" 2>/dev/null | head -1 | sed -E 's|.*@~/.claude/stacks/([^.]+)\.md.*|\1|')
     if [[ -n "$DETECTED_STACK" ]]; then
       STACK="$DETECTED_STACK"
-      echo -e "${CYAN}Auto-detected stack: ${GREEN}$STACK${NC}"
+      echo -e "${CYAN}Auto-detected stack from CLAUDE.md: ${GREEN}$STACK${NC}"
+    fi
+  fi
+
+  # Second try: Detect from project files
+  if [[ -z "$STACK" ]]; then
+    # We need the detect_stack function - source it inline for now
+    # ExpressionEngine
+    if [[ -d "$PROJECT_DIR/system/ee" ]] || [[ -f "$PROJECT_DIR/system/user/config/config.php" ]]; then
+      if [[ -f "$PROJECT_DIR/composer.json" ]] && grep -q "laravel/framework" "$PROJECT_DIR/composer.json" 2>/dev/null; then
+        STACK="coilpack"
+      else
+        STACK="expressionengine"
+      fi
+    # Craft CMS
+    elif [[ -f "$PROJECT_DIR/craft" ]] && [[ -f "$PROJECT_DIR/composer.json" ]] && grep -q "craftcms/cms" "$PROJECT_DIR/composer.json" 2>/dev/null; then
+      STACK="craftcms"
+    # WordPress Bedrock
+    elif [[ -d "$PROJECT_DIR/web/app/mu-plugins" ]] || [[ -d "$PROJECT_DIR/web/app/plugins" ]] || [[ -f "$PROJECT_DIR/wp-config.php" ]] || [[ -d "$PROJECT_DIR/wp-content" ]]; then
+      STACK="wordpress-roots"
+    # Next.js
+    elif [[ -f "$PROJECT_DIR/next.config.js" ]] || [[ -f "$PROJECT_DIR/next.config.mjs" ]] || [[ -f "$PROJECT_DIR/next.config.ts" ]]; then
+      STACK="nextjs"
+    # Docusaurus
+    elif [[ -f "$PROJECT_DIR/docusaurus.config.js" ]] || [[ -f "$PROJECT_DIR/docusaurus.config.ts" ]]; then
+      STACK="docusaurus"
+    # Check package.json for Next.js or Docusaurus
+    elif [[ -f "$PROJECT_DIR/package.json" ]]; then
+      if grep -q '"next"' "$PROJECT_DIR/package.json" 2>/dev/null; then
+        STACK="nextjs"
+      elif grep -q '"@docusaurus' "$PROJECT_DIR/package.json" 2>/dev/null; then
+        STACK="docusaurus"
+      fi
+    fi
+
+    if [[ -n "$STACK" ]]; then
+      echo -e "${CYAN}Auto-detected stack from project files: ${GREEN}$STACK${NC}"
     fi
   fi
 fi
 
+# If still no stack and --discover mode, use custom/generic stack
+if [[ -z "$STACK" ]] && [[ "$DISCOVER" == true ]]; then
+  STACK="custom"
+  echo -e "${CYAN}Discovery mode: Will generate custom configuration${NC}"
+fi
+
 # Validate stack is specified or detected
 if [[ -z "$STACK" ]]; then
-  echo -e "${RED}Error: --stack is required${NC}"
+  echo -e "${YELLOW}Could not auto-detect stack.${NC}"
+  echo ""
+  echo "Options:"
+  echo "  1. Specify a stack:  --stack=<stack>"
+  echo "  2. Use discovery mode:  --discover"
+  echo ""
   echo "Available stacks:"
   ls -1 "$SCRIPT_DIR/projects/" 2>/dev/null | sed 's/^/  - /'
+  echo "  - custom (use --discover for AI-powered setup)"
   exit 1
 fi
 
-# Check stack exists
+# Check stack exists (or is custom)
 STACK_DIR="$SCRIPT_DIR/projects/$STACK"
-if [[ ! -d "$STACK_DIR" ]]; then
+if [[ "$STACK" != "custom" ]] && [[ ! -d "$STACK_DIR" ]]; then
   echo -e "${RED}Error: Stack '$STACK' not found${NC}"
   echo "Available stacks:"
   ls -1 "$SCRIPT_DIR/projects/" 2>/dev/null | sed 's/^/  - /'
+  echo "  - custom (use --discover for AI-powered setup)"
   exit 1
 fi
 
@@ -320,6 +430,134 @@ detect_addons() {
   return 0
 }
 
+# Auto-detect the technology stack based on project files
+detect_stack() {
+  local detected=""
+
+  # ExpressionEngine: system/ee/ directory
+  if [[ -d "$PROJECT_DIR/system/ee" ]] || [[ -f "$PROJECT_DIR/system/user/config/config.php" ]]; then
+    # Check if it's Coilpack (EE + Laravel)
+    if [[ -f "$PROJECT_DIR/composer.json" ]] && grep -q "laravel/framework" "$PROJECT_DIR/composer.json" 2>/dev/null; then
+      detected="coilpack"
+    else
+      detected="expressionengine"
+    fi
+
+  # Craft CMS: craft executable or config/app.php with Craft
+  elif [[ -f "$PROJECT_DIR/craft" ]] || [[ -f "$PROJECT_DIR/bootstrap.php" && -d "$PROJECT_DIR/config" ]]; then
+    if [[ -f "$PROJECT_DIR/composer.json" ]] && grep -q "craftcms/cms" "$PROJECT_DIR/composer.json" 2>/dev/null; then
+      detected="craftcms"
+    fi
+
+  # WordPress Bedrock (Roots): web/app structure or wp-content
+  elif [[ -d "$PROJECT_DIR/web/app/mu-plugins" ]] || [[ -d "$PROJECT_DIR/web/app/plugins" ]]; then
+    detected="wordpress-roots"
+  elif [[ -f "$PROJECT_DIR/wp-config.php" ]] || [[ -d "$PROJECT_DIR/wp-content" ]]; then
+    detected="wordpress-roots"
+
+  # Next.js: next.config.js or next.config.mjs
+  elif [[ -f "$PROJECT_DIR/next.config.js" ]] || [[ -f "$PROJECT_DIR/next.config.mjs" ]] || [[ -f "$PROJECT_DIR/next.config.ts" ]]; then
+    detected="nextjs"
+
+  # Docusaurus: docusaurus.config.js
+  elif [[ -f "$PROJECT_DIR/docusaurus.config.js" ]] || [[ -f "$PROJECT_DIR/docusaurus.config.ts" ]]; then
+    detected="docusaurus"
+
+  # Additional framework detection for future stacks
+  # Laravel (standalone): artisan file
+  elif [[ -f "$PROJECT_DIR/artisan" ]] && [[ -f "$PROJECT_DIR/composer.json" ]]; then
+    if grep -q "laravel/framework" "$PROJECT_DIR/composer.json" 2>/dev/null; then
+      detected="laravel"  # Future stack
+    fi
+
+  # React (Create React App or Vite)
+  elif [[ -f "$PROJECT_DIR/package.json" ]]; then
+    if grep -q '"react"' "$PROJECT_DIR/package.json" 2>/dev/null; then
+      if grep -q '"next"' "$PROJECT_DIR/package.json" 2>/dev/null; then
+        detected="nextjs"
+      elif grep -q '"@docusaurus' "$PROJECT_DIR/package.json" 2>/dev/null; then
+        detected="docusaurus"
+      fi
+    fi
+  fi
+
+  echo "$detected"
+}
+
+# Detect additional technologies for discovery report
+detect_all_technologies() {
+  DETECTED_TECHNOLOGIES=()
+
+  # Package managers
+  [[ -f "$PROJECT_DIR/package.json" ]] && DETECTED_TECHNOLOGIES+=("npm/Node.js")
+  [[ -f "$PROJECT_DIR/yarn.lock" ]] && DETECTED_TECHNOLOGIES+=("Yarn")
+  [[ -f "$PROJECT_DIR/pnpm-lock.yaml" ]] && DETECTED_TECHNOLOGIES+=("pnpm")
+  [[ -f "$PROJECT_DIR/bun.lockb" ]] && DETECTED_TECHNOLOGIES+=("Bun")
+  [[ -f "$PROJECT_DIR/composer.json" ]] && DETECTED_TECHNOLOGIES+=("Composer/PHP")
+  [[ -f "$PROJECT_DIR/Gemfile" ]] && DETECTED_TECHNOLOGIES+=("Ruby/Bundler")
+  [[ -f "$PROJECT_DIR/requirements.txt" ]] || [[ -f "$PROJECT_DIR/pyproject.toml" ]] && DETECTED_TECHNOLOGIES+=("Python")
+  [[ -f "$PROJECT_DIR/go.mod" ]] && DETECTED_TECHNOLOGIES+=("Go")
+  [[ -f "$PROJECT_DIR/Cargo.toml" ]] && DETECTED_TECHNOLOGIES+=("Rust")
+
+  # Frameworks (from package.json)
+  if [[ -f "$PROJECT_DIR/package.json" ]]; then
+    grep -q '"react"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("React")
+    grep -q '"vue"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Vue.js")
+    grep -q '"svelte"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Svelte")
+    grep -q '"angular"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Angular")
+    grep -q '"express"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Express.js")
+    grep -q '"fastify"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Fastify")
+    grep -q '"astro"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Astro")
+    grep -q '"nuxt"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Nuxt.js")
+    grep -q '"gatsby"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Gatsby")
+    grep -q '"remix"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Remix")
+    grep -q '"vite"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Vite")
+    grep -q '"webpack"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Webpack")
+    grep -q '"esbuild"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("esbuild")
+    grep -q '"typescript"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("TypeScript")
+    grep -q '"tailwindcss"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Tailwind CSS")
+    grep -q '"alpinejs"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Alpine.js")
+    grep -q '"sass"\|"node-sass"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Sass/SCSS")
+    grep -q '"jest"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Jest")
+    grep -q '"vitest"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Vitest")
+    grep -q '"playwright"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Playwright")
+    grep -q '"cypress"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Cypress")
+    grep -q '"prisma"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Prisma")
+    grep -q '"drizzle"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Drizzle ORM")
+    grep -q '"eslint"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("ESLint")
+    grep -q '"prettier"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Prettier")
+    grep -q '"storybook"' "$PROJECT_DIR/package.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Storybook")
+  fi
+
+  # PHP frameworks (from composer.json)
+  if [[ -f "$PROJECT_DIR/composer.json" ]]; then
+    grep -q '"laravel/framework"' "$PROJECT_DIR/composer.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Laravel")
+    grep -q '"symfony/' "$PROJECT_DIR/composer.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Symfony")
+    grep -q '"craftcms/cms"' "$PROJECT_DIR/composer.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Craft CMS")
+    grep -q '"expressionengine/' "$PROJECT_DIR/composer.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("ExpressionEngine")
+    grep -q '"phpunit/' "$PROJECT_DIR/composer.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("PHPUnit")
+    grep -q '"pestphp/' "$PROJECT_DIR/composer.json" 2>/dev/null && DETECTED_TECHNOLOGIES+=("Pest PHP")
+  fi
+
+  # Config files detection
+  [[ -f "$PROJECT_DIR/tailwind.config.js" ]] || [[ -f "$PROJECT_DIR/tailwind.config.ts" ]] && DETECTED_TECHNOLOGIES+=("Tailwind CSS")
+  [[ -f "$PROJECT_DIR/tsconfig.json" ]] && DETECTED_TECHNOLOGIES+=("TypeScript")
+  [[ -f "$PROJECT_DIR/.eslintrc.js" ]] || [[ -f "$PROJECT_DIR/.eslintrc.json" ]] || [[ -f "$PROJECT_DIR/eslint.config.js" ]] && DETECTED_TECHNOLOGIES+=("ESLint")
+  [[ -f "$PROJECT_DIR/.prettierrc" ]] || [[ -f "$PROJECT_DIR/prettier.config.js" ]] && DETECTED_TECHNOLOGIES+=("Prettier")
+  [[ -f "$PROJECT_DIR/docker-compose.yml" ]] || [[ -f "$PROJECT_DIR/docker-compose.yaml" ]] && DETECTED_TECHNOLOGIES+=("Docker Compose")
+  [[ -f "$PROJECT_DIR/Dockerfile" ]] && DETECTED_TECHNOLOGIES+=("Docker")
+  [[ -d "$PROJECT_DIR/.ddev" ]] && DETECTED_TECHNOLOGIES+=("DDEV")
+  [[ -f "$PROJECT_DIR/.github/workflows" ]] && DETECTED_TECHNOLOGIES+=("GitHub Actions")
+  [[ -f "$PROJECT_DIR/.gitlab-ci.yml" ]] && DETECTED_TECHNOLOGIES+=("GitLab CI")
+
+  # Database indicators
+  [[ -f "$PROJECT_DIR/prisma/schema.prisma" ]] && DETECTED_TECHNOLOGIES+=("Prisma ORM")
+  [[ -d "$PROJECT_DIR/migrations" ]] || [[ -d "$PROJECT_DIR/database/migrations" ]] && DETECTED_TECHNOLOGIES+=("Database Migrations")
+
+  # Remove duplicates
+  DETECTED_TECHNOLOGIES=($(echo "${DETECTED_TECHNOLOGIES[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+}
+
 # ============================================================================
 # Helper Functions
 # ============================================================================
@@ -369,13 +607,27 @@ do_template() {
 }
 
 do_clean() {
-  # Remove existing Claude/AI and Gemini configuration files
+  # Remove existing AI assistant configuration files
   local files_to_clean=(
+    # Claude Code
     "$PROJECT_DIR/CLAUDE.md"
     "$PROJECT_DIR/.claude"
+    # Gemini Code Assist
     "$PROJECT_DIR/GEMINI.md"
     "$PROJECT_DIR/.gemini"
     "$PROJECT_DIR/.geminiignore"
+    # GitHub Copilot
+    "$PROJECT_DIR/.github/copilot-instructions.md"
+    # Cursor AI
+    "$PROJECT_DIR/.cursorrules"
+    "$PROJECT_DIR/.cursor"
+    # Windsurf AI
+    "$PROJECT_DIR/.windsurfrules"
+    "$PROJECT_DIR/.windsurf"
+    # OpenAI Codex
+    "$PROJECT_DIR/AGENTS.md"
+    # Aider
+    "$PROJECT_DIR/CONVENTIONS.md"
   )
 
   echo -e "${CYAN}Cleaning existing configuration...${NC}"
@@ -398,7 +650,7 @@ do_clean() {
 # ============================================================================
 
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}  Claude Code Configuration Setup${NC}"
+echo -e "${BLUE}  AI Coding Assistant Configuration Setup${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -441,7 +693,27 @@ echo -e "  Dry Run:     ${YELLOW}$DRY_RUN${NC}"
 echo -e "  Force:       ${YELLOW}$FORCE${NC}"
 echo -e "  Clean:       ${YELLOW}$CLEAN${NC}"
 echo -e "  Refresh:     ${YELLOW}$REFRESH${NC}"
+[[ "$DISCOVER" == true ]] && echo -e "  Discover:    ${GREEN}true${NC}"
 echo ""
+
+# Discovery mode: Run comprehensive technology detection and generate analysis prompt
+if [[ "$DISCOVER" == true ]]; then
+  echo -e "${BLUE}Running discovery mode...${NC}"
+  echo ""
+
+  # Run comprehensive technology detection
+  detect_all_technologies
+
+  echo -e "${CYAN}Technologies detected:${NC}"
+  if [[ ${#DETECTED_TECHNOLOGIES[@]} -gt 0 ]]; then
+    for tech in "${DETECTED_TECHNOLOGIES[@]}"; do
+      echo -e "  ${GREEN}✓${NC} $tech"
+    done
+  else
+    echo -e "  ${YELLOW}○${NC} No specific technologies detected"
+  fi
+  echo ""
+fi
 
 # Refresh mode: only regenerate CLAUDE.md, skip everything else
 if [[ "$REFRESH" == true ]]; then
@@ -641,7 +913,7 @@ if [[ -d "$STACK_DIR/commands" ]]; then
   do_mkdir "$PROJECT_DIR/.claude/commands"
 
   # Core commands - ALWAYS copy if they exist
-  for cmd in project-analyze.md sync-configs.md ddev-helper.md ee-template-scaffold.md ee-check-syntax.md craft-helper.md wordpress-helper.md nextjs-helper.md stash-optimize.md laravel-helper.md twig-helper.md livewire-component.md twig-scaffold.md docusaurus-helper.md; do
+  for cmd in project-analyze.md project-discover.md sync-configs.md ddev-helper.md ee-template-scaffold.md ee-check-syntax.md craft-helper.md wordpress-helper.md nextjs-helper.md stash-optimize.md laravel-helper.md twig-helper.md livewire-component.md twig-scaffold.md docusaurus-helper.md; do
     if [[ -f "$STACK_DIR/commands/$cmd" ]]; then
       do_copy "$STACK_DIR/commands/$cmd" "$PROJECT_DIR/.claude/commands/"
     fi
@@ -880,6 +1152,84 @@ if [[ "$WITH_GEMINI" == true ]] && [[ -d "$STACK_DIR/gemini" ]]; then
   fi
 fi
 
+# 6b. Deploy GitHub Copilot configuration (if requested)
+if [[ "$WITH_COPILOT" == true ]]; then
+  echo ""
+  echo -e "${CYAN}Deploying GitHub Copilot configuration...${NC}"
+
+  # Create .github directory
+  do_mkdir "$PROJECT_DIR/.github"
+
+  # Deploy copilot-instructions.md from template
+  if [[ -f "$STACK_DIR/copilot/copilot-instructions.md.template" ]]; then
+    do_template "$STACK_DIR/copilot/copilot-instructions.md.template" "$PROJECT_DIR/.github/copilot-instructions.md"
+  elif [[ -f "$STACK_DIR/copilot/copilot-instructions.md" ]]; then
+    do_copy "$STACK_DIR/copilot/copilot-instructions.md" "$PROJECT_DIR/.github/"
+  else
+    echo -e "  ${YELLOW}○${NC} No Copilot template found for this stack"
+  fi
+fi
+
+# 6c. Deploy Cursor AI configuration (if requested)
+if [[ "$WITH_CURSOR" == true ]]; then
+  echo ""
+  echo -e "${CYAN}Deploying Cursor AI configuration...${NC}"
+
+  # Deploy .cursorrules from template
+  if [[ -f "$STACK_DIR/cursor/cursorrules.template" ]]; then
+    do_template "$STACK_DIR/cursor/cursorrules.template" "$PROJECT_DIR/.cursorrules"
+  elif [[ -f "$STACK_DIR/cursor/cursorrules" ]]; then
+    do_copy "$STACK_DIR/cursor/cursorrules" "$PROJECT_DIR/.cursorrules"
+  else
+    echo -e "  ${YELLOW}○${NC} No Cursor template found for this stack"
+  fi
+fi
+
+# 6d. Deploy Windsurf AI configuration (if requested)
+if [[ "$WITH_WINDSURF" == true ]]; then
+  echo ""
+  echo -e "${CYAN}Deploying Windsurf AI configuration...${NC}"
+
+  # Deploy .windsurfrules from template
+  if [[ -f "$STACK_DIR/windsurf/windsurfrules.template" ]]; then
+    do_template "$STACK_DIR/windsurf/windsurfrules.template" "$PROJECT_DIR/.windsurfrules"
+  elif [[ -f "$STACK_DIR/windsurf/windsurfrules" ]]; then
+    do_copy "$STACK_DIR/windsurf/windsurfrules" "$PROJECT_DIR/.windsurfrules"
+  else
+    echo -e "  ${YELLOW}○${NC} No Windsurf template found for this stack"
+  fi
+fi
+
+# 6e. Deploy OpenAI Codex configuration (if requested)
+if [[ "$WITH_CODEX" == true ]]; then
+  echo ""
+  echo -e "${CYAN}Deploying OpenAI Codex configuration...${NC}"
+
+  # Deploy AGENTS.md from template
+  if [[ -f "$STACK_DIR/openai/AGENTS.md.template" ]]; then
+    do_template "$STACK_DIR/openai/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md"
+  elif [[ -f "$STACK_DIR/openai/AGENTS.md" ]]; then
+    do_copy "$STACK_DIR/openai/AGENTS.md" "$PROJECT_DIR/"
+  else
+    echo -e "  ${YELLOW}○${NC} No Codex template found for this stack"
+  fi
+fi
+
+# 6f. Deploy Aider configuration (if requested)
+if [[ "$WITH_AIDER" == true ]]; then
+  echo ""
+  echo -e "${CYAN}Deploying Aider configuration...${NC}"
+
+  # Deploy CONVENTIONS.md from template
+  if [[ -f "$STACK_DIR/aider/CONVENTIONS.md.template" ]]; then
+    do_template "$STACK_DIR/aider/CONVENTIONS.md.template" "$PROJECT_DIR/CONVENTIONS.md"
+  elif [[ -f "$STACK_DIR/aider/CONVENTIONS.md" ]]; then
+    do_copy "$STACK_DIR/aider/CONVENTIONS.md" "$PROJECT_DIR/"
+  else
+    echo -e "  ${YELLOW}○${NC} No Aider template found for this stack"
+  fi
+fi
+
 # 7. Create CLAUDE.md from template
 echo ""
 echo -e "${CYAN}Deploying Claude Code main configuration...${NC}"
@@ -936,6 +1286,97 @@ ANALYSIS_EOF
   echo -e "  ${GREEN}✓${NC} Created .claude/ANALYZE_PROJECT.md"
 fi
 
+# 9. Generate discovery prompt if in discovery mode
+if [[ "$DISCOVER" == true ]] && [[ "$DRY_RUN" != true ]]; then
+  echo ""
+  echo -e "${CYAN}Generating discovery analysis prompt...${NC}"
+
+  # Build technology list for the prompt
+  TECH_LIST=""
+  if [[ ${#DETECTED_TECHNOLOGIES[@]} -gt 0 ]]; then
+    for tech in "${DETECTED_TECHNOLOGIES[@]}"; do
+      TECH_LIST="${TECH_LIST}- ${tech}\n"
+    done
+  fi
+
+  cat > "$PROJECT_DIR/.claude/DISCOVERY_PROMPT.md" << DISCOVERY_EOF
+# Project Discovery Analysis
+
+This project was set up using **discovery mode**. Claude (or another AI assistant) should analyze this codebase and generate comprehensive configuration.
+
+## Detected Technologies
+
+The setup script detected the following technologies:
+
+${TECH_LIST:-"- No specific technologies detected - manual analysis required"}
+
+## Your Task
+
+Run the \`/project-discover\` command (or follow these steps manually):
+
+### 1. Analyze the Codebase
+
+Scan the project to understand:
+- Directory structure and organization
+- Primary programming language(s) and frameworks
+- Build tools and package managers
+- Testing setup and conventions
+- Code quality tools (linters, formatters)
+
+### 2. Research Best Practices
+
+For each detected technology, research:
+- Official coding standards and style guides
+- Security best practices
+- Performance optimization techniques
+- Testing strategies
+
+### 3. Generate Configuration
+
+Create or update:
+
+**CLAUDE.md** - Update with:
+- Accurate project overview
+- Complete directory structure
+- All development commands
+- Framework-specific patterns
+
+**.claude/rules/** - Create rules for:
+- Framework-specific patterns
+- Language coding standards
+- Security requirements
+- Testing guidelines
+
+**.claude/agents/** - Create specialists for:
+- Backend development (if applicable)
+- Frontend development (if applicable)
+- Testing and QA
+- Security review
+
+### 4. Update Other AI Configs
+
+If other AI assistants were deployed, update:
+- \`.github/copilot-instructions.md\`
+- \`.cursorrules\`
+- \`.windsurfrules\`
+- \`AGENTS.md\`
+- \`CONVENTIONS.md\`
+- \`GEMINI.md\`
+
+## Project Information
+
+- **Name**: ${PROJECT_NAME}
+- **Path**: ${PROJECT_DIR}
+- **Stack**: ${STACK} (custom/discovery mode)
+
+## After Discovery
+
+Once complete, delete this file and commit the generated configuration.
+DISCOVERY_EOF
+
+  echo -e "  ${GREEN}✓${NC} Created .claude/DISCOVERY_PROMPT.md"
+fi
+
 echo ""
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 if [[ "$DRY_RUN" == true ]]; then
@@ -945,10 +1386,25 @@ else
 fi
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
-echo -e "${CYAN}Next steps:${NC}"
-echo "  1. Open the project in Claude Code"
-echo "  2. Run: /project-analyze"
-echo "     This will scan the codebase and customize the configuration"
+
+# Adjust next steps based on mode
+if [[ "$DISCOVER" == true ]]; then
+  echo -e "${CYAN}Discovery Mode - Next steps:${NC}"
+  echo "  1. Open the project in Claude Code (or your AI assistant)"
+  echo "  2. Run: /project-discover"
+  echo "     This will analyze your codebase and generate custom configuration"
+  echo ""
+  echo "  The AI will:"
+  echo "  - Analyze your project structure and technologies"
+  echo "  - Research best practices for your stack"
+  echo "  - Generate rules, agents, and documentation"
+  echo "  - Update all AI assistant configuration files"
+else
+  echo -e "${CYAN}Next steps:${NC}"
+  echo "  1. Open the project in Claude Code"
+  echo "  2. Run: /project-analyze"
+  echo "     This will scan the codebase and customize the configuration"
+fi
 echo ""
 echo "  Or manually review and customize:"
 echo "  - CLAUDE.md — Project overview and commands"
@@ -986,6 +1442,31 @@ if [[ "$WITH_GEMINI" == true ]]; then
   echo "  - .geminiignore — File exclusion patterns"
   echo ""
 fi
+if [[ "$WITH_COPILOT" == true ]]; then
+  echo -e "${CYAN}GitHub Copilot configuration deployed:${NC}"
+  echo "  - .github/copilot-instructions.md — Custom instructions"
+  echo ""
+fi
+if [[ "$WITH_CURSOR" == true ]]; then
+  echo -e "${CYAN}Cursor AI configuration deployed:${NC}"
+  echo "  - .cursorrules — Project rules for Cursor"
+  echo ""
+fi
+if [[ "$WITH_WINDSURF" == true ]]; then
+  echo -e "${CYAN}Windsurf AI configuration deployed:${NC}"
+  echo "  - .windsurfrules — Project rules for Windsurf"
+  echo ""
+fi
+if [[ "$WITH_CODEX" == true ]]; then
+  echo -e "${CYAN}OpenAI Codex configuration deployed:${NC}"
+  echo "  - AGENTS.md — Agent instructions for Codex"
+  echo ""
+fi
+if [[ "$WITH_AIDER" == true ]]; then
+  echo -e "${CYAN}Aider configuration deployed:${NC}"
+  echo "  - CONVENTIONS.md — Coding conventions for Aider"
+  echo ""
+fi
 if [[ "$INSTALL_EXTENSIONS" == true ]] && [[ "$SKIP_VSCODE" != true ]] && [[ "$DRY_RUN" != true ]]; then
   echo -e "${CYAN}Installing VSCode extensions...${NC}"
   echo ""
@@ -1006,5 +1487,22 @@ if [[ "$WITH_GEMINI" == true ]]; then
   echo "    GEMINI.md"
   echo "    .gemini/"
   echo "    .geminiignore"
+fi
+if [[ "$WITH_COPILOT" == true ]]; then
+  echo "    .github/copilot-instructions.md"
+fi
+if [[ "$WITH_CURSOR" == true ]]; then
+  echo "    .cursorrules"
+  echo "    .cursor/"
+fi
+if [[ "$WITH_WINDSURF" == true ]]; then
+  echo "    .windsurfrules"
+  echo "    .windsurf/"
+fi
+if [[ "$WITH_CODEX" == true ]]; then
+  echo "    AGENTS.md"
+fi
+if [[ "$WITH_AIDER" == true ]]; then
+  echo "    CONVENTIONS.md"
 fi
 echo ""

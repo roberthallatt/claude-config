@@ -1,0 +1,32 @@
+# GitHub Copilot Instructions
+
+## Project: {{PROJECT_NAME}}
+
+This project was set up using AI-powered discovery mode. The configuration will be customized after running `/project-discover`.
+
+## Temporary Instructions
+
+Until the project is fully analyzed:
+
+### General Guidelines
+- Follow existing code patterns in the codebase
+- Use consistent indentation and formatting
+- Write clear, self-documenting code
+- Add comments for complex logic
+
+### Security
+- Never commit credentials or secrets
+- Sanitize user input
+- Use parameterized queries for databases
+
+### Testing
+- Write tests for new functionality
+- Follow existing test patterns
+
+## Next Steps
+
+Run `/project-discover` in Claude Code to:
+1. Analyze this codebase
+2. Detect frameworks and libraries
+3. Generate stack-specific instructions
+4. Update this file with detailed patterns

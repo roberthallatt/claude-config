@@ -1,0 +1,67 @@
+# Windsurf Rules for {{PROJECT_NAME}}
+
+## Project Type
+ExpressionEngine 7.x CMS website with Tailwind CSS and Alpine.js.
+
+## Environment
+- Primary URL: {{DDEV_PRIMARY_URL}}
+- Control Panel: {{DDEV_PRIMARY_URL}}/eecp.php
+- DDEV local development
+- PHP {{DDEV_PHP}}+ / {{DDEV_DB_TYPE}} {{DDEV_DB_VERSION}}
+
+## Key Directories
+- Templates: `system/user/templates/{{TEMPLATE_GROUP}}/`
+- Add-ons: `system/user/addons/`
+- Frontend: `{{DDEV_DOCROOT}}/`
+
+## Coding Standards
+
+### PHP
+- PSR-12, 4-space indentation
+- Type hints required
+- Early returns preferred
+
+### HTML/Templates
+- 2-space indentation
+- Semantic HTML5
+- EE templates: `.html` extension
+- Partials prefixed with underscore
+
+### CSS
+- Tailwind utility classes preferred
+- Mobile-first approach
+- BEM for custom classes
+
+### JavaScript
+- ES6+, 2-space indentation
+- Alpine.js for interactivity
+
+## EE Template Patterns
+
+Channel entries:
+```html
+{exp:channel:entries channel="pages" limit="10" dynamic="no" disable="categories|member_data"}
+    <article>{title}</article>
+{/exp:channel:entries}
+```
+
+Stash caching:
+```html
+{exp:stash:set name="content" save="yes" scope="site"}...{/exp:stash:set}
+{exp:stash:get name="content"}
+```
+
+## Commands
+- `ddev start` - Start environment
+- `ddev ee cache:clear` - Clear caches
+- `npm run dev` - Development build
+- `npm run build` - Production build
+
+## Security
+- Never commit `.env.php`
+- Use `{csrf_token}` in forms
+- Sanitize user input
+
+## Notes
+- Site may have bilingual content (EN/FR)
+- Check for `{lv_*_en}` / `{lv_*_fr}` variables

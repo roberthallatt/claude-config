@@ -1,0 +1,82 @@
+# GitHub Copilot Instructions
+
+## Project: {{PROJECT_NAME}}
+
+This is an **ExpressionEngine 7.x** CMS website using native EE templates with Tailwind CSS and Alpine.js.
+
+## Tech Stack
+
+- **CMS**: ExpressionEngine 7.x (PHP-based)
+- **CSS**: Tailwind CSS via PostCSS
+- **JavaScript**: Alpine.js for interactivity
+- **Environment**: DDEV local development
+- **Database**: {{DDEV_DB_TYPE}} {{DDEV_DB_VERSION}}
+- **PHP**: {{DDEV_PHP}}+
+
+## Coding Standards
+
+### PHP
+- Follow PSR-12 coding standards with 4-space indentation
+- Use type hints for parameters and return types
+- Use early returns to reduce nesting
+
+### HTML/Templates
+- Use 2-space indentation
+- Use semantic HTML5 elements
+- EE templates use `.html` extension
+- Prefix partials with underscore: `_header`
+
+### CSS
+- Prefer Tailwind utility classes over custom CSS
+- Follow mobile-first responsive design
+- Use BEM naming for custom CSS classes
+
+### JavaScript
+- Use ES6+ features with 2-space indentation
+- Prefer Alpine.js `x-data` components
+
+## Key Patterns
+
+### ExpressionEngine Channel Entries
+```html
+{exp:channel:entries channel="pages" limit="10" dynamic="no" disable="categories|member_data"}
+    <article>{title}</article>
+{/exp:channel:entries}
+```
+
+### Stash Caching
+```html
+{exp:stash:set name="content" save="yes" scope="site"}
+    {!-- expensive query here --}
+{/exp:stash:set}
+{exp:stash:get name="content"}
+```
+
+### Alpine.js Components
+```html
+<div x-data="{ open: false }">
+    <button @click="open = !open">Toggle</button>
+    <div x-show="open">Content</div>
+</div>
+```
+
+## Security Requirements
+
+- Never commit `.env.php` or credentials
+- Use parameterized queries for custom SQL
+- Sanitize all user input before output
+- Include CSRF tokens via `{csrf_token}` in forms
+
+## File Locations
+
+- Templates: `system/user/templates/{{TEMPLATE_GROUP}}/`
+- Add-ons: `system/user/addons/`
+- Config: `system/user/config/config.php`
+- Frontend: `{{DDEV_DOCROOT}}/`
+
+## Commands
+
+- `ddev start` - Start environment
+- `ddev ee cache:clear` - Clear caches
+- `npm run dev` - Development build
+- `npm run build` - Production build

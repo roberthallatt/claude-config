@@ -1,23 +1,71 @@
-# Conditional Rule Deployment
+# Conditional Deployment & Technology Detection
 
-**Updated:** December 22, 2024
+**Updated:** January 2, 2026
 
 ## Overview
 
-The setup script now **intelligently detects** project technologies and only deploys relevant coding rules. This keeps the configuration clean and targeted to what the project actually uses.
+The setup script **intelligently detects** both your project's stack and its technologies, deploying only relevant configurations. This keeps everything clean and targeted to what your project actually uses.
 
-## How It Works
+## Stack Auto-Detection
 
-When you run:
+When you run without specifying `--stack`:
 ```bash
-./setup-project.sh --stack=craftcms --project=/path/to/project
+ai-config --project=/path/to/project --with-all
 ```
 
 The script will:
-1. **Scan the project** for technologies (Tailwind, Alpine.js, bilingual content, etc.)
-2. **Always copy** core rules (accessibility, performance, stack-specific)
-3. **Conditionally copy** optional rules based on detection
-4. **Report** what was detected and what was skipped
+1. **Auto-detect the stack** (ExpressionEngine, Craft CMS, WordPress, Next.js, Docusaurus, Coilpack)
+2. **Scan for technologies** (Tailwind, Alpine.js, bilingual content, etc.)
+3. **Deploy stack-specific configurations** for all AI assistants
+4. **Report** what was detected
+
+### Detection Logic for Stacks
+
+The script identifies stacks by looking for specific files and directories:
+
+| Stack | Detection Pattern |
+|-------|------------------|
+| **ExpressionEngine** | `system/ee/` directory exists |
+| **Craft CMS** | `craft` executable exists |
+| **WordPress/Bedrock** | `wp-config.php` or `web/wp/` directory |
+| **Next.js** | `next.config.js` or `next.config.mjs` exists |
+| **Docusaurus** | `docusaurus.config.js` exists |
+| **Coilpack** | Laravel structure + ExpressionEngine |
+
+### Discovery Mode
+
+For projects that don't match a known stack:
+```bash
+ai-config --project=/path/to/project --discover --with-all
+```
+
+The script will:
+1. **Detect 50+ technologies** (React, Vue, Laravel, Django, Express, etc.)
+2. **Deploy base configuration** for all AI assistants
+3. **Generate discovery prompt** for AI analysis
+
+Then open in Claude Code and run `/project-discover` to generate custom rules.
+
+## Technology Detection
+
+After determining the stack (auto or manual), the script scans for specific technologies:
+
+### How It Works
+
+```bash
+# With auto-detected stack
+ai-config --project=/path/to/project --with-all
+
+# With manual stack
+ai-config --stack=craftcms --project=/path/to/project --with-all
+```
+
+The script will:
+1. **Identify the stack** (auto or manual)
+2. **Scan the project** for technologies (Tailwind, Alpine.js, bilingual content, etc.)
+3. **Always copy** core rules (accessibility, performance, stack-specific)
+4. **Conditionally copy** optional rules based on detection
+5. **Report** what was detected and what was skipped
 
 ## Detection Logic
 
@@ -109,8 +157,11 @@ Only deployed when the stack matches:
 
 ## Example Output
 
-### Project WITH Tailwind and Alpine.js:
+### Auto-Detected Craft CMS with Tailwind and Alpine.js:
 ```bash
+Detecting stack...
+  ✓ Detected stack: craftcms
+
 Scanning project...
   ✓ Found DDEV config
   ✓ Found template group: blog
@@ -127,10 +178,13 @@ Copying rules (conditional based on detection)...
   ○ Skipped bilingual-content.md (not detected)
 ```
 
-### Project WITHOUT Tailwind:
+### Auto-Detected Next.js WITHOUT Tailwind:
 ```bash
+Detecting stack...
+  ✓ Detected stack: nextjs
+
 Scanning project...
-  ✓ Found DDEV config
+  ✓ Found package.json
   ○ No Tailwind detected
   ○ No Alpine.js detected
   ○ No bilingual patterns detected
@@ -144,19 +198,50 @@ Copying rules (conditional based on detection)...
   ○ Skipped bilingual-content.md (not detected)
 ```
 
+### Discovery Mode for Unknown Stack:
+```bash
+Detecting stack...
+  ○ No known stack detected
+  ✓ Using discovery mode
+
+Scanning project...
+  ✓ Detected: React, TypeScript, Vite, Vue Router
+  ✓ Detected: Tailwind CSS
+  ✓ Found 15 technologies
+
+Deploying base configuration...
+  ✓ Created discovery prompt
+  ✓ Deployed all AI assistant configs
+
+Next: Open in Claude Code and run /project-discover
+```
+
 ## Benefits
+
+### Zero Configuration Required
+- No need to remember stack names or specify `--stack`
+- Just point to your project and go
+- Works for 6+ known stacks automatically
 
 ### Cleaner Configuration
 - No unnecessary rules cluttering the `.claude/rules/` directory
+- Only relevant AI assistants and configurations deployed
 - Easier for developers to focus on what's relevant
 
 ### Accurate Context
-- Claude only sees rules for technologies actually in use
+- AI assistants only see rules for technologies actually in use
 - Reduces potential confusion from irrelevant coding standards
+- Stack-specific agents only deployed when relevant
 
 ### Automatic Adaptation
 - As project evolves and adds Tailwind/Alpine, run `--refresh` to update
-- Script will detect new technologies and deploy appropriate rules
+- Script will re-detect stack and technologies automatically
+- No need to remember what stack you originally specified
+
+### Works Everywhere
+- Supports known stacks (auto-detect)
+- Supports unknown stacks (discovery mode)
+- Gracefully handles edge cases
 
 ## Manual Override
 
@@ -173,13 +258,16 @@ If you want to force inclusion of a rule, you can:
 
 When using `--refresh`:
 ```bash
-./setup-project.sh --stack=craftcms --project=/path/to/project --refresh
+ai-config --refresh --project=/path/to/project
 ```
 
 The script will:
-- Re-detect all technologies
-- Re-deploy rules based on current detection
-- **Note:** This will re-run detection, so if you added Tailwind since initial setup, the rule will now be included
+- **Auto-detect the stack** from existing configuration (no `--stack` needed!)
+- **Re-detect all technologies** (Tailwind, Alpine.js, etc.)
+- **Re-deploy rules** based on current detection
+- **Update all AI assistant configs** that were previously deployed
+
+**Note:** This will re-run detection, so if you added Tailwind since initial setup, the rule will now be included automatically.
 
 ## Detection Improvements
 
@@ -192,8 +280,24 @@ Future enhancements could detect:
 
 ## Summary
 
-**Before:** All rules copied blindly → cluttered configuration
+**Before:** Manual `--stack` required + all rules copied blindly → cluttered configuration
 
-**After:** Smart detection → clean, targeted configuration
+**After:** Auto-detect stack + smart technology detection → clean, targeted configuration
 
-The setup script is now more intelligent and respects what your project actually uses. 🎯
+The setup script is now fully automatic and respects what your project actually uses. 🎯
+
+## Quick Reference
+
+```bash
+# Auto-detect everything (recommended)
+ai-config --project=/path/to/project --with-all
+
+# Discovery mode for unknown stacks
+ai-config --project=/path/to/project --discover --with-all
+
+# Manual stack (if auto-detect fails)
+ai-config --stack=craftcms --project=/path/to/project --with-all
+
+# Refresh (auto-detects stack from existing config)
+ai-config --refresh --project=/path/to/project
+```

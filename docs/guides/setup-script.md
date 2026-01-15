@@ -1,18 +1,44 @@
 # Setup Script Guide
 
-Comprehensive guide to using `setup-project.sh`.
+Comprehensive guide to using `setup-project.sh` (also available globally as `ai-config`).
 
 ## Synopsis
 
 ```bash
+ai-config [OPTIONS]
+# or
 ./setup-project.sh [OPTIONS]
 ```
 
 ## Required Options
 
+### --project=\<path>
+
+Target project directory (absolute or relative path, use `.` for current directory).
+
+**Required for all operations.**
+
+## Stack Selection
+
+### Auto-Detect (Recommended)
+
+If you omit `--stack`, the script will automatically detect your project's stack:
+
+```bash
+ai-config --project=/path/to/project --with-all
+```
+
+**Detects:**
+- ExpressionEngine 7.x
+- Craft CMS
+- WordPress/Bedrock
+- Next.js 14+
+- Docusaurus 3+
+- Coilpack (Laravel + EE hybrid)
+
 ### --stack=\<name>
 
-Technology stack template to use. Auto-detected when using `--refresh`.
+Manually specify the technology stack template to use.
 
 **Available stacks:**
 - `expressionengine`
@@ -22,19 +48,85 @@ Technology stack template to use. Auto-detected when using `--refresh`.
 - `nextjs`
 - `docusaurus`
 
-### --project=\<path>
+**Example:**
+```bash
+ai-config --stack=expressionengine --project=/path/to/project
+```
 
-Target project directory (absolute or relative path).
+### --discover
+
+AI-powered discovery mode for projects that don't match a known stack.
+
+```bash
+ai-config --discover --project=/path/to/project --with-all
+```
+
+This will:
+1. Detect 50+ technologies (React, Vue, Laravel, Django, Express, etc.)
+2. Deploy base configuration for all AI assistants
+3. Generate a discovery prompt for AI analysis
+
+Then open in Claude Code and run `/project-discover` to generate custom rules.
 
 ## Deployment Options
 
+### --with-all
+
+Deploy configurations for all 7 AI coding assistants.
+
+**Recommended for maximum compatibility.**
+
+Creates:
+- Claude Code (always deployed)
+- Gemini Code Assist
+- GitHub Copilot
+- Cursor AI
+- Windsurf AI
+- OpenAI Codex
+- Aider
+
 ### --with-gemini
 
-Deploy Gemini Code Assist configuration alongside Claude Code configuration.
+Deploy Gemini Code Assist configuration alongside Claude Code.
 
 Creates:
 - `GEMINI.md`
 - `.gemini/` directory
+
+### --with-copilot
+
+Deploy GitHub Copilot configuration.
+
+Creates:
+- `.github/copilot-instructions.md`
+
+### --with-cursor
+
+Deploy Cursor AI configuration.
+
+Creates:
+- `.cursorrules`
+
+### --with-windsurf
+
+Deploy Windsurf AI configuration.
+
+Creates:
+- `.windsurfrules`
+
+### --with-codex
+
+Deploy OpenAI Codex configuration.
+
+Creates:
+- `AGENTS.md`
+
+### --with-aider
+
+Deploy Aider configuration.
+
+Creates:
+- `CONVENTIONS.md`
 
 ### --install-extensions
 
@@ -49,7 +141,7 @@ Requires `code` CLI command. See [VSCode Extensions Guide](vscode-extensions.md)
 Update configuration files while preserving customizations.
 
 **Behavior:**
-- Auto-detects stack from existing `CLAUDE.md`
+- Auto-detects stack from existing `CLAUDE.md` (no `--stack` needed)
 - Re-scans project for technology changes
 - Updates all configuration files
 - Preserves `.claude/` customizations
@@ -57,8 +149,10 @@ Update configuration files while preserving customizations.
 
 **Example:**
 ```bash
-./setup-project.sh --refresh --project=/path/to/project
+ai-config --refresh --project=/path/to/project
 ```
+
+**Note:** Stack auto-detection makes `--refresh` much easier to use!
 
 ### --force
 
@@ -142,27 +236,48 @@ The script automatically detects:
 
 ## Examples
 
-### First-Time Setup
+### Auto-Detect Any Project (Recommended)
 
 ```bash
-./setup-project.sh \
+# Let the script detect your stack
+ai-config --project=/Users/dev/myproject --with-all
+```
+
+### First-Time Setup (Manual Stack)
+
+```bash
+ai-config \
   --stack=expressionengine \
   --project=/Users/dev/myproject \
-  --with-gemini \
+  --with-all \
   --install-extensions
+```
+
+### Discovery Mode for Unknown Stack
+
+```bash
+# For Vue, Laravel, Django, etc.
+ai-config --discover --project=/Users/dev/my-vue-app --with-all
+```
+
+### Current Directory Shortcut
+
+```bash
+cd /path/to/project
+ai-config --project=. --with-all
 ```
 
 ### Update After Technology Changes
 
 ```bash
 # Added Tailwind CSS to your project
-./setup-project.sh --refresh --project=/Users/dev/myproject
+ai-config --refresh --project=/Users/dev/myproject
 ```
 
 ### Force Clean Reinstall
 
 ```bash
-./setup-project.sh \
+ai-config \
   --clean \
   --force \
   --stack=craftcms \
@@ -172,10 +287,10 @@ The script automatically detects:
 ### Preview Without Changes
 
 ```bash
-./setup-project.sh \
+ai-config \
   --dry-run \
-  --stack=nextjs \
-  --project=../my-nextjs-app
+  --project=../my-nextjs-app \
+  --with-all
 ```
 
 ## Exit Codes
@@ -200,9 +315,13 @@ Make sure to use `=` syntax for values:
 --stack expressionengine
 ```
 
-### "stack is required" with --refresh
+### "Could not detect stack" Error
 
-Your project doesn't have `CLAUDE.md` or it doesn't contain stack information. Specify `--stack=<name>` manually.
+The script couldn't automatically identify your project's stack. Options:
+
+1. **Specify manually:** Use `--stack=<name>` if it's a known stack
+2. **Use discovery mode:** Run with `--discover` for unknown stacks
+3. **Check project:** Ensure project has recognizable files (e.g., `system/ee/`, `craft`, `wp-config.php`, `next.config.js`)
 
 ### Extensions Not Installing
 

@@ -1,0 +1,104 @@
+# AGENTS.md
+
+Instructions for AI coding agents working on this ExpressionEngine project.
+
+## Project: {{PROJECT_NAME}}
+
+**Stack**: ExpressionEngine 7.x CMS with Tailwind CSS and Alpine.js
+
+**Environment**: DDEV local development
+- Primary URL: {{DDEV_PRIMARY_URL}}
+- Control Panel: {{DDEV_PRIMARY_URL}}/eecp.php
+- PHP: {{DDEV_PHP}}+
+- Database: {{DDEV_DB_TYPE}} {{DDEV_DB_VERSION}}
+
+## Directory Structure
+
+```
+{{PROJECT_SLUG}}/
+├── {{DDEV_DOCROOT}}/              # Document root (frontend assets)
+├── system/user/
+│   ├── addons/                    # Third-party add-ons
+│   ├── config/config.php          # EE configuration
+│   └── templates/{{TEMPLATE_GROUP}}/  # Site templates
+└── .ddev/                         # DDEV configuration
+```
+
+## Coding Conventions
+
+### PHP
+- PSR-12 coding standards
+- 4-space indentation
+- Type hints for all parameters and return types
+- Early returns to reduce nesting
+
+### HTML/Templates
+- 2-space indentation
+- Semantic HTML5 elements
+- EE templates use `.html` extension
+- Prefix partials with underscore: `_header`
+
+### CSS
+- Use Tailwind utility classes
+- Mobile-first responsive design
+- BEM naming for custom CSS classes
+
+### JavaScript
+- ES6+ with 2-space indentation
+- Alpine.js for interactivity
+
+## ExpressionEngine Patterns
+
+### Channel Entries
+```html
+{exp:channel:entries channel="pages" limit="10" dynamic="no" disable="categories|member_data"}
+    <article>
+        <h2>{title}</h2>
+        {body}
+    </article>
+{/exp:channel:entries}
+```
+
+### Stash Caching
+```html
+{exp:stash:set name="page_content" save="yes" scope="site" replace="no"}
+    {!-- expensive database query here --}
+{/exp:stash:set}
+
+{exp:stash:get name="page_content"}
+```
+
+### Layouts and Embeds
+```html
+{!-- Layout usage --}
+{layout="layouts/_main"}
+{layout:set name="page_title"}{title}{/layout:set}
+
+{!-- Embed usage --}
+{embed="_partials/_header"}
+```
+
+## Commands
+
+```bash
+ddev start                  # Start environment
+ddev stop                   # Stop environment
+ddev ee cache:clear         # Clear all caches
+ddev ee list                # List available CLI commands
+npm run dev                 # Development build
+npm run build               # Production build
+```
+
+## Security Requirements
+
+- Never commit `.env.php` or database credentials
+- Use parameterized queries for custom SQL
+- Sanitize all user input before output
+- Include CSRF tokens: `{csrf_token}`
+
+## Bilingual Content
+
+This site may have EN/FR content:
+- Language variables: `{lv_*_en}` / `{lv_*_fr}`
+- Domain-based language detection may be in use
+- Respect existing translation patterns
