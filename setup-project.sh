@@ -426,15 +426,20 @@ detect_frontend_tools() {
     HAS_SCSS=true
   fi
 
-  # Check for Alpine.js (in package.json or templates)
+  # Check for Alpine.js (in package.json at root or docroot, or in templates)
+  local docroot="${DDEV_DOCROOT:-public}"
   if [[ -f "$PROJECT_DIR/package.json" ]] && grep -q "alpinejs" "$PROJECT_DIR/package.json" 2>/dev/null; then
     HAS_ALPINE=true
-  elif find "$PROJECT_DIR" -path "*/node_modules" -prune -o -path "*/vendor" -prune -o -path "*/.git" -prune -o \( -name "*.html" -o -name "*.twig" -o -name "*.blade.php" \) -type f -exec grep -lq "x-data\|@click" {} \; 2>/dev/null | head -1 | grep -q .; then
+  elif [[ -f "$PROJECT_DIR/$docroot/package.json" ]] && grep -q "alpinejs" "$PROJECT_DIR/$docroot/package.json" 2>/dev/null; then
+    HAS_ALPINE=true
+  elif grep -rq --include="*.html" --include="*.twig" --include="*.blade.php" "x-data\|x-bind\|x-on:" "$PROJECT_DIR" 2>/dev/null; then
     HAS_ALPINE=true
   fi
 
-  # Check for bilingual content patterns (user_language compared to 'en'/'fr' or lang variables)
-  if find "$PROJECT_DIR" -path "*/node_modules" -prune -o -path "*/vendor" -prune -o -path "*/.git" -prune -o \( -name "*.html" -o -name "*.twig" -o -name "*.blade.php" \) -type f -exec grep -lq "user_language.*['\"]en['\"]\\|user_language.*['\"]fr['\"]\\|{lang:\\|{% if.*lang\\|@lang" {} \; 2>/dev/null | head -1 | grep -q .; then
+  # Check for bilingual content patterns (EE user_language, Twig lang, Blade @lang)
+  if grep -rq --include="*.html" "user_language" "$PROJECT_DIR/system/user/templates" 2>/dev/null; then
+    HAS_BILINGUAL=true
+  elif grep -rq --include="*.twig" --include="*.blade.php" '{%.*lang\|@lang\|__(' "$PROJECT_DIR" 2>/dev/null; then
     HAS_BILINGUAL=true
   fi
 
