@@ -16,14 +16,6 @@ This will:
 - Update all configuration files
 - Preserve `.claude/` customizations
 
-## Update With Extensions
-
-Install new extensions when updating:
-
-```bash
-./setup-project.sh --refresh --install-extensions --project=/path/to/project
-```
-
 ## Scenarios
 
 ### Technology Added to Project
@@ -50,20 +42,7 @@ Repository updated VSCode settings and you want the latest:
 
 **Result:**
 - Updates `.vscode/settings.json`
-- Updates `.vscode/extensions.json`
 - Preserves your custom settings (if any)
-
-### New Extensions Available
-
-New extension added to stack template:
-
-```bash
-./setup-project.sh --refresh --install-extensions --project=/path/to/project
-```
-
-**Result:**
-- Updates extension recommendations
-- Installs new extensions automatically
 
 ### Gemini Config Added
 
@@ -198,11 +177,6 @@ done
 3. **Reload VSCode** (if settings changed)
    - `Cmd+Shift+P` → "Developer: Reload Window"
 
-4. **Install new extensions**
-   ```bash
-   ./install-vscode-extensions.sh /path/to/project
-   ```
-
 ## Version Tracking
 
 The configuration doesn't include version numbers. Track updates via:
@@ -244,17 +218,8 @@ The configuration doesn't include version numbers. Track updates via:
 2. Use `--dry-run` to see detection results
 3. Ensure technology files are in expected locations
 
-### Extensions Not Installing
-
-**Problem:** `--install-extensions` doesn't work.
-
-**Solution:**
-1. Check `code` command: `code --version`
-2. Manually run: `./install-vscode-extensions.sh /path/to/project`
-3. See [VSCode Extensions Guide](vscode-extensions.md)
-
 ## Next Steps
 
 - **[Setup Script](setup-script.md)** - All options detailed
 - **[Conditional Deployment](conditional-deployment.md)** - Detection logic
-- **[VSCode Extensions](vscode-extensions.md)** - Extension management
+- **[Installation](../getting-started/installation.md)** - Shell aliases setup

@@ -7,7 +7,6 @@ Complete reference for the configuration repository structure.
 ```
 claude-config/
 ├── setup-project.sh              # Main deployment script
-├── install-vscode-extensions.sh  # Extension installer
 ├── serve-docs.sh                 # Documentation server
 ├── README.md                     # Overview and quick links
 ├── CLAUDE.md                     # Repository context for Claude
@@ -147,10 +146,8 @@ projects/expressionengine/
 │
 └── .vscode/                      # VSCode configuration
     ├── settings.json             # Editor settings
-    ├── extensions.json           # Extension recommendations
     ├── launch.json               # Debug config
-    ├── tasks.json                # Tasks
-    └── tailwind.json             # Tailwind IntelliSense
+    └── tasks.json                # Tasks
 ```
 
 ## Deployed Project Structure
@@ -198,10 +195,8 @@ your-project/
 │
 ├── .vscode/                      # If not --skip-vscode
 │   ├── settings.json
-│   ├── extensions.json
 │   ├── launch.json
-│   ├── tasks.json
-│   └── tailwind.json
+│   └── tasks.json
 │
 ├── .mcp.json                     # If --with-mcp used (rare)
 ├── .geminiignore                 # If --with-gemini or --with-all
@@ -239,7 +234,6 @@ Documentation and configuration files:
 
 Configuration files:
 - `.vscode/settings.json` - VSCode settings
-- `.vscode/extensions.json` - Extension recommendations
 - `.gemini/settings.json` - MCP servers
 - `.mcp.json` - Standalone MCP config
 - `.claude/hooks/hooks.json` - Session hooks
@@ -259,7 +253,7 @@ Gemini command definitions:
 Scripts should be executable:
 ```bash
 chmod +x setup-project.sh
-chmod +x install-vscode-extensions.sh
+chmod +x serve-docs.sh
 chmod +x .claude/hooks/session-start.sh
 ```
 

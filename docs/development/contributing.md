@@ -27,7 +27,6 @@ Want to add a new stack?
    - `GEMINI.md.template`
    - `.claude/rules/` - Stack-specific rules
    - `.vscode/settings.json` - IDE configuration
-   - `.vscode/extensions.json` - Extension recommendations
 3. Update detection logic in `setup-project.sh`
 4. Test with real project
 5. Submit pull request
@@ -42,15 +41,6 @@ Enhance technology detection:
    - `detect_addons()`
 2. Test with various project structures
 3. Update documentation
-4. Submit pull request
-
-### Add Extensions
-
-Recommend better VSCode extensions:
-
-1. Test extension with stack
-2. Update `projects/{stack}/.vscode/extensions.json`
-3. Document in [VSCode Extensions Guide](../guides/vscode-extensions.md)
 4. Submit pull request
 
 ## Development Setup
@@ -108,7 +98,6 @@ Before submitting pull request:
 - [ ] Test with `--dry-run`
 - [ ] Test actual deployment
 - [ ] Test `--refresh` on existing project
-- [ ] Test with `--install-extensions`
 - [ ] Verify VSCode settings work
 - [ ] Check syntax highlighting
 - [ ] Verify MCP configuration (if applicable)

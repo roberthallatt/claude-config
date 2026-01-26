@@ -4,7 +4,7 @@
 
 - **Git** - Clone this repository
 - **Bash** - Run the setup script (macOS/Linux/WSL)
-- **VSCode** (optional) - For IDE integration and extension installation
+- **VSCode** (optional) - For IDE integration
 - **DDEV** (optional) - For ExpressionEngine/Coilpack MCP servers
 
 ## Clone the Repository
@@ -96,20 +96,6 @@ ai-config-docs
 ```
 
 The first command should show the setup script help. The second should start the documentation server at http://localhost:8000.
-
-## Optional: VSCode CLI
-
-To enable automatic extension installation with `--install-extensions`, install the VSCode CLI:
-
-1. Open VSCode
-2. Press `Cmd+Shift+P` (macOS) or `Ctrl+Shift+P` (Windows/Linux)
-3. Type "Shell Command: Install 'code' command in PATH"
-4. Select it to install
-
-Verify:
-```bash
-code --version
-```
 
 ## Next Steps
 

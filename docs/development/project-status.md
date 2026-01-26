@@ -182,8 +182,7 @@ superpowers/
 ./setup-project.sh \
   --stack=expressionengine \
   --project=/path/to/project \
-  --with-all \
-  --install-extensions
+  --with-all
 ```
 
 **What Gets Deployed:**
@@ -302,15 +301,14 @@ Templates support these auto-detected variables:
 ai-config \
   --stack=expressionengine \
   --project=/path/to/my-ee-site \
-  --with-all \
-  --install-extensions
+  --with-all
 ```
 
 **Result:**
 - Full Claude configuration with memory system
 - All 6 AI assistant configurations
 - Superpowers workflow skills
-- VSCode extensions installed
+- VSCode settings configured
 
 ### Discovery Mode for Unknown Stack
 

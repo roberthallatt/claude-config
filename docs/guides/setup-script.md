@@ -126,12 +126,6 @@ Deploy OpenAI Codex configuration.
 Creates:
 - `AGENTS.md`
 
-### --install-extensions
-
-Automatically install VSCode extensions from `.vscode/extensions.json`.
-
-Requires `code` CLI command. See [Installation](../getting-started/installation.md#optional-vscode-cli) for setup.
-
 ## Memory & Token Optimization
 
 Every deployment includes the memory system:
@@ -291,8 +285,7 @@ ai-config --project=/Users/dev/myproject --with-all
 ai-config \
   --stack=expressionengine \
   --project=/Users/dev/myproject \
-  --with-all \
-  --install-extensions
+  --with-all
 ```
 
 ### Discovery Mode for Unknown Stack
@@ -373,12 +366,6 @@ The script couldn't automatically identify your project's stack. Options:
 1. **Specify manually:** Use `--stack=<name>` if it's a known stack
 2. **Use discovery mode:** Run with `--discover` for unknown stacks
 3. **Check project:** Ensure project has recognizable files (e.g., `system/ee/`, `craft`, `wp-config.php`, `next.config.js`)
-
-### Extensions Not Installing
-
-1. Check if `code` command is available: `code --version`
-2. Install VSCode CLI: VSCode → Cmd+Shift+P → "Shell Command: Install 'code' command in PATH"
-3. Install manually: `code --install-extension <extension-id>`
 
 ### Technology Not Detected
 

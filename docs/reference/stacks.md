@@ -98,13 +98,6 @@ Configured in `.vscode/settings.json` and `.gemini/settings.json`:
 }
 ```
 
-### VSCode Extensions
-
-- ExpressionEngine (mindpixel-labs.expressionengine)
-- Tailwind CSS IntelliSense
-- PHP Intelephense
-- EditorConfig
-
 ### File Associations
 
 ```json
@@ -144,15 +137,6 @@ Configured in `.vscode/settings.json` and `.gemini/settings.json`:
 ### MCP Support
 
 Same as ExpressionEngine (includes EE MCP server).
-
-### VSCode Extensions
-
-- ExpressionEngine
-- Laravel Blade (onecentlin.laravel-blade)
-- Twig Language
-- Tailwind CSS IntelliSense
-- PHP Intelephense
-- EditorConfig
 
 ### File Associations
 
@@ -195,14 +179,6 @@ Same as ExpressionEngine (includes EE MCP server).
 
 Context7 only (library documentation).
 
-### VSCode Extensions
-
-- Craft CMS Twig (craftcms.craft-cms-twig)
-- Twig Language (whatwedo.twig)
-- Tailwind CSS IntelliSense
-- PHP Intelephense
-- EditorConfig
-
 ### File Associations
 
 ```json
@@ -242,14 +218,6 @@ Context7 only (library documentation).
 
 Context7 only.
 
-### VSCode Extensions
-
-- Laravel Blade
-- Tailwind CSS IntelliSense
-- PHP Intelephense
-- WordPress Toolbox
-- EditorConfig
-
 ### File Associations
 
 ```json
@@ -284,12 +252,6 @@ Context7 only.
 - `tailwind-css.md`
 - `alpinejs.md`
 
-### VSCode Extensions
-
-- PHP Intelephense
-- WordPress Toolbox
-- EditorConfig
-
 ## Next.js
 
 **Stack ID:** `nextjs`
@@ -316,17 +278,6 @@ Context7 only.
 ### MCP Support
 
 Context7 only.
-
-### VSCode Extensions
-
-- Tailwind CSS IntelliSense
-- ESLint
-- Prettier
-- EditorConfig
-
-### File Associations
-
-Uses standard TypeScript/React extensions (`.tsx`, `.ts`, `.jsx`, `.js`).
 
 ### Special Settings
 
@@ -365,17 +316,6 @@ For `cva()` and `cn()` utility functions.
 ### MCP Support
 
 Context7 only.
-
-### VSCode Extensions
-
-- ESLint
-- Prettier
-- EditorConfig
-- Markdown All in One
-
-### File Associations
-
-Uses standard Markdown extensions (`.md`, `.mdx`).
 
 ### Special Settings
 

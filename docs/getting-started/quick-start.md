@@ -27,8 +27,7 @@ If you prefer to specify the stack manually:
 ai-config \
   --stack=expressionengine \
   --project=/path/to/your/project \
-  --with-all \
-  --install-extensions
+  --with-all
 ```
 
 This will:
@@ -37,7 +36,6 @@ This will:
 3. Deploy configurations for all 6 AI assistants
 4. Deploy memory bank (`MEMORY.md`) for persistent context
 5. Configure VSCode settings with syntax recognition
-6. Install recommended VSCode extensions
 
 ### Discovery Mode (Unknown Stacks)
 
@@ -91,7 +89,6 @@ Note: For `--refresh`, specify `--stack` if auto-detection fails.
 | `--with-cursor` | Deploy Cursor AI configuration |
 | `--with-windsurf` | Deploy Windsurf AI configuration |
 | `--with-codex` | Deploy OpenAI Codex configuration |
-| `--install-extensions` | Auto-install VSCode extensions |
 | `--refresh` | Update existing configuration (specify --stack) |
 | `--dry-run` | Preview changes without applying |
 | `--force` | Overwrite without prompting |
@@ -129,7 +126,6 @@ Note: For `--refresh`, specify `--stack` if auto-detection fails.
 
 ### VSCode
 - `.vscode/settings.json` - Editor settings with syntax recognition
-- `.vscode/extensions.json` - Recommended extensions
 - `.vscode/launch.json` - Xdebug debugging (PHP stacks)
 - `.vscode/tasks.json` - Build and DDEV tasks
 

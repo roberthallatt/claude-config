@@ -64,10 +64,8 @@ VSCode IDE configuration:
 ```
 .vscode/
 ├── settings.json       # Editor settings + file associations
-├── extensions.json     # Recommended extensions
 ├── launch.json         # Debug configuration
-├── tasks.json          # Build/run tasks
-└── tailwind.json       # Tailwind IntelliSense
+└── tasks.json          # Build/run tasks
 ```
 
 ## Template Variables
