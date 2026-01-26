@@ -31,9 +31,10 @@ This repository provides automated configuration deployment for **6 AI coding as
 ## Guides
 
 - **[Setup Script](guides/setup-script.md)** - Comprehensive setup-project.sh usage
+- **[Memory System](guides/memory-system.md)** - Persistent context and token optimization
+- **[Superpowers](guides/superpowers.md)** - Workflow skills for systematic development
 - **[Conditional Deployment](guides/conditional-deployment.md)** - Technology detection and smart deployment
 - **[Updating Projects](guides/updating-projects.md)** - Refresh and update existing configurations
-- **[Memory System](guides/memory-system.md)** - Persistent context and token optimization
 
 ## Reference
 
