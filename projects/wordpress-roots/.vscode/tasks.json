@@ -2,22 +2,67 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "DDEV: Enable Xdebug",
+      "label": "DDEV: Start",
       "type": "shell",
-      "command": "ddev xdebug on",
-      "presentation": {
-        "reveal": "silent",
-        "close": true
-      }
+      "command": "ddev start",
+      "problemMatcher": [],
+      "group": "build"
     },
     {
-      "label": "DDEV: Disable Xdebug",
+      "label": "DDEV: Stop",
+      "type": "shell",
+      "command": "ddev stop",
+      "problemMatcher": []
+    },
+    {
+      "label": "DDEV: Xdebug On",
+      "type": "shell",
+      "command": "ddev xdebug on",
+      "problemMatcher": []
+    },
+    {
+      "label": "DDEV: Xdebug Off",
       "type": "shell",
       "command": "ddev xdebug off",
-      "presentation": {
-        "reveal": "silent",
-        "close": true
-      }
+      "problemMatcher": []
+    },
+    {
+      "label": "DDEV: SSH",
+      "type": "shell",
+      "command": "ddev ssh",
+      "problemMatcher": []
+    },
+    {
+      "label": "WP-CLI: Cache Flush",
+      "type": "shell",
+      "command": "ddev wp cache flush",
+      "problemMatcher": []
+    },
+    {
+      "label": "WP-CLI: Rewrite Flush",
+      "type": "shell",
+      "command": "ddev wp rewrite flush",
+      "problemMatcher": []
+    },
+    {
+      "label": "Composer: Install",
+      "type": "shell",
+      "command": "ddev composer install",
+      "problemMatcher": []
+    },
+    {
+      "label": "Sage: Build",
+      "type": "shell",
+      "command": "cd web/app/themes/sage && ddev exec npm run build",
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "Sage: Watch",
+      "type": "shell",
+      "command": "cd web/app/themes/sage && ddev exec npm run dev",
+      "problemMatcher": [],
+      "group": "build"
     }
   ]
 }

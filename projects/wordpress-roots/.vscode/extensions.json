@@ -1,9 +1,0 @@
-{
-  "recommendations": [
-    "onecentlin.laravel-blade",
-    "bradlc.vscode-tailwindcss",
-    "bmewburn.vscode-intelephense-client",
-    "editorconfig.editorconfig",
-    "wordpresstoolbox.wordpress-toolbox"
-  ]
-}

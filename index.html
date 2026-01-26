@@ -266,11 +266,55 @@
 
         // Handle navigation clicks
         document.addEventListener('click', (e) => {
-            if (e.target.matches('.sidebar a, #markdown-content a')) {
-                const file = e.target.dataset.file;
-                if (file) {
+            const link = e.target.closest('a');
+            if (!link) return;
+
+            // Handle sidebar links with data-file
+            if (link.dataset.file) {
+                e.preventDefault();
+                loadMarkdown(link.dataset.file);
+                return;
+            }
+
+            // Handle markdown content links to .md files
+            if (link.closest('#markdown-content') && link.getAttribute('href')) {
+                const href = link.getAttribute('href');
+
+                // Skip external links and anchors
+                if (href.startsWith('http') || href.startsWith('#') || href.startsWith('mailto:')) {
+                    return;
+                }
+
+                // Handle relative .md links
+                if (href.endsWith('.md')) {
                     e.preventDefault();
-                    loadMarkdown(file);
+
+                    // Get current file's directory
+                    const currentFile = window.location.hash.slice(1) || 'README.md';
+                    const currentDir = currentFile.includes('/') ? currentFile.substring(0, currentFile.lastIndexOf('/') + 1) : '';
+
+                    // Resolve relative path
+                    let targetFile = href;
+
+                    if (href.startsWith('../')) {
+                        // Handle parent directory references (e.g., ../guides/setup-script.md)
+                        const dirParts = currentDir.split('/').filter(p => p);
+                        let hrefRemaining = href;
+
+                        while (hrefRemaining.startsWith('../')) {
+                            dirParts.pop();
+                            hrefRemaining = hrefRemaining.slice(3);
+                        }
+
+                        targetFile = dirParts.length > 0
+                            ? dirParts.join('/') + '/' + hrefRemaining
+                            : hrefRemaining;
+                    } else if (!href.startsWith('/') && !href.startsWith('docs/')) {
+                        // Relative to current directory (e.g., stacks.md from reference/)
+                        targetFile = currentDir + href;
+                    }
+
+                    loadMarkdown(targetFile);
                 }
             }
         });

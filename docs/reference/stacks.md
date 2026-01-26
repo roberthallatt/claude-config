@@ -10,8 +10,39 @@ Complete reference for all supported technology stacks.
 | **coilpack** | Laravel + EE | Blade/Twig/EE | Hybrid apps with CMS |
 | **craftcms** | Craft CMS | Twig | Content management |
 | **wordpress-roots** | WordPress/Bedrock | Blade (via Sage) | WordPress with modern stack |
+| **wordpress** | WordPress | PHP Templates | Standard WordPress |
 | **nextjs** | Next.js | React/TSX | React web applications |
 | **docusaurus** | Docusaurus | MDX | Documentation sites |
+| **custom** | Any | Any | Discovery mode for unknown stacks |
+
+## AI Assistant Support Per Stack
+
+| Stack | Claude | Gemini | Copilot | Cursor | Windsurf | Codex |
+|-------|--------|--------|---------|--------|----------|-------|
+| **expressionengine** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Stack | ✅ Stack | ✅ Stack |
+| **coilpack** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common | ✅ Common | ✅ Common |
+| **craftcms** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common | ✅ Common | ✅ Common |
+| **wordpress-roots** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common | ✅ Common | ✅ Common |
+| **wordpress** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common | ✅ Common | ✅ Common |
+| **nextjs** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common | ✅ Common | ✅ Common |
+| **docusaurus** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common | ✅ Common | ✅ Common |
+| **custom** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Stack | ✅ Stack | ✅ Stack |
+
+**Legend:**
+- ✅ Stack = Stack-specific template
+- ✅ Common = Uses common fallback template
+
+## Common Features (All Stacks)
+
+Every stack deployment includes:
+
+| Feature | Files |
+|---------|-------|
+| Memory Bank | `MEMORY.md` |
+| Memory Rules | `.claude/rules/memory-management.md` |
+| Token Optimization | `.claude/rules/token-optimization.md` |
+| Superpowers Skills | `.claude/skills/superpowers/` |
+| Session Hooks | `.claude/hooks/` |
 
 ## ExpressionEngine
 
@@ -30,6 +61,8 @@ Complete reference for all supported technology stacks.
 - `accessibility.md` - WCAG compliance
 - `expressionengine-templates.md` - EE template best practices
 - `performance.md` - Performance optimization
+- `memory-management.md` - Memory protocols
+- `token-optimization.md` - Token efficiency
 
 **Conditional:**
 - `tailwind-css.md` - If Tailwind detected
@@ -43,6 +76,7 @@ Complete reference for all supported technology stacks.
 - `ee-stash-optimizer` - Optimize Stash usage
 - `ee-template-assistant` - EE template help
 - `tailwind-utility-finder` - Find Tailwind utilities
+- Plus all Superpowers skills
 
 ### MCP Support
 
@@ -98,6 +132,8 @@ Configured in `.vscode/settings.json` and `.gemini/settings.json`:
 - `accessibility.md`
 - `laravel-patterns.md` - Laravel best practices
 - `performance.md`
+- `memory-management.md`
+- `token-optimization.md`
 
 **Conditional:**
 - `tailwind-css.md`
@@ -147,6 +183,8 @@ Same as ExpressionEngine (includes EE MCP server).
 - `accessibility.md`
 - `craft-templates.md` - Craft/Twig best practices
 - `performance.md`
+- `memory-management.md`
+- `token-optimization.md`
 
 **Conditional:**
 - `tailwind-css.md`
@@ -192,6 +230,8 @@ Context7 only (library documentation).
 - `accessibility.md`
 - `wordpress-patterns.md` - WordPress/Roots best practices
 - `performance.md`
+- `memory-management.md`
+- `token-optimization.md`
 
 **Conditional:**
 - `tailwind-css.md`
@@ -220,6 +260,36 @@ Context7 only.
 }
 ```
 
+## WordPress (Standard)
+
+**Stack ID:** `wordpress`
+
+### Technologies
+
+- **CMS:** Standard WordPress
+- **Template Engine:** PHP
+- **PHP:** 7.4+
+- **Database:** MySQL/MariaDB
+
+### Rules Included
+
+**Always:**
+- `accessibility.md`
+- `wordpress-patterns.md`
+- `performance.md`
+- `memory-management.md`
+- `token-optimization.md`
+
+**Conditional:**
+- `tailwind-css.md`
+- `alpinejs.md`
+
+### VSCode Extensions
+
+- PHP Intelephense
+- WordPress Toolbox
+- EditorConfig
+
 ## Next.js
 
 **Stack ID:** `nextjs`
@@ -237,6 +307,8 @@ Context7 only.
 - `accessibility.md`
 - `nextjs-patterns.md` - Next.js best practices
 - `performance.md`
+- `memory-management.md`
+- `token-optimization.md`
 
 **Conditional:**
 - `tailwind-css.md`
@@ -284,6 +356,8 @@ For `cva()` and `cn()` utility functions.
 - `accessibility.md`
 - `markdown-content.md` - MDX best practices
 - `performance.md`
+- `memory-management.md`
+- `token-optimization.md`
 
 **Conditional:**
 - `tailwind-css.md`
@@ -312,16 +386,46 @@ Uses standard Markdown extensions (`.md`, `.mdx`).
 }
 ```
 
+## Custom (Discovery Mode)
+
+**Stack ID:** `custom`
+
+### Technologies
+
+- **Framework:** Any (auto-detected)
+- **Languages:** 50+ supported
+- **Detection:** React, Vue, Angular, Laravel, Django, Express, etc.
+
+### Rules Included
+
+**Always:**
+- `accessibility.md`
+- `memory-management.md`
+- `token-optimization.md`
+
+### Usage
+
+```bash
+ai-config --discover --project=/path/to/project --with-all
+```
+
+Then run `/project-discover` in Claude Code to generate custom rules.
+
 ## Detection Logic
 
 ### How Stacks Are Detected
 
-During `--refresh`, the stack is read from `CLAUDE.md`:
+The script checks for:
 
-```markdown
-## Stack Configuration
-@~/.claude/stacks/expressionengine.md
-```
+| Stack | Detection Method |
+|-------|------------------|
+| expressionengine | `system/ee/` directory |
+| coilpack | Laravel + EE indicators |
+| craftcms | `craft` executable |
+| wordpress-roots | `wp-config.php` + Bedrock structure |
+| wordpress | `wp-config.php` |
+| nextjs | `next.config.js` or `.next/` |
+| docusaurus | `docusaurus.config.js` |
 
 ### How Technologies Are Detected
 
@@ -350,6 +454,6 @@ See [Conditional Deployment Guide](../guides/conditional-deployment.md) for deta
 
 ## Next Steps
 
+- **[Memory System](../guides/memory-system.md)** - Persistent context guide
 - **[Configuration](../getting-started/configuration.md)** - File structure details
 - **[Conditional Deployment](../guides/conditional-deployment.md)** - Detection logic
-- **[Project Status](../development/project-status.md)** - Implementation status

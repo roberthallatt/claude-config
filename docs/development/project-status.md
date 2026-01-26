@@ -1,16 +1,18 @@
-# Claude + Gemini Configuration Repository - Status Report
+# AI Configuration Repository - Status Report
 
 ## Executive Summary
 
 **Status: ✅ PRODUCTION READY**
 
-All 6 technology stacks have complete Claude Code and Gemini Code Assist configurations with:
-- Full template systems (CLAUDE.md + GEMINI.md)
+All 7+ technology stacks have complete configurations for **6 AI coding assistants**:
+- Full template systems for Claude and Gemini (stack-specific)
+- Common fallback templates for Copilot, Cursor, Windsurf, Codex
+- Memory bank system for persistent context
+- Token optimization rules
+- Superpowers workflow skills (15 skills)
 - Technology-specific coding rules (4-7 rules per stack)
-- Specialized agents and commands
-- Bi-directional config sync capabilities
 
-The setup script (`setup-project.sh`) correctly deploys both Claude and Gemini configurations when the appropriate flags are used.
+The setup script (`setup-project.sh`) deploys configurations for all AI assistants when using `--with-all`.
 
 ---
 
@@ -18,39 +20,117 @@ The setup script (`setup-project.sh`) correctly deploys both Claude and Gemini c
 
 All stacks have complete configurations:
 
-| Stack | Claude Template | Rules | Skills | Gemini Config | Commands | Status |
-|-------|----------------|-------|--------|---------------|----------|--------|
-| **coilpack** | ✅ | 7 rules | Ready | ✅ | 6 commands | ✅ Complete |
-| **craftcms** | ✅ | 6 rules | Ready | ✅ | 5 commands | ✅ Complete |
-| **docusaurus** | ✅ | 4 rules | Ready | ✅ | 4 commands | ✅ Complete |
-| **expressionengine** | ✅ | 7 rules | 4 skills | ✅ | 5 commands | ✅ Complete |
-| **nextjs** | ✅ | 4 rules | Ready | ✅ | 4 commands | ✅ Complete |
-| **wordpress-roots** | ✅ | 6 rules | Ready | ✅ | 4 commands | ✅ Complete |
+| Stack | Claude | Gemini | Rules | Skills | Memory | Status |
+|-------|--------|--------|-------|--------|--------|--------|
+| **coilpack** | ✅ | ✅ | 9 rules | 15+ | ✅ | ✅ Complete |
+| **craftcms** | ✅ | ✅ | 8 rules | 15+ | ✅ | ✅ Complete |
+| **docusaurus** | ✅ | ✅ | 6 rules | 15+ | ✅ | ✅ Complete |
+| **expressionengine** | ✅ | ✅ | 9 rules | 19+ | ✅ | ✅ Complete |
+| **nextjs** | ✅ | ✅ | 6 rules | 15+ | ✅ | ✅ Complete |
+| **wordpress-roots** | ✅ | ✅ | 8 rules | 15+ | ✅ | ✅ Complete |
+| **wordpress** | ✅ | ✅ | 6 rules | 15+ | ✅ | ✅ Complete |
+| **custom** | ✅ | ✅ | 3 rules | 15+ | ✅ | ✅ Complete |
 
-### Detailed Rules Breakdown
+## AI Assistant Coverage
 
-**Coilpack (Laravel + EE) - 7 rules:**
+| AI Assistant | Stack-Specific Templates | Common Fallback | Status |
+|--------------|--------------------------|-----------------|--------|
+| **Claude Code** | All 8 stacks | Not needed | ✅ Complete |
+| **Gemini Code Assist** | All 8 stacks | Not needed | ✅ Complete |
+| **GitHub Copilot** | None | ✅ Yes | ✅ Complete |
+| **Cursor AI** | 2 stacks (EE, custom) | ✅ Yes | ✅ Complete |
+| **Windsurf AI** | 2 stacks (EE, custom) | ✅ Yes | ✅ Complete |
+| **OpenAI Codex** | 2 stacks (EE, custom) | ✅ Yes | ✅ Complete |
+
+The common fallback templates in `projects/common/` ensure all AI assistants work with any stack.
+
+---
+
+## Memory & Token System
+
+Every deployment includes the memory system:
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| Memory Bank | `MEMORY.md` | Persistent project context |
+| Memory Rules | `.claude/rules/memory-management.md` | Update protocols |
+| Token Rules | `.claude/rules/token-optimization.md` | Efficiency guidelines |
+| Memory Skill | `.claude/skills/superpowers/memory-management/` | Automated behaviors |
+
+### Memory Bank Sections
+
+- **Project Identity** - Name, type, tech stack
+- **Architecture** - Patterns, directory map, decisions
+- **Decision Log** - Architectural decisions with rationale
+- **Active Context** - Current work, blockers, recent changes
+- **Session Handoff** - Next steps for incomplete work
+- **Knowledge Base** - Environment setup, common issues
+
+---
+
+## Superpowers Skills
+
+15 workflow skills deployed with every stack:
+
+| Skill | Purpose |
+|-------|---------|
+| `memory-management` | Persistent context across sessions |
+| `brainstorming` | Structured idea generation |
+| `writing-plans` | Implementation planning |
+| `executing-plans` | Step-by-step execution |
+| `systematic-debugging` | Root cause analysis |
+| `test-driven-development` | TDD workflow |
+| `dispatching-parallel-agents` | Multi-agent coordination |
+| `using-git-worktrees` | Git worktree workflows |
+| `finishing-a-development-branch` | Branch completion |
+| `receiving-code-review` | Review handling |
+| `requesting-code-review` | Review requests |
+| `subagent-driven-development` | Agent orchestration |
+| `using-superpowers` | Skill system guide |
+| `verification-before-completion` | Quality checks |
+| `writing-skills` | Custom skill creation |
+
+---
+
+## Detailed Rules Breakdown
+
+**All Stacks Include:**
+- `memory-management.md` - Memory protocols
+- `token-optimization.md` - Token efficiency
+- `accessibility.md` - WCAG compliance
+
+**Coilpack (Laravel + EE) - 9 rules:**
 - accessibility.md, alpinejs.md, bilingual-content.md
 - laravel-patterns.md, mcp-workflow.md, performance.md, tailwind-css.md
+- memory-management.md, token-optimization.md
 
-**Craft CMS - 6 rules:**
+**Craft CMS - 8 rules:**
 - accessibility.md, alpinejs.md, bilingual-content.md
 - craft-templates.md, performance.md, tailwind-css.md
+- memory-management.md, token-optimization.md
 
-**Docusaurus - 4 rules:**
+**Docusaurus - 6 rules:**
 - accessibility.md, markdown-content.md, performance.md, tailwind-css.md
+- memory-management.md, token-optimization.md
 
-**ExpressionEngine - 7 rules + 4 skills:**
+**ExpressionEngine - 9 rules + 4 stack skills:**
 - accessibility.md, alpinejs.md, bilingual-content.md
 - expressionengine-templates.md, mcp-workflow.md, performance.md, tailwind-css.md
+- memory-management.md, token-optimization.md
 - Skills: alpine-component-builder, ee-stash-optimizer, ee-template-assistant, tailwind-utility-finder
 
-**Next.js - 4 rules:**
+**Next.js - 6 rules:**
 - accessibility.md, nextjs-patterns.md, performance.md, tailwind-css.md
+- memory-management.md, token-optimization.md
 
-**WordPress/Roots - 6 rules:**
+**WordPress/Roots - 8 rules:**
 - accessibility.md, alpinejs.md, bilingual-content.md
 - blade-templates.md, performance.md, tailwind-css.md
+- memory-management.md, token-optimization.md
+
+**Custom (Discovery Mode) - 3 rules:**
+- accessibility.md
+- memory-management.md, token-optimization.md
 
 ---
 
@@ -64,29 +144,32 @@ projects/{stack}/
 ├── CLAUDE.md.template          # Main AI context (templated with project vars)
 ├── agents/                     # Specialized AI agents
 ├── commands/                   # Claude slash commands
-│   ├── project-analyze.md
-│   ├── sync-configs.md         # Syncs Claude & Gemini configs
-│   └── {stack}-specific.md
 ├── rules/                      # Always-on coding constraints
-├── skills/                     # Knowledge modules
+├── skills/                     # Stack-specific knowledge modules
 ├── settings.local.json         # Claude permissions
 ├── .vscode/                    # VSCode settings
 └── .mcp.json                   # MCP server config (if applicable)
 ```
 
-### Gemini Code Assist Configuration
+### Common Templates
 ```
-projects/{stack}/gemini/
-├── GEMINI.md.template          # Main Gemini context (templated)
-├── settings.json.template      # Gemini settings + MCP config
-├── config.yaml                 # PR review settings
-├── styleguide.md               # Code review guidelines
-├── geminiignore.template       # File exclusion patterns
-├── instructions.md             # Additional Gemini instructions
-└── commands/                   # Custom Gemini commands (TOML)
-    ├── project-analyze.toml
-    ├── config-sync.toml        # Syncs with Claude config
-    └── {stack}-specific.toml
+projects/common/
+├── copilot/                    # GitHub Copilot fallback
+├── cursor/                     # Cursor AI fallback
+├── windsurf/                   # Windsurf AI fallback
+├── openai/                     # OpenAI Codex fallback
+├── rules/                      # Common rules
+│   ├── memory-management.md
+│   └── token-optimization.md
+└── MEMORY.md.template          # Memory bank template
+```
+
+### Superpowers Skills
+```
+superpowers/
+├── skills/                     # 15 workflow skills
+├── commands/                   # Slash commands
+└── hooks/                      # Session hooks
 ```
 
 ---
@@ -99,59 +182,54 @@ projects/{stack}/gemini/
 ./setup-project.sh \
   --stack=expressionengine \
   --project=/path/to/project \
-  --with-mcp \
-  --with-gemini
+  --with-all \
+  --install-extensions
 ```
 
 **What Gets Deployed:**
 
-#### Claude Configuration
-1. `CLAUDE.md` - Generated from template with project-specific values
-2. `AGENTS.md` - Symlink to CLAUDE.md
+#### Always Deployed
+1. `CLAUDE.md` - Generated from template
+2. `MEMORY.md` - Persistent memory bank
 3. `.claude/` directory with:
    - `agents/` - AI agent personas
-   - `commands/` - Slash commands
-   - `rules/` - Coding constraints
-   - `skills/` - Knowledge modules
+   - `commands/` - Slash commands + Superpowers commands
+   - `rules/` - Coding constraints + memory/token rules
+   - `skills/superpowers/` - Workflow skills
+   - `hooks/` - Session hooks
    - `settings.local.json` - Permissions
 4. `.vscode/` - Editor settings
-5. `.mcp.json` - MCP server config (if `--with-mcp`)
 
-#### Gemini Configuration (if `--with-gemini`)
-1. `GEMINI.md` - Generated from template
-2. `AGENT.md` - Symlink to GEMINI.md
-3. `.gemini/` directory with:
-   - `config.yaml` - PR review settings
-   - `styleguide.md` - Code review style guide
-   - `settings.json` - Generated from template (includes MCP)
-   - `commands/*.toml` - Custom Gemini commands
-4. `.geminiignore` - File exclusion patterns
+#### With --with-all
+- `GEMINI.md` + `.gemini/`
+- `.github/copilot-instructions.md`
+- `.cursorrules`
+- `.windsurfrules`
+- `AGENTS.md`
 
 ### Refresh Command
 
 ```bash
 ./setup-project.sh \
-  --stack=expressionengine \
-  --project=/path/to/project \
   --refresh \
-  --with-gemini
+  --stack=custom \
+  --project=/path/to/project
 ```
 
 **What Gets Updated:**
 
 - ✅ Regenerates `CLAUDE.md` with current project values
-- ✅ Regenerates `GEMINI.md` with current project values (if `--with-gemini`)
-- ✅ Updates `.gemini/settings.json` from template
-- ✅ Redeploys Gemini commands
-- ✅ Redeploys `.mcp.json` if `--with-mcp`
-- ⏸️ **Preserves** `.claude/` customizations (agents, commands, rules, skills)
+- ✅ Regenerates other AI config files (if flags provided)
+- ✅ Updates Superpowers skills
+- ⏸️ **Preserves** `MEMORY.md` (never overwritten)
+- ⏸️ **Preserves** `.claude/` customizations
 - ⏸️ **Preserves** `.vscode/` settings
 
 ---
 
 ## Template Variable Substitution
 
-Both `CLAUDE.md.template` and `GEMINI.md.template` support these auto-detected variables:
+Templates support these auto-detected variables:
 
 | Variable | Example | Detection Source |
 |----------|---------|------------------|
@@ -167,21 +245,28 @@ Both `CLAUDE.md.template` and `GEMINI.md.template` support these auto-detected v
 
 ---
 
-## Sync Between Claude and Gemini
+## Recent Changes
 
-Both systems include a config sync mechanism:
+### Memory System Added
+- `projects/common/MEMORY.md.template` - Memory bank template
+- `projects/common/rules/memory-management.md` - Memory protocols
+- `projects/common/rules/token-optimization.md` - Token efficiency
+- `superpowers/skills/memory-management/` - Memory skill
 
-### Claude Command
-**File:** `.claude/commands/sync-configs.md`
-- Invoked as: `/sync-configs`
-- Compares CLAUDE.md ↔ GEMINI.md
-- Syncs coding standards and project info
+### Aider Support Removed
+- Removed `--with-aider` flag
+- Removed `projects/common/aider/` directory
+- Now supports 6 AI assistants (was 7)
 
-### Gemini Command
-**File:** `.gemini/commands/config-sync.toml`
-- Invoked as: `/config:sync` (in Gemini)
-- Compares GEMINI.md ↔ CLAUDE.md
-- Ensures consistency across both AI assistants
+### Superpowers Skills Integration
+- 15 workflow skills deployed by default
+- Session hooks for auto-activation
+- Slash commands (`/brainstorm`, `/write-plan`, `/execute-plan`)
+
+### Setup Script Updates
+- Memory files deployed with all stacks
+- `MEMORY.md` preserved on refresh/clean
+- Common rules fallback for memory/token optimization
 
 ---
 
@@ -189,115 +274,71 @@ Both systems include a config sync mechanism:
 
 ### ✅ All Stacks Have:
 - [x] CLAUDE.md.template with variable substitution
-- [x] Complete `.claude/` structure (agents, commands, rules, skills)
+- [x] MEMORY.md.template (common fallback)
+- [x] Complete `.claude/` structure
+- [x] Memory management rules
+- [x] Token optimization rules
+- [x] Superpowers workflow skills
+- [x] Session hooks
 - [x] GEMINI.md.template with variable substitution
-- [x] Complete `.gemini/` structure (config, styleguide, commands)
-- [x] settings.json.template for Gemini MCP integration
-- [x] geminiignore.template
-- [x] Project-specific Gemini commands (TOML format)
-- [x] Sync commands in both Claude and Gemini
+- [x] Complete `.gemini/` structure
 
 ### ✅ Setup Script Handles:
-- [x] `--with-gemini` flag to deploy Gemini config
-- [x] `--refresh` mode regenerates both CLAUDE.md and GEMINI.md
-- [x] Template variable substitution for both
-- [x] Symlink creation (AGENTS.md → CLAUDE.md, AGENT.md → GEMINI.md)
-- [x] Preserves customizations during refresh
-- [x] Deploys Gemini commands from source
+- [x] Memory bank deployment
+- [x] Memory preservation on refresh
+- [x] Superpowers skills deployment
+- [x] Token optimization rules
+- [x] Common fallback templates
+- [x] Template variable substitution
+- [x] Discovery mode for unknown stacks
 
 ---
 
 ## Usage Examples
 
-### Setup New Project with Both
+### Setup New Project with All AI Assistants
 
 ```bash
-./setup-project.sh \
+ai-config \
   --stack=expressionengine \
   --project=/path/to/my-ee-site \
-  --with-mcp \
-  --with-gemini \
-  --clean
+  --with-all \
+  --install-extensions
 ```
 
 **Result:**
-- Full Claude configuration deployed
-- Full Gemini configuration deployed
-- Both use same project detection values
-- MCP servers configured for both
+- Full Claude configuration with memory system
+- All 6 AI assistant configurations
+- Superpowers workflow skills
+- VSCode extensions installed
 
-### Refresh After DDEV Changes
+### Discovery Mode for Unknown Stack
 
 ```bash
-# Changed PHP version or database?
-./setup-project.sh \
-  --stack=expressionengine \
-  --project=/path/to/my-ee-site \
-  --refresh \
-  --with-gemini
+ai-config \
+  --discover \
+  --project=/path/to/react-app \
+  --with-gemini --with-copilot --with-codex
 ```
 
 **Result:**
-- CLAUDE.md regenerated with new values
-- GEMINI.md regenerated with new values
-- Custom agents/commands/rules preserved
+- Technologies auto-detected
+- Memory bank deployed
+- Run `/project-discover` for custom rules
 
-### Add Gemini to Existing Claude-Only Project
+### Refresh After Changes
 
 ```bash
-./setup-project.sh \
-  --stack=craftcms \
-  --project=/path/to/my-craft-site \
+ai-config \
   --refresh \
-  --with-gemini
+  --stack=custom \
+  --project=/path/to/project
 ```
 
 **Result:**
-- Existing Claude config untouched
-- Gemini config added
-- Both synchronized
-
----
-
-## Recent Additions (Git Status)
-
-Based on recent commits, the following files were added across all stacks:
-
-### New Agent Files
-- `agents/code-quality-specialist.md` (all 6 stacks)
-- `agents/security-expert.md` (all 6 stacks)
-
-### New Command Files
-- `commands/sync-configs.md` (all 6 stacks)
-- `gemini/commands/config-sync.toml` (all 6 stacks)
-
-### Modified Files
-- `commands/project-analyze.md` (all 6 stacks) - Updated to support config sync
-
----
-
-## Next Steps
-
-### For Repository
-1. ✅ **COMPLETE** - All stacks have full Claude + Gemini configurations
-2. Consider: Update README.md to document `--with-gemini` flag usage
-3. Consider: Add example .gitignore entries for Gemini files
-
-### For Projects Being Configured
-When deploying to actual projects, add to `.gitignore`:
-
-```gitignore
-# Claude Code / AI configuration (local dev only)
-CLAUDE.md
-AGENTS.md
-.claude/
-
-# Gemini Code Assist configuration (local dev only)
-GEMINI.md
-AGENT.md
-.gemini/
-.geminiignore
-```
+- `CLAUDE.md` regenerated
+- `MEMORY.md` preserved
+- Skills updated
 
 ---
 
@@ -305,12 +346,16 @@ AGENT.md
 
 ✅ **Repository Status: Production Ready**
 
-All 6 technology stacks have complete, synchronized configurations for both Claude Code and Gemini Code Assist. The setup script correctly deploys both when invoked with appropriate flags.
+All 8 technology stacks have complete configurations for 6 AI coding assistants:
+- **Claude Code** and **Gemini Code Assist**: Full stack-specific templates
+- **Copilot, Cursor, Windsurf, Codex**: Stack-specific (EE/custom) + common fallbacks
 
-**Key Features Working:**
+**Key Features:**
+- Memory bank for persistent context
+- Token optimization rules
+- 15 Superpowers workflow skills
 - Template-based generation with auto-detection
-- Dual AI support (Claude + Gemini)
-- Configuration sync commands
-- Refresh mode preserves customizations
-- MCP integration for both platforms
-- Project-specific commands for each stack
+- Support for 6 AI coding assistants
+- Common fallback templates for universal coverage
+- Discovery mode for unknown stacks
+- Session hooks for auto-activation

@@ -1,71 +1,85 @@
 {
-  "editor.tabSize": 2,
+  // Editor Settings
+  "editor.formatOnSave": true,
+  "editor.tabSize": 4,
   "editor.insertSpaces": true,
-  "editor.formatOnSave": false,
+  "editor.detectIndentation": true,
   "editor.wordWrap": "on",
-  "editor.linkedEditing": true,
+  "editor.rulers": [80, 120],
+  "editor.renderWhitespace": "boundary",
   "editor.bracketPairColorization.enabled": true,
   "editor.guides.bracketPairs": true,
 
+  // PHP Settings
   "[php]": {
-    "editor.tabSize": 4,
-    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client",
+    "editor.tabSize": 4
   },
 
-  "files.associations": {
-    "**/system/user/templates/**/*.html": "ExpressionEngine",
-    "**/templates/**/*.html": "ExpressionEngine",
-    "*.html": "ExpressionEngine",
-    ".env.php": "php",
-    ".env.*.php": "php"
+  // HTML/Template Settings
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
   },
 
+  // CSS/SCSS Settings
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // JavaScript Settings
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+
+  // JSON Settings
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+
+  // File Settings
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
   "files.exclude": {
-    "**/.DS_Store": true,
-    "**/node_modules": true,
     "**/.git": true,
-    "system/ee": true
+    "**/node_modules": true,
+    "**/.DS_Store": true
+  },
+  "files.associations": {
+    "*.html": "html"
   },
 
+  // Search Settings
   "search.exclude": {
     "**/node_modules": true,
-    "**/public/assets": true,
-    "system/ee": true
+    "**/vendor": true,
+    "**/system/ee": true,
+    "**/.git": true,
+    "**/cache": true
   },
 
+  // Emmet Settings for EE Templates
   "emmet.includeLanguages": {
-    "ExpressionEngine": "html"
+    "html": "html"
   },
-  "emmet.triggerExpansionOnTab": true,
-  "emmet.showSuggestionsAsSnippets": true,
-  "emmet.showExpandedAbbreviation": "always",
 
-  "css.customData": [
-    ".vscode/tailwind.json"
-  ],
-  "scss.lint.unknownAtRules": "ignore",
+  // Tailwind CSS Settings (if using Tailwind)
   "tailwindCSS.includeLanguages": {
-    "ExpressionEngine": "html"
+    "html": "html"
   },
   "tailwindCSS.emmetCompletions": true,
 
-  "git.ignoreLimitWarning": true,
-  "dotenv.enableAutocloaking": false,
-
-  "terminal.integrated.env.osx": {},
-  "livePreview.defaultPreviewPath": "/",
-
-  "gemini.mcpServers": {
-    "expressionengine": {
-      "type": "stdio",
-      "command": "ddev",
-      "args": ["ee", "mcp:serve"],
-      "cwd": "${workspaceFolder}"
-    },
-    "context7": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp"]
-    }
-  }
+  // PHP Intelephense Settings
+  "intelephense.files.exclude": [
+    "**/.git/**",
+    "**/node_modules/**",
+    "**/vendor/**/{Tests,tests}/**",
+    "**/system/ee/**"
+  ]
 }

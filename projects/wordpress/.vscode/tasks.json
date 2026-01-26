@@ -1,0 +1,80 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "DDEV: Start",
+      "type": "shell",
+      "command": "ddev start",
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "DDEV: Stop",
+      "type": "shell",
+      "command": "ddev stop",
+      "problemMatcher": []
+    },
+    {
+      "label": "DDEV: Xdebug On",
+      "type": "shell",
+      "command": "ddev xdebug on",
+      "problemMatcher": []
+    },
+    {
+      "label": "DDEV: Xdebug Off",
+      "type": "shell",
+      "command": "ddev xdebug off",
+      "problemMatcher": []
+    },
+    {
+      "label": "DDEV: SSH",
+      "type": "shell",
+      "command": "ddev ssh",
+      "problemMatcher": []
+    },
+    {
+      "label": "WP-CLI: Cache Flush",
+      "type": "shell",
+      "command": "ddev wp cache flush",
+      "problemMatcher": []
+    },
+    {
+      "label": "WP-CLI: Rewrite Flush",
+      "type": "shell",
+      "command": "ddev wp rewrite flush",
+      "problemMatcher": []
+    },
+    {
+      "label": "WP-CLI: Plugin List",
+      "type": "shell",
+      "command": "ddev wp plugin list",
+      "problemMatcher": []
+    },
+    {
+      "label": "WP-CLI: Theme List",
+      "type": "shell",
+      "command": "ddev wp theme list",
+      "problemMatcher": []
+    },
+    {
+      "label": "WP-CLI: DB Export",
+      "type": "shell",
+      "command": "ddev wp db export backup.sql",
+      "problemMatcher": []
+    },
+    {
+      "label": "npm: Build",
+      "type": "shell",
+      "command": "ddev exec npm run build",
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "npm: Watch",
+      "type": "shell",
+      "command": "ddev exec npm run watch",
+      "problemMatcher": [],
+      "group": "build"
+    }
+  ]
+}

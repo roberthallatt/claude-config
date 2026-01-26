@@ -1,0 +1,149 @@
+# {{PROJECT_NAME}} - Project Memory
+
+> **Purpose:** Persistent context for AI coding assistants across sessions.
+> **Updated:** _Last modified date will appear here_
+
+---
+
+## Project Identity
+
+### Overview
+- **Name:** {{PROJECT_NAME}}
+- **Type:** _[Web app / API / Library / Documentation / etc.]_
+- **Primary Language:** _[TypeScript / PHP / Python / etc.]_
+- **Framework:** _[Next.js / Laravel / Express / etc.]_
+
+### Key Stakeholders
+- **Owner:** _[Name/Team]_
+- **Primary Contact:** _[For questions/decisions]_
+
+---
+
+## Architecture
+
+### Tech Stack
+| Layer | Technology | Notes |
+|-------|------------|-------|
+| Frontend | _TBD_ | |
+| Backend | _TBD_ | |
+| Database | _TBD_ | |
+| Hosting | _TBD_ | |
+
+### Key Patterns
+<!-- Document patterns unique to this project -->
+
+1. **Pattern Name**
+   - Where: _Files/directories affected_
+   - Why: _Reasoning behind the pattern_
+   - Example: _Brief code reference_
+
+### Directory Map
+<!-- Quick reference for important locations -->
+
+```
+src/
+├── components/    # Purpose
+├── services/      # Purpose
+├── utils/         # Purpose
+└── types/         # Purpose
+```
+
+---
+
+## Decision Log
+
+<!-- Record architectural decisions with context -->
+
+### DEC-001: _Decision Title_
+- **Date:** YYYY-MM-DD
+- **Context:** _What problem were we solving?_
+- **Decision:** _What did we choose?_
+- **Rationale:** _Why this approach?_
+- **Consequences:** _What are the tradeoffs?_
+
+---
+
+## Active Context
+
+<!-- Current work in progress - update frequently -->
+
+### Current Focus
+<!-- What are we actively working on? -->
+
+- [ ] _Current task 1_
+- [ ] _Current task 2_
+
+### Blockers
+<!-- What's preventing progress? -->
+
+- None currently
+
+### Recent Changes
+<!-- Last 3-5 significant changes -->
+
+| Date | Change | Files |
+|------|--------|-------|
+| | | |
+
+---
+
+## Session Handoff
+
+<!-- For incomplete work - what does the next session need to know? -->
+
+### Last Session Summary
+_Brief summary of what was accomplished_
+
+### Next Steps
+1. _Priority action 1_
+2. _Priority action 2_
+3. _Priority action 3_
+
+### Temporary State
+<!-- Any workarounds, debug code, or incomplete implementations -->
+
+- None currently
+
+### Open Questions
+<!-- Decisions pending user input -->
+
+- None currently
+
+---
+
+## Knowledge Base
+
+<!-- Project-specific knowledge that saves re-discovery -->
+
+### Environment Setup
+<!-- Quick reference for local development -->
+
+```bash
+# Commands to get started
+```
+
+### Common Issues
+<!-- Known problems and solutions -->
+
+| Issue | Solution |
+|-------|----------|
+| | |
+
+### Testing Notes
+<!-- How to run tests, what to watch for -->
+
+```bash
+# Test commands
+```
+
+---
+
+## Memory Maintenance
+
+**Guidelines:**
+- Update "Active Context" after each significant change
+- Add to "Decision Log" for any architectural choices
+- Archive completed work when this file exceeds 500 lines
+- Keep "Session Handoff" current for continuity
+
+**Archive Location:** `MEMORY-ARCHIVE.md` (create when needed)

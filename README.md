@@ -44,15 +44,15 @@ Deploy configurations for **7 AI coding assistants** with automatic technology d
 Install once, use anywhere on your system:
 
 ```bash
-# Clone the repository
-git clone https://github.com/canadian-paediatric-society/claude-config-repo.git ~/ai-config
+# Clone the repository (choose your preferred location)
+git clone https://github.com/canadian-paediatric-society/claude-config-repo.git ~/data/business/_tools/claude-config
 
 # Add aliases to your shell profile (~/.zshrc or ~/.bashrc)
 cat >> ~/.zshrc << 'EOF'
 
 # AI Config - Universal AI Coding Assistant Configuration
-alias ai-config="~/ai-config/setup-project.sh"
-alias ai-config-docs="~/ai-config/serve-docs.sh"
+alias ai-config="~/data/business/_tools/claude-config/setup-project.sh"
+alias ai-config-docs="~/data/business/_tools/claude-config/serve-docs.sh"
 EOF
 
 # Reload your shell
@@ -69,8 +69,8 @@ ai-config-docs                       # View documentation
 ### Quick Install (One-liner)
 
 ```bash
-git clone https://github.com/canadian-paediatric-society/claude-config-repo.git ~/ai-config && \
-echo -e '\n# AI Config\nalias ai-config="~/ai-config/setup-project.sh"\nalias ai-config-docs="~/ai-config/serve-docs.sh"' >> ~/.zshrc && \
+git clone https://github.com/canadian-paediatric-society/claude-config-repo.git ~/data/business/_tools/claude-config && \
+echo -e '\n# AI Config\nalias ai-config="~/data/business/_tools/claude-config/setup-project.sh"\nalias ai-config-docs="~/data/business/_tools/claude-config/serve-docs.sh"' >> ~/.zshrc && \
 source ~/.zshrc
 ```
 
@@ -273,7 +273,7 @@ ai-config --project=<path> [options]
 
 **Extension Installer:**
 ```bash
-~/ai-config/install-vscode-extensions.sh /path/to/project
+~/data/business/_tools/claude-config/install-vscode-extensions.sh /path/to/project
 ```
 
 [Full command reference →](docs/guides/setup-script.md)

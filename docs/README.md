@@ -1,6 +1,26 @@
 # Documentation
 
-Complete documentation for the Claude + Gemini Configuration Repository.
+Complete documentation for the AI Configuration Repository.
+
+## Overview
+
+This repository provides automated configuration deployment for **6 AI coding assistants** across **8 technology stacks** with:
+
+- Automatic stack detection
+- Memory bank for persistent context
+- Token optimization rules
+- Superpowers workflow skills
+
+## Supported AI Assistants
+
+| Assistant | Config File |
+|-----------|-------------|
+| Claude Code | `CLAUDE.md`, `MEMORY.md`, `.claude/` |
+| Gemini Code Assist | `GEMINI.md`, `.gemini/` |
+| GitHub Copilot | `.github/copilot-instructions.md` |
+| Cursor AI | `.cursorrules` |
+| Windsurf AI | `.windsurfrules` |
+| OpenAI Codex | `AGENTS.md` |
 
 ## Getting Started
 
@@ -11,9 +31,9 @@ Complete documentation for the Claude + Gemini Configuration Repository.
 ## Guides
 
 - **[Setup Script](guides/setup-script.md)** - Comprehensive setup-project.sh usage
-- **[VSCode Extensions](guides/vscode-extensions.md)** - Automatic extension installation and syntax recognition
 - **[Conditional Deployment](guides/conditional-deployment.md)** - Technology detection and smart deployment
 - **[Updating Projects](guides/updating-projects.md)** - Refresh and update existing configurations
+- **[Memory System](guides/memory-system.md)** - Persistent context and token optimization
 
 ## Reference
 

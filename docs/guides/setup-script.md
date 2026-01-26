@@ -32,6 +32,7 @@ ai-config --project=/path/to/project --with-all
 - ExpressionEngine 7.x
 - Craft CMS
 - WordPress/Bedrock
+- Standard WordPress
 - Next.js 14+
 - Docusaurus 3+
 - Coilpack (Laravel + EE hybrid)
@@ -45,8 +46,10 @@ Manually specify the technology stack template to use.
 - `coilpack`
 - `craftcms`
 - `wordpress-roots`
+- `wordpress`
 - `nextjs`
 - `docusaurus`
+- `custom` (used with `--discover`)
 
 **Example:**
 ```bash
@@ -64,7 +67,8 @@ ai-config --discover --project=/path/to/project --with-all
 This will:
 1. Detect 50+ technologies (React, Vue, Laravel, Django, Express, etc.)
 2. Deploy base configuration for all AI assistants
-3. Generate a discovery prompt for AI analysis
+3. Deploy memory bank and token optimization
+4. Generate a discovery prompt for AI analysis
 
 Then open in Claude Code and run `/project-discover` to generate custom rules.
 
@@ -72,18 +76,19 @@ Then open in Claude Code and run `/project-discover` to generate custom rules.
 
 ### --with-all
 
-Deploy configurations for all 7 AI coding assistants.
+Deploy configurations for all 6 AI coding assistants.
 
 **Recommended for maximum compatibility.**
 
 Creates:
-- Claude Code (always deployed)
-- Gemini Code Assist
-- GitHub Copilot
-- Cursor AI
-- Windsurf AI
-- OpenAI Codex
-- Aider
+- Claude Code (always deployed) → `CLAUDE.md`, `MEMORY.md`, `.claude/`
+- Gemini Code Assist → `GEMINI.md`, `.gemini/`
+- GitHub Copilot → `.github/copilot-instructions.md`
+- Cursor AI → `.cursorrules`
+- Windsurf AI → `.windsurfrules`
+- OpenAI Codex → `AGENTS.md`
+
+**Template fallback:** For AI assistants without stack-specific templates, the script uses common fallback templates from `projects/common/`.
 
 ### --with-gemini
 
@@ -121,18 +126,49 @@ Deploy OpenAI Codex configuration.
 Creates:
 - `AGENTS.md`
 
-### --with-aider
-
-Deploy Aider configuration.
-
-Creates:
-- `CONVENTIONS.md`
-
 ### --install-extensions
 
 Automatically install VSCode extensions from `.vscode/extensions.json`.
 
 Requires `code` CLI command. See [VSCode Extensions Guide](vscode-extensions.md).
+
+## Memory & Token Optimization
+
+Every deployment includes the memory system:
+
+- `MEMORY.md` - Persistent memory bank (preserved on refresh)
+- `.claude/rules/memory-management.md` - Memory update protocols
+- `.claude/rules/token-optimization.md` - Token efficiency rules
+- `.claude/skills/superpowers/memory-management/` - Memory skill
+
+See [Memory System Guide](memory-system.md) for details.
+
+## Superpowers Skills
+
+Superpowers workflow skills are enabled by default:
+
+### Skill Options
+
+| Flag | Description |
+|------|-------------|
+| `--no-superpowers` | Disable all Superpowers skills |
+| `--superpowers-all` | Deploy all skills (default) |
+| `--superpowers-core` | Deploy core skills only |
+| `--superpowers-minimal` | Deploy bootstrap skill only |
+| `--superpowers-skill=X` | Deploy specific skills (comma-separated) |
+
+### Available Skills
+
+| Skill | Purpose |
+|-------|---------|
+| `memory-management` | Persistent context across sessions |
+| `brainstorming` | Structured idea generation |
+| `writing-plans` | Implementation planning |
+| `executing-plans` | Step-by-step execution |
+| `systematic-debugging` | Root cause analysis |
+| `test-driven-development` | TDD workflow |
+| `dispatching-parallel-agents` | Multi-agent coordination |
+| `using-git-worktrees` | Git worktree workflows |
 
 ## Update Options
 
@@ -141,32 +177,38 @@ Requires `code` CLI command. See [VSCode Extensions Guide](vscode-extensions.md)
 Update configuration files while preserving customizations.
 
 **Behavior:**
-- Auto-detects stack from existing `CLAUDE.md` (no `--stack` needed)
 - Re-scans project for technology changes
-- Updates all configuration files
+- Updates `CLAUDE.md` and other config files
+- **Preserves `MEMORY.md`** (never overwritten)
 - Preserves `.claude/` customizations
-- Updates VSCode settings
+- Updates Superpowers skills
 
 **Example:**
 ```bash
-ai-config --refresh --project=/path/to/project
+ai-config --refresh --stack=custom --project=/path/to/project
 ```
 
-**Note:** Stack auto-detection makes `--refresh` much easier to use!
+**Note:** Specify `--stack` for refresh if auto-detection fails.
 
 ### --force
 
 Overwrite existing files without prompting.
 
-**Warning:** This will replace all files, including customizations.
+**Warning:** This will replace config files, but still preserves `MEMORY.md`.
 
 ### --clean
 
-Remove all existing Claude/Gemini configuration before deploying.
+Remove all existing AI configuration before deploying.
 
 Deletes:
 - `CLAUDE.md`, `.claude/`
 - `GEMINI.md`, `.gemini/`, `.geminiignore`
+- `.github/copilot-instructions.md`
+- `.cursorrules`
+- `.windsurfrules`
+- `AGENTS.md`
+
+**Note:** `MEMORY.md` is NOT deleted by `--clean` to preserve project memory.
 
 Use this for a complete fresh start.
 
@@ -271,7 +313,7 @@ ai-config --project=. --with-all
 
 ```bash
 # Added Tailwind CSS to your project
-ai-config --refresh --project=/Users/dev/myproject
+ai-config --refresh --stack=custom --project=/Users/dev/myproject
 ```
 
 ### Force Clean Reinstall
@@ -291,6 +333,15 @@ ai-config \
   --dry-run \
   --project=../my-nextjs-app \
   --with-all
+```
+
+### Core Skills Only
+
+```bash
+ai-config \
+  --project=. \
+  --superpowers-core \
+  --with-gemini
 ```
 
 ## Exit Codes
@@ -338,6 +389,7 @@ Detection scans template files only (excluding `node_modules`, `vendor`). If tec
 
 ## Next Steps
 
+- **[Memory System](memory-system.md)** - Persistent context guide
 - **[VSCode Extensions](vscode-extensions.md)** - Extension installation details
 - **[Conditional Deployment](conditional-deployment.md)** - Detection logic
 - **[Updating Projects](updating-projects.md)** - Update workflows

@@ -1,0 +1,134 @@
+{
+  // Editor Settings
+  "editor.formatOnSave": true,
+  "editor.tabSize": 4,
+  "editor.insertSpaces": false,
+  "editor.detectIndentation": true,
+  "editor.wordWrap": "on",
+  "editor.rulers": [80, 120],
+  "editor.renderWhitespace": "boundary",
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+
+  // PHP Settings (WordPress uses tabs)
+  "[php]": {
+    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client",
+    "editor.tabSize": 4,
+    "editor.insertSpaces": false
+  },
+
+  // HTML Settings
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+
+  // CSS/SCSS Settings
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.insertSpaces": true
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.insertSpaces": true
+  },
+
+  // JavaScript Settings
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 4,
+    "editor.insertSpaces": false
+  },
+
+  // JSON Settings
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+
+  // File Settings
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.exclude": {
+    "**/.git": true,
+    "**/node_modules": true,
+    "**/.DS_Store": true
+  },
+
+  // Search Settings
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/vendor": true,
+    "**/wp-admin": true,
+    "**/wp-includes": true,
+    "**/wp-content/uploads": true,
+    "**/.git": true
+  },
+
+  // Emmet Settings
+  "emmet.includeLanguages": {
+    "php": "html"
+  },
+
+  // Tailwind CSS Settings
+  "tailwindCSS.includeLanguages": {
+    "php": "html"
+  },
+  "tailwindCSS.emmetCompletions": true,
+
+  // PHP Intelephense Settings
+  "intelephense.files.exclude": [
+    "**/.git/**",
+    "**/node_modules/**",
+    "**/vendor/**/{Tests,tests}/**",
+    "**/wp-admin/**",
+    "**/wp-includes/**"
+  ],
+
+  // WordPress Stubs for IntelliSense
+  "intelephense.stubs": [
+    "apache",
+    "bcmath",
+    "bz2",
+    "Core",
+    "curl",
+    "date",
+    "dom",
+    "fileinfo",
+    "filter",
+    "gd",
+    "hash",
+    "iconv",
+    "intl",
+    "json",
+    "libxml",
+    "mbstring",
+    "mcrypt",
+    "mysql",
+    "mysqli",
+    "openssl",
+    "pcre",
+    "PDO",
+    "Phar",
+    "readline",
+    "Reflection",
+    "regex",
+    "session",
+    "SimpleXML",
+    "soap",
+    "sockets",
+    "SPL",
+    "standard",
+    "superglobals",
+    "tokenizer",
+    "xml",
+    "xmlreader",
+    "xmlwriter",
+    "zip",
+    "zlib",
+    "wordpress"
+  ]
+}

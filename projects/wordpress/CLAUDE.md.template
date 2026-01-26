@@ -1,0 +1,373 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Stack Configuration
+
+@~/.claude/stacks/wordpress.md
+@~/.claude/libraries/html5.md
+@~/.claude/libraries/vanilla-js.md
+
+## Project Overview
+
+{{PROJECT_NAME}} is a WordPress website.
+
+- **CMS**: WordPress 6.x
+- **Theme**: Custom theme in `wp-content/themes/{{PROJECT_SLUG}}/`
+- **Environment**: DDEV (Docker-based local dev)
+- **Database**: {{DDEV_DB_TYPE}}/{{DDEV_DB_VERSION}}
+- **PHP**: {{DDEV_PHP}}+
+
+## Local Development URLs
+
+- **Primary**: {{DDEV_PRIMARY_URL}}
+- **Admin**: {{DDEV_PRIMARY_URL}}/wp-admin/
+
+## Directory Structure
+
+```
+{{PROJECT_SLUG}}/
+├── {{DDEV_DOCROOT}}/                  # Document root (usually 'public' or 'web')
+│   ├── wp-content/
+│   │   ├── themes/
+│   │   │   └── {{PROJECT_SLUG}}/      # Custom theme
+│   │   │       ├── assets/            # Compiled CSS/JS
+│   │   │       ├── src/               # Source files
+│   │   │       ├── template-parts/    # Reusable template parts
+│   │   │       ├── inc/               # PHP includes
+│   │   │       ├── functions.php      # Theme functions
+│   │   │       ├── style.css          # Theme info + styles
+│   │   │       └── templates/         # Page templates
+│   │   ├── plugins/                   # WordPress plugins
+│   │   ├── mu-plugins/                # Must-use plugins
+│   │   └── uploads/                   # Media uploads
+│   ├── wp-admin/                      # WordPress admin (don't modify)
+│   ├── wp-includes/                   # WordPress core (don't modify)
+│   ├── wp-config.php                  # WordPress configuration
+│   └── index.php                      # WordPress entry point
+├── .ddev/                             # DDEV configuration
+└── .github/workflows/                 # CI/CD pipelines
+```
+
+## Common Commands
+
+### Local Development
+```bash
+ddev start                     # Start DDEV containers
+ddev stop                      # Stop DDEV containers
+ddev ssh                       # SSH into web container
+ddev describe                  # Show project info and URLs
+```
+
+### WordPress CLI (WP-CLI)
+```bash
+ddev wp plugin list            # List installed plugins
+ddev wp plugin install <name>  # Install a plugin
+ddev wp plugin activate <name> # Activate a plugin
+ddev wp theme list             # List themes
+ddev wp theme activate <name>  # Activate a theme
+ddev wp cache flush            # Clear WordPress cache
+ddev wp rewrite flush          # Flush rewrite rules
+ddev wp db export backup.sql   # Export database
+ddev wp db import backup.sql   # Import database
+ddev wp search-replace 'old' 'new' # Search and replace in DB
+ddev wp user list              # List users
+ddev wp post list              # List posts
+```
+
+### Database
+```bash
+ddev export-db > backup.sql.gz   # Export database (compressed)
+ddev import-db < backup.sql.gz   # Import database
+ddev mysql                       # MySQL CLI
+```
+
+### Xdebug
+```bash
+ddev xdebug on                 # Enable Xdebug
+ddev xdebug off                # Disable Xdebug
+```
+
+## Theme Development
+
+### Template Hierarchy
+WordPress uses a template hierarchy to determine which template file to load:
+
+```
+index.php                      # Fallback for everything
+├── front-page.php             # Static front page
+├── home.php                   # Blog posts index
+├── single.php                 # Single post
+│   └── single-{post-type}.php # Custom post type single
+├── page.php                   # Single page
+│   └── page-{slug}.php        # Specific page by slug
+├── archive.php                # Archive pages
+│   ├── archive-{post-type}.php
+│   ├── category.php
+│   ├── tag.php
+│   └── author.php
+├── search.php                 # Search results
+├── 404.php                    # Not found
+├── header.php                 # Header template
+├── footer.php                 # Footer template
+└── sidebar.php                # Sidebar template
+```
+
+### Template Parts
+Use `get_template_part()` for reusable components:
+
+```php
+// Load template-parts/content.php
+get_template_part('template-parts/content');
+
+// Load template-parts/content-page.php
+get_template_part('template-parts/content', 'page');
+
+// Pass data to template part (WP 5.5+)
+get_template_part('template-parts/card', 'post', ['title' => $title]);
+```
+
+### The Loop
+Standard WordPress loop pattern:
+
+```php
+<?php if (have_posts()) : ?>
+    <?php while (have_posts()) : the_post(); ?>
+        <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+            <h2><?php the_title(); ?></h2>
+            <?php the_content(); ?>
+        </article>
+    <?php endwhile; ?>
+    <?php the_posts_pagination(); ?>
+<?php else : ?>
+    <p>No posts found.</p>
+<?php endif; ?>
+```
+
+### Custom Queries
+Use WP_Query for custom post queries:
+
+```php
+$args = [
+    'post_type'      => 'post',
+    'posts_per_page' => 10,
+    'orderby'        => 'date',
+    'order'          => 'DESC',
+    'meta_query'     => [],
+    'tax_query'      => [],
+];
+$query = new WP_Query($args);
+
+if ($query->have_posts()) :
+    while ($query->have_posts()) : $query->the_post();
+        // Template code
+    endwhile;
+    wp_reset_postdata(); // Always reset after custom query
+endif;
+```
+
+### Enqueueing Assets
+Register and enqueue scripts/styles properly:
+
+```php
+// In functions.php
+function theme_enqueue_assets() {
+    // Styles
+    wp_enqueue_style(
+        'theme-style',
+        get_stylesheet_uri(),
+        [],
+        filemtime(get_stylesheet_directory() . '/style.css')
+    );
+
+    // Scripts
+    wp_enqueue_script(
+        'theme-script',
+        get_template_directory_uri() . '/assets/js/main.js',
+        ['jquery'], // Dependencies
+        filemtime(get_template_directory() . '/assets/js/main.js'),
+        true // Load in footer
+    );
+
+    // Localize script for AJAX
+    wp_localize_script('theme-script', 'themeAjax', [
+        'ajaxurl' => admin_url('admin-ajax.php'),
+        'nonce'   => wp_create_nonce('theme_nonce'),
+    ]);
+}
+add_action('wp_enqueue_scripts', 'theme_enqueue_assets');
+```
+
+## Hooks and Filters
+
+### Common Action Hooks
+```php
+// After theme setup
+add_action('after_setup_theme', function() {
+    add_theme_support('title-tag');
+    add_theme_support('post-thumbnails');
+    add_theme_support('html5', ['search-form', 'comment-form', 'gallery']);
+    register_nav_menus(['primary' => 'Primary Menu']);
+});
+
+// Init hook
+add_action('init', function() {
+    // Register custom post types, taxonomies
+});
+
+// Admin init
+add_action('admin_init', function() {
+    // Admin-only setup
+});
+```
+
+### Common Filters
+```php
+// Modify main query
+add_action('pre_get_posts', function($query) {
+    if (!is_admin() && $query->is_main_query()) {
+        // Modify query
+    }
+});
+
+// Filter content
+add_filter('the_content', function($content) {
+    return $content;
+});
+
+// Filter excerpt length
+add_filter('excerpt_length', function() {
+    return 20;
+});
+```
+
+## Custom Post Types
+
+```php
+add_action('init', function() {
+    register_post_type('project', [
+        'labels' => [
+            'name'          => 'Projects',
+            'singular_name' => 'Project',
+        ],
+        'public'       => true,
+        'has_archive'  => true,
+        'rewrite'      => ['slug' => 'projects'],
+        'supports'     => ['title', 'editor', 'thumbnail', 'excerpt'],
+        'show_in_rest' => true, // Enable Gutenberg
+        'menu_icon'    => 'dashicons-portfolio',
+    ]);
+});
+```
+
+## Custom Fields (ACF)
+
+If using Advanced Custom Fields:
+
+```php
+// Get field value
+$value = get_field('field_name');
+$value = get_field('field_name', $post_id);
+
+// Display field
+the_field('field_name');
+
+// Repeater field
+if (have_rows('repeater_field')) :
+    while (have_rows('repeater_field')) : the_row();
+        $sub_value = get_sub_field('sub_field');
+    endwhile;
+endif;
+
+// Flexible content
+if (have_rows('flexible_content')) :
+    while (have_rows('flexible_content')) : the_row();
+        if (get_row_layout() == 'layout_name') :
+            // Layout code
+        endif;
+    endwhile;
+endif;
+```
+
+## Security Requirements
+
+- Never edit WordPress core files (`wp-admin/`, `wp-includes/`)
+- Never commit `wp-config.php` with production credentials
+- Use `esc_html()`, `esc_attr()`, `esc_url()` for output
+- Use `wp_nonce_field()` and `wp_verify_nonce()` for forms
+- Use `$wpdb->prepare()` for database queries
+- Validate and sanitize all user input
+- Use `current_user_can()` for capability checks
+
+## Performance Guidelines
+
+- Use transients for expensive queries: `get_transient()`, `set_transient()`
+- Optimize images before upload
+- Use lazy loading for images
+- Minimize plugins - each adds overhead
+- Use object caching (Redis/Memcached) in production
+- Avoid queries in loops
+- Use `wp_reset_postdata()` after custom queries
+
+## Code Style
+
+- PHP: WordPress Coding Standards
+- 4-space indentation (tabs in PHP per WordPress standards)
+- Use proper escaping for all output
+- Document functions with PHPDoc
+- Prefix all functions, classes, and globals with theme/plugin prefix
+
+## Common Plugins
+
+- **ACF** - Advanced Custom Fields for custom fields
+- **Yoast SEO** - Search engine optimization
+- **WP Super Cache** or **W3 Total Cache** - Caching
+- **Wordfence** - Security
+- **UpdraftPlus** - Backups
+- **Contact Form 7** or **Gravity Forms** - Forms
+- **WP Migrate DB** - Database migrations
+
+## Before Making Changes
+
+1. Run `ddev start` and verify the site loads
+2. Check existing theme structure and patterns
+3. Test changes on staging before production
+4. Clear caches after template/code changes: `ddev wp cache flush`
+5. Backup database before major changes
+
+## First-Time Setup
+
+After running the setup script, use the `/project-analyze` command to have Claude scan this specific codebase and customize the configuration for:
+- Theme structure and naming conventions
+- Active plugins and their patterns
+- Custom post types in use
+- ACF field groups if applicable
+
+{{#SUPERPOWERS}}
+## Workflow Skills (Superpowers)
+
+This project uses structured workflow skills for disciplined AI-assisted development.
+
+### Key Commands
+| Command | When to Use |
+|---------|-------------|
+| `/brainstorm` | Before building new features - design exploration |
+| `/write-plan` | After design approval - create implementation plan |
+| `/execute-plan` | With approved plan - batch execution with checkpoints |
+
+### Core Skills
+| Skill | When to Use |
+|-------|-------------|
+| `brainstorming` | Before any new feature or significant change |
+| `test-driven-development` | All code implementation (RED-GREEN-REFACTOR) |
+| `systematic-debugging` | Bug investigation and root cause analysis |
+| `subagent-driven-development` | Complex tasks requiring parallel work |
+| `verification-before-completion` | Ensure changes actually work |
+
+### How Skills Work
+Skills activate automatically based on task type, or can be invoked explicitly via the Skill tool. The `using-superpowers` bootstrap skill loads on every session start.
+
+**Key Principle**: If a skill might apply (even 1% chance), invoke it. Skills tell you HOW to approach tasks.
+
+See `.claude/skills/superpowers/using-superpowers/SKILL.md` for the full skill usage guide.
+{{/SUPERPOWERS}}

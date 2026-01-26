@@ -1,66 +1,96 @@
 {
+  // Editor Settings
+  "editor.formatOnSave": true,
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
-  "editor.formatOnSave": false,
+  "editor.detectIndentation": true,
   "editor.wordWrap": "on",
-  "editor.linkedEditing": true,
+  "editor.rulers": [80, 120],
+  "editor.renderWhitespace": "boundary",
   "editor.bracketPairColorization.enabled": true,
   "editor.guides.bracketPairs": true,
 
+  // PHP Settings
   "[php]": {
-    "editor.tabSize": 4,
-    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client",
+    "editor.tabSize": 4
   },
 
-  "files.associations": {
-    "**/resources/views/**/*.blade.php": "blade",
-    "*.blade.php": "blade",
-    ".env": "dotenv",
-    ".env.*": "dotenv"
+  // Blade Template Settings (Sage theme)
+  "[blade]": {
+    "editor.defaultFormatter": "shufo.vscode-blade-formatter",
+    "editor.tabSize": 2,
+    "editor.autoClosingBrackets": "always"
   },
 
+  // HTML Settings
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+
+  // CSS/SCSS Settings
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // JavaScript/TypeScript Settings
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+
+  // JSON Settings
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+
+  // File Settings
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
   "files.exclude": {
-    "**/.DS_Store": true,
-    "**/node_modules": true,
     "**/.git": true,
-    "**/vendor": true,
-    "**/web/app/uploads": true
+    "**/node_modules": true,
+    "**/.DS_Store": true
+  },
+  "files.associations": {
+    "*.blade.php": "blade"
   },
 
+  // Search Settings
   "search.exclude": {
     "**/node_modules": true,
     "**/vendor": true,
+    "**/web/wp": true,
     "**/web/app/uploads": true,
-    "**/public/dist": true
+    "**/.git": true
   },
 
+  // Emmet Settings
   "emmet.includeLanguages": {
     "blade": "html"
   },
-  "emmet.triggerExpansionOnTab": true,
-  "emmet.showSuggestionsAsSnippets": true,
-  "emmet.showExpandedAbbreviation": "always",
 
-  "css.customData": [
-    ".vscode/tailwind.json"
-  ],
-  "scss.lint.unknownAtRules": "ignore",
+  // Tailwind CSS Settings
   "tailwindCSS.includeLanguages": {
     "blade": "html"
   },
   "tailwindCSS.emmetCompletions": true,
 
-  "git.ignoreLimitWarning": true,
-  "dotenv.enableAutocloaking": false,
-
-  "terminal.integrated.env.osx": {},
-  "livePreview.defaultPreviewPath": "/",
-
-  "gemini.mcpServers": {
-    "context7": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp"]
-    }
-  }
+  // PHP Intelephense Settings
+  "intelephense.files.exclude": [
+    "**/.git/**",
+    "**/node_modules/**",
+    "**/vendor/**/{Tests,tests}/**",
+    "**/web/wp/**"
+  ]
 }

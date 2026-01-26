@@ -5,11 +5,12 @@ Complete reference for the configuration repository structure.
 ## Repository Structure
 
 ```
-claude-config-repo/
+claude-config/
 ├── setup-project.sh              # Main deployment script
 ├── install-vscode-extensions.sh  # Extension installer
+├── serve-docs.sh                 # Documentation server
 ├── README.md                     # Overview and quick links
-├── CLAUDE.md                     # Repository context
+├── CLAUDE.md                     # Repository context for Claude
 │
 ├── docs/                         # Documentation
 │   ├── getting-started/
@@ -17,26 +18,90 @@ claude-config-repo/
 │   ├── reference/
 │   └── development/
 │
-├── global/                       # Global configs (legacy)
-│   └── CLAUDE.md
-│
-├── stacks/                       # Stack knowledge (legacy)
-│   ├── expressionengine.md
-│   ├── craftcms.md
-│   └── ...
-│
-├── libraries/                    # Library references (legacy)
-│   ├── tailwind.md
-│   ├── alpinejs.md
-│   └── ...
+├── superpowers/                  # Workflow skills system
+│   ├── skills/                   # All available skills
+│   │   ├── memory-management/
+│   │   ├── brainstorming/
+│   │   ├── writing-plans/
+│   │   ├── executing-plans/
+│   │   ├── systematic-debugging/
+│   │   ├── test-driven-development/
+│   │   └── ...
+│   ├── commands/                 # Slash commands
+│   └── hooks/                    # Session hooks
 │
 └── projects/                     # Stack templates
+    ├── common/                   # Global fallback templates
+    │   ├── copilot/
+    │   ├── cursor/
+    │   ├── windsurf/
+    │   ├── openai/
+    │   ├── rules/                # Common rules
+    │   │   ├── memory-management.md
+    │   │   └── token-optimization.md
+    │   └── MEMORY.md.template    # Memory bank template
     ├── expressionengine/
     ├── coilpack/
     ├── craftcms/
     ├── wordpress-roots/
+    ├── wordpress/
     ├── nextjs/
-    └── docusaurus/
+    ├── docusaurus/
+    └── custom/
+```
+
+## Common Fallback Templates
+
+The `projects/common/` directory contains global fallback templates used when a stack doesn't have its own template.
+
+```
+projects/common/
+├── copilot/
+│   └── copilot-instructions.md.template
+├── cursor/
+│   └── cursorrules.template
+├── windsurf/
+│   └── windsurfrules.template
+├── openai/
+│   └── AGENTS.md.template
+├── rules/
+│   ├── memory-management.md      # Memory protocols
+│   └── token-optimization.md     # Token efficiency
+└── MEMORY.md.template            # Project memory bank
+```
+
+**Fallback priority:**
+1. Stack-specific template (e.g., `projects/expressionengine/cursor/`)
+2. Common fallback (e.g., `projects/common/cursor/`)
+
+## Superpowers Skills Structure
+
+```
+superpowers/
+├── skills/
+│   ├── memory-management/
+│   │   └── SKILL.md
+│   ├── brainstorming/
+│   │   └── SKILL.md
+│   ├── writing-plans/
+│   │   └── SKILL.md
+│   ├── executing-plans/
+│   │   └── SKILL.md
+│   ├── systematic-debugging/
+│   │   └── SKILL.md
+│   ├── test-driven-development/
+│   │   └── SKILL.md
+│   ├── dispatching-parallel-agents/
+│   │   └── SKILL.md
+│   └── using-superpowers/
+│       └── SKILL.md
+├── commands/
+│   ├── brainstorm.md
+│   ├── write-plan.md
+│   └── execute-plan.md
+└── hooks/
+    ├── hooks.json.template
+    └── session-start.sh
 ```
 
 ## Project Template Structure
@@ -90,24 +155,46 @@ projects/expressionengine/
 
 ## Deployed Project Structure
 
-After running `setup-project.sh`, your project will have:
+After running `setup-project.sh --with-all`, your project will have:
 
 ```
 your-project/
 ├── CLAUDE.md                     # Generated from template
-├── GEMINI.md                     # If --with-gemini used
+├── MEMORY.md                     # Persistent memory bank
+├── GEMINI.md                     # If --with-gemini or --with-all
+├── AGENTS.md                     # If --with-codex or --with-all
 │
 ├── .claude/
 │   ├── rules/
+│   │   ├── memory-management.md  # Memory protocols
+│   │   ├── token-optimization.md # Token efficiency
+│   │   └── ...                   # Stack-specific rules
 │   ├── agents/
 │   ├── commands/
-│   └── skills/                   # If stack has skills
+│   │   ├── brainstorm.md         # Superpowers commands
+│   │   ├── write-plan.md
+│   │   └── execute-plan.md
+│   ├── skills/
+│   │   └── superpowers/          # Workflow skills
+│   │       ├── memory-management/
+│   │       ├── brainstorming/
+│   │       ├── writing-plans/
+│   │       └── ...
+│   └── hooks/                    # Session hooks
+│       ├── hooks.json
+│       └── session-start.sh
 │
-├── .gemini/                      # If --with-gemini used
+├── .gemini/                      # If --with-gemini or --with-all
 │   ├── settings.json
 │   ├── config.yaml
 │   ├── styleguide.md
 │   └── commands/
+│
+├── .github/                      # If --with-copilot or --with-all
+│   └── copilot-instructions.md
+│
+├── .cursorrules                  # If --with-cursor or --with-all
+├── .windsurfrules                # If --with-windsurf or --with-all
 │
 ├── .vscode/                      # If not --skip-vscode
 │   ├── settings.json
@@ -117,7 +204,7 @@ your-project/
 │   └── tailwind.json
 │
 ├── .mcp.json                     # If --with-mcp used (rare)
-├── .geminiignore                 # If --with-gemini used
+├── .geminiignore                 # If --with-gemini or --with-all
 │
 └── (your existing project files)
 ```
@@ -132,6 +219,7 @@ Files with `.template` extension contain template variables that get replaced du
 - `{{PROJECT_NAME}}` - Human-readable project name
 - `{{PROJECT_SLUG}}` - URL-safe identifier
 - `{{PROJECT_PATH}}` - Absolute path to project
+- `{{STACK}}` - Detected or specified stack name
 - `{{DDEV_NAME}}` - DDEV project name
 - `{{DDEV_PRIMARY_URL}}` - Primary URL
 - `{{DDEV_DOCROOT}}` - Document root
@@ -143,6 +231,7 @@ Files with `.template` extension contain template variables that get replaced du
 
 Documentation and configuration files:
 - `CLAUDE.md` - Project context
+- `MEMORY.md` - Persistent memory bank
 - `GEMINI.md` - Agent mode context
 - Rules, agents, commands, skills
 
@@ -153,6 +242,7 @@ Configuration files:
 - `.vscode/extensions.json` - Extension recommendations
 - `.gemini/settings.json` - MCP servers
 - `.mcp.json` - Standalone MCP config
+- `.claude/hooks/hooks.json` - Session hooks
 
 ### YAML
 
@@ -170,6 +260,7 @@ Scripts should be executable:
 ```bash
 chmod +x setup-project.sh
 chmod +x install-vscode-extensions.sh
+chmod +x .claude/hooks/session-start.sh
 ```
 
 ## Ignored Files
@@ -179,10 +270,18 @@ Recommended `.gitignore` for projects:
 ```gitignore
 # AI Configuration (project-specific, not committed)
 CLAUDE.md
+MEMORY.md
+MEMORY-ARCHIVE.md
 .claude/
 GEMINI.md
 .gemini/
 .geminiignore
+.github/copilot-instructions.md
+.cursorrules
+.cursor/
+.windsurfrules
+.windsurf/
+AGENTS.md
 
 # VSCode (optional - some teams commit these)
 .vscode/
@@ -204,42 +303,17 @@ Thumbs.db
 test-*/
 ```
 
-## Legacy Directories
-
-### global/
-
-Contains `CLAUDE.md` with universal coding preferences. Previously installed to `~/.claude/`.
-
-**Status:** Deprecated - not currently used by setup script.
-
-### stacks/
-
-Stack-specific knowledge files (e.g., `expressionengine.md`).
-
-**Status:** Referenced in deployed `CLAUDE.md` via:
-```markdown
-@~/.claude/stacks/expressionengine.md
-```
-
-But installation step is not included in current workflow.
-
-### libraries/
-
-Framework/library reference files (e.g., `tailwind.md`, `alpinejs.md`).
-
-**Status:** Referenced but not actively installed.
-
 ## File Naming Conventions
 
 - **Templates:** `{filename}.template`
-- **Rules:** `kebab-case.md` (e.g., `expressionengine-templates.md`)
+- **Rules:** `kebab-case.md` (e.g., `memory-management.md`)
 - **Agents:** `kebab-case.md` (e.g., `code-quality-specialist.md`)
 - **Commands:** `kebab-case.md` or `.toml`
-- **Skills:** `kebab-case/` directory with `skill.json`
+- **Skills:** `kebab-case/` directory with `SKILL.md`
 - **VSCode:** Standard VSCode naming
 
 ## Next Steps
 
 - **[Stacks Reference](stacks.md)** - Stack-specific details
-- **[Configuration](../getting-started/configuration.md)** - Configuration guide
+- **[Memory System](../guides/memory-system.md)** - Memory bank guide
 - **[Commands Reference](commands.md)** - Available commands

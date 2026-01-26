@@ -1,121 +1,218 @@
-# Global Development Preferences
+# AI Configuration Repository
 
-## Code Style
+Universal AI coding assistant configuration for modern web development stacks.
 
-### General
-- Use 2-space indentation for HTML, CSS, JavaScript, JSON, YAML
-- Use 4-space indentation for PHP
-- Maximum line length of 120 characters
-- Use single quotes for strings in JavaScript/PHP unless interpolation needed
-- Always use strict equality (=== and !==) in JavaScript
-- Prefer const over let; avoid var entirely
-- Use meaningful, descriptive variable and function names — clarity over brevity
-- One statement per line; avoid chaining more than 2-3 methods
+## Project Overview
 
-### HTML
-- Use semantic HTML5 elements (nav, main, article, section, aside, footer)
-- Always include alt attributes on images — descriptive for content, empty for decorative
-- Use lowercase for element names and attributes
-- Quote all attribute values with double quotes
-- Self-close void elements without slash (e.g., `<img>` not `<img />`)
+This repository provides automated configuration deployment for **6 AI coding assistants** across **8 technology stacks** with:
+- Automatic stack detection
+- Memory bank for persistent context
+- Token optimization rules
+- VSCode settings (formatters, Xdebug, tasks)
+- 15 Superpowers workflow skills
 
-### CSS
-- Prefer modern CSS (custom properties, grid, flexbox) over legacy approaches
-- Use BEM naming convention for class names when not using utility framework
-- Mobile-first media queries (min-width)
-- Logical properties where appropriate (margin-inline, padding-block)
-- Group properties: positioning, box model, typography, visual, misc
+**Repository Path:** `/Users/robert/data/business/_tools/claude-config`
 
-### JavaScript
-- Use ES6+ features (arrow functions, destructuring, template literals, optional chaining)
-- Async/await over raw promises where practical
-- Early returns to reduce nesting
-- Avoid mutating function arguments
+## Supported AI Assistants
 
-### PHP
-- Follow PSR-12 coding standards
-- Use type declarations for parameters and return types
-- Prefer null coalescing (??) and nullsafe operator (?->)
-- Use early returns to reduce nesting
-- Array short syntax [] not array()
+| Assistant | Config File | Template Location |
+|-----------|-------------|-------------------|
+| Claude Code | `CLAUDE.md`, `MEMORY.md`, `.claude/` | Stack-specific (all stacks) |
+| Gemini Code Assist | `GEMINI.md`, `.gemini/` | Stack-specific (all stacks) |
+| GitHub Copilot | `.github/copilot-instructions.md` | Common fallback |
+| Cursor AI | `.cursorrules` | EE + common fallback |
+| Windsurf AI | `.windsurfrules` | EE + common fallback |
+| OpenAI Codex | `AGENTS.md` | EE + common fallback |
 
-### SQL
-- Use uppercase for SQL keywords (SELECT, FROM, WHERE, JOIN)
-- Lowercase for table and column names
-- Use snake_case for naming
-- Always use parameterized queries — never concatenate user input
+## Supported Stacks
 
-## Git & Version Control
-- Write commit messages in imperative mood ("Add feature" not "Added feature")
-- Use conventional commits format: type(scope): description
-  - feat: new feature
-  - fix: bug fix
-  - refactor: code change that neither fixes nor adds
-  - docs: documentation only
-  - style: formatting, no code change
-  - test: adding or updating tests
-  - chore: maintenance tasks
-- Keep commits atomic — one logical change per commit
-- Never commit credentials, API keys, or secrets
+| Stack ID | Framework | Template Engine |
+|----------|-----------|-----------------|
+| `expressionengine` | ExpressionEngine 7.x | EE Templates |
+| `coilpack` | Laravel + EE | Blade/Twig/EE |
+| `craftcms` | Craft CMS | Twig |
+| `wordpress-roots` | WordPress/Bedrock | Blade (Sage) |
+| `wordpress` | WordPress | PHP |
+| `nextjs` | Next.js 14+ | React/TSX |
+| `docusaurus` | Docusaurus 3+ | MDX |
+| `custom` | Discovery mode | Any |
 
-## Security Fundamentals
-- Sanitize all user input before output
-- Use parameterized queries for all database operations
-- Escape output appropriate to context (HTML, JS, URL, SQL)
-- Never trust client-side validation alone
-- Use HTTPS URLs for all external resources
-- Set appropriate CORS headers
-- Avoid inline JavaScript and CSS where CSP is a concern
+## Key Files
 
-## Performance
-- Minimize DOM queries; cache references when reused
-- Debounce scroll/resize event handlers
-- Lazy load images below the fold
-- Prefer CSS animations over JavaScript when possible
-- Avoid layout thrashing (batch DOM reads, then writes)
-- Consider perceived performance, not just actual load time
+### Scripts
+- `setup-project.sh` - Main deployment script (aliased as `ai-config`)
+- `serve-docs.sh` - Local documentation server (aliased as `ai-config-docs`)
 
-## Accessibility
-- Ensure keyboard navigation works for all interactive elements
-- Maintain logical heading hierarchy (h1 → h2 → h3)
-- Sufficient color contrast (WCAG AA minimum: 4.5:1 for text)
-- Don't rely on color alone to convey information
-- Provide visible focus states for interactive elements
-- Use ARIA only when native HTML semantics are insufficient
+### Template Structure
+```
+projects/
+├── common/                    # Global fallback templates
+│   ├── copilot/              # GitHub Copilot
+│   ├── cursor/               # Cursor AI
+│   ├── windsurf/             # Windsurf AI
+│   ├── openai/               # OpenAI Codex
+│   ├── rules/                # Memory & token rules
+│   └── MEMORY.md.template    # Memory bank template
+├── expressionengine/         # Full stack config
+├── coilpack/                 # Full stack config
+├── craftcms/                 # Full stack config
+├── wordpress-roots/          # Full stack config
+├── wordpress/                # Full stack config
+├── nextjs/                   # Full stack config
+├── docusaurus/               # Full stack config
+└── custom/                   # Discovery mode base
 
-## Documentation & Comments
-- Comment the "why," not the "what" — code shows what, comments explain why
-- Use JSDoc/PHPDoc for functions: describe parameters, return values, exceptions
-- Document non-obvious business logic and edge cases
-- Keep README files current with setup instructions
-- Include example usage for utility functions
+superpowers/
+├── skills/                   # 15 workflow skills
+│   ├── memory-management/
+│   ├── brainstorming/
+│   ├── writing-plans/
+│   ├── systematic-debugging/
+│   └── ...
+├── commands/                 # Slash commands
+└── hooks/                    # Session hooks
+```
 
-## File Organization
-- Group by feature/module rather than file type when project scale warrants
-- Keep files focused — if it's doing too many things, split it
-- Consistent naming: kebab-case for files, PascalCase for components/classes
+## Memory System
 
-## Testing Mindset
-- Write testable code: pure functions, dependency injection, single responsibility
-- Test behavior, not implementation details
-- Cover edge cases and error conditions
-- If fixing a bug, write a test that would have caught it
+Every deployment includes persistent memory:
 
-## Working With Claude
+| Component | Purpose |
+|-----------|---------|
+| `MEMORY.md` | Project memory bank (preserved on refresh) |
+| `memory-management.md` | Memory update protocols |
+| `token-optimization.md` | Token efficiency rules |
+| `memory-management/` | Memory skill in Superpowers |
 
-### Communication Preferences
-- Be direct; skip excessive caveats or preamble
-- When showing code changes, show only the relevant diff context unless full file requested
-- Explain architectural decisions and tradeoffs briefly
-- If multiple valid approaches exist, suggest the most pragmatic one and note alternatives
+See `docs/guides/memory-system.md` for full documentation.
 
-### Before Making Changes
-- Understand existing patterns in the codebase before introducing new ones
-- Check for existing utilities/helpers before creating new ones
-- Respect established conventions even if different from these defaults
-- Ask for clarification on ambiguous requirements rather than assuming
+## Usage
 
-### Error Handling
-- When debugging, identify root cause before suggesting fixes
-- Explain what went wrong and why the fix works
-- Consider related areas that might have the same issue
+### Deploy to a Project
+```bash
+# Auto-detect stack and deploy all AI configs
+ai-config --project=/path/to/project --with-all
+
+# Specify stack manually
+ai-config --stack=expressionengine --project=/path/to/project --with-all
+
+# Discovery mode for unknown stacks
+ai-config --discover --project=/path/to/project --with-all
+```
+
+### Update Existing Project
+```bash
+ai-config --refresh --stack=custom --project=/path/to/project
+```
+
+### View Documentation
+```bash
+ai-config-docs  # Opens at http://localhost:8000
+```
+
+## Template Fallback Logic
+
+The setup script uses this priority for each AI assistant:
+
+1. **Stack-specific template** - `projects/{stack}/{assistant}/`
+2. **Common fallback** - `projects/common/{assistant}/`
+3. **Error message** - Only if neither exists
+
+### Current Coverage
+
+| AI Assistant | Has Stack Templates | Has Common Fallback |
+|--------------|---------------------|---------------------|
+| Claude | All 8 stacks | Not needed |
+| Gemini | All 8 stacks | Not needed |
+| Copilot | None | Yes |
+| Cursor | 2 stacks (EE, custom) | Yes |
+| Windsurf | 2 stacks (EE, custom) | Yes |
+| Codex | 2 stacks (EE, custom) | Yes |
+
+## Superpowers Skills
+
+15 workflow skills deployed by default:
+
+| Skill | Purpose |
+|-------|---------|
+| `memory-management` | Persistent context |
+| `brainstorming` | Idea generation |
+| `writing-plans` | Implementation planning |
+| `executing-plans` | Step-by-step execution |
+| `systematic-debugging` | Root cause analysis |
+| `test-driven-development` | TDD workflow |
+
+Disable with `--no-superpowers`.
+
+## Template Variables
+
+Templates use `{{VARIABLE}}` syntax, replaced during deployment:
+
+| Variable | Source |
+|----------|--------|
+| `{{PROJECT_NAME}}` | Directory name or `--name` flag |
+| `{{PROJECT_SLUG}}` | Derived from name |
+| `{{PROJECT_PATH}}` | Absolute path |
+| `{{STACK}}` | Detected or specified stack |
+| `{{DDEV_NAME}}` | `.ddev/config.yaml` |
+| `{{DDEV_PRIMARY_URL}}` | `.ddev/config.yaml` |
+| `{{DDEV_PHP}}` | `.ddev/config.yaml` |
+| `{{DDEV_DB_TYPE}}` | `.ddev/config.yaml` |
+| `{{DDEV_DB_VERSION}}` | `.ddev/config.yaml` |
+| `{{DDEV_DOCROOT}}` | `.ddev/config.yaml` |
+| `{{TEMPLATE_GROUP}}` | EE template directory |
+
+## Development Guidelines
+
+### Adding a New AI Assistant
+
+1. Create common fallback template in `projects/common/{assistant}/`
+2. Update `setup-project.sh` with deployment logic and fallback
+3. Add command-line flag (`--with-{assistant}`)
+4. Update documentation
+
+### Adding Stack-Specific Templates
+
+1. Create template in `projects/{stack}/{assistant}/`
+2. Stack-specific automatically takes priority over common
+3. No script changes needed
+
+### Code Style (This Repository)
+
+- Bash scripts: Use `set -e`, quote variables, meaningful names
+- Markdown: ATX headings, fenced code blocks, reference links
+- Templates: `{{UPPERCASE}}` for variables
+
+## Documentation
+
+- `docs/getting-started/` - Installation, quick start, configuration
+- `docs/guides/` - Setup script, memory system
+- `docs/reference/` - Stacks, file structure, commands
+- `docs/development/` - Project status, contributing
+
+## Recent Changes
+
+- Added memory bank system (`MEMORY.md`, memory rules, memory skill)
+- Added token optimization rules
+- Added 15 Superpowers workflow skills
+- Removed Aider support (not used)
+- All stacks get configurations for all 6 AI assistants via `--with-all`
+
+## Quick Reference
+
+```bash
+# Full deployment with all AI assistants
+ai-config --project=. --with-all
+
+# Discovery mode for unknown stacks
+ai-config --discover --project=. --with-all
+
+# Refresh (preserves MEMORY.md)
+ai-config --refresh --stack=custom --project=.
+
+# Preview without changes
+ai-config --dry-run --project=. --with-all
+
+# Force clean reinstall
+ai-config --clean --force --project=. --with-all
+```

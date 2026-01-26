@@ -16,15 +16,12 @@
 #   --force       Overwrite existing configuration without prompting
 #   --clean       Remove existing Claude/AI config before deploying
 #   --refresh     Re-scan project and regenerate CLAUDE.md only (preserves .claude/ customizations)
-#   --skip-vscode       Skip VSCode settings (if you manage them separately)
-#   --install-extensions Install recommended VSCode extensions automatically
 #   --with-mcp          Deploy .mcp.json for ExpressionEngine MCP server integration
 #   --with-gemini       Deploy .gemini/ configuration for Gemini Code Assist
 #   --with-copilot      Deploy .github/copilot-instructions.md for GitHub Copilot
 #   --with-cursor       Deploy .cursorrules for Cursor AI
 #   --with-windsurf     Deploy .windsurfrules for Windsurf AI
 #   --with-codex        Deploy AGENTS.md for OpenAI Codex
-#   --with-aider        Deploy CONVENTIONS.md for Aider
 #   --with-all          Deploy configuration for ALL supported AI assistants
 #   --analyze           Generate analysis prompt for AI to build custom config
 #   --discover          AI-powered analysis mode for unknown/custom stacks
@@ -52,18 +49,18 @@ DRY_RUN=false
 FORCE=false
 CLEAN=false
 REFRESH=false
-SKIP_VSCODE=false
-INSTALL_EXTENSIONS=false
 WITH_MCP=false
 WITH_GEMINI=false
 WITH_COPILOT=false
 WITH_CURSOR=false
 WITH_WINDSURF=false
 WITH_CODEX=false
-WITH_AIDER=false
 WITH_ALL=false
 ANALYZE=false
 DISCOVER=false
+WITH_SUPERPOWERS=true          # Enabled by default
+SUPERPOWERS_MODE=""            # all, core, minimal, custom
+SUPERPOWERS_CUSTOM_SKILLS=""   # comma-separated skill names
 
 # Detected values (populated during analysis)
 DDEV_NAME=""
@@ -117,14 +114,6 @@ while [[ $# -gt 0 ]]; do
       REFRESH=true
       shift
       ;;
-    --skip-vscode)
-      SKIP_VSCODE=true
-      shift
-      ;;
-    --install-extensions)
-      INSTALL_EXTENSIONS=true
-      shift
-      ;;
     --with-mcp)
       WITH_MCP=true
       shift
@@ -149,10 +138,6 @@ while [[ $# -gt 0 ]]; do
       WITH_CODEX=true
       shift
       ;;
-    --with-aider)
-      WITH_AIDER=true
-      shift
-      ;;
     --with-all)
       WITH_ALL=true
       WITH_GEMINI=true
@@ -160,7 +145,6 @@ while [[ $# -gt 0 ]]; do
       WITH_CURSOR=true
       WITH_WINDSURF=true
       WITH_CODEX=true
-      WITH_AIDER=true
       shift
       ;;
     --analyze)
@@ -169,6 +153,35 @@ while [[ $# -gt 0 ]]; do
       ;;
     --discover)
       DISCOVER=true
+      shift
+      ;;
+    --with-superpowers)
+      WITH_SUPERPOWERS=true
+      shift
+      ;;
+    --superpowers-all)
+      WITH_SUPERPOWERS=true
+      SUPERPOWERS_MODE="all"
+      shift
+      ;;
+    --superpowers-core)
+      WITH_SUPERPOWERS=true
+      SUPERPOWERS_MODE="core"
+      shift
+      ;;
+    --superpowers-minimal)
+      WITH_SUPERPOWERS=true
+      SUPERPOWERS_MODE="minimal"
+      shift
+      ;;
+    --superpowers-skill=*)
+      WITH_SUPERPOWERS=true
+      SUPERPOWERS_MODE="custom"
+      SUPERPOWERS_CUSTOM_SKILLS="${1#*=}"
+      shift
+      ;;
+    --no-superpowers)
+      WITH_SUPERPOWERS=false
       shift
       ;;
     -h|--help)
@@ -184,8 +197,6 @@ while [[ $# -gt 0 ]]; do
       echo "  --force           Overwrite existing config without prompting"
       echo "  --clean           Remove existing config before deploying (fresh start)"
       echo "  --refresh         Update config files (auto-detects stack from CLAUDE.md)"
-      echo "  --skip-vscode     Do not copy VSCode settings"
-      echo "  --install-extensions Install recommended VSCode extensions automatically"
       echo ""
       echo "AI Assistants:"
       echo "  --with-gemini     Deploy .gemini/ for Gemini Code Assist"
@@ -193,9 +204,15 @@ while [[ $# -gt 0 ]]; do
       echo "  --with-cursor     Deploy .cursorrules for Cursor AI"
       echo "  --with-windsurf   Deploy .windsurfrules for Windsurf AI"
       echo "  --with-codex      Deploy AGENTS.md for OpenAI Codex"
-      echo "  --with-aider      Deploy CONVENTIONS.md for Aider"
       echo "  --with-all        Deploy ALL AI assistant configurations"
       echo "  --with-mcp        Deploy .mcp.json for EE MCP server integration"
+      echo ""
+      echo "Superpowers Skills (enabled by default):"
+      echo "  --no-superpowers        Disable Superpowers skills system"
+      echo "  --superpowers-all       Deploy all skills (default when enabled)"
+      echo "  --superpowers-core      Deploy core skills only (TDD, debugging, brainstorming)"
+      echo "  --superpowers-minimal   Deploy only the bootstrap skill"
+      echo "  --superpowers-skill=X   Deploy specific skills (comma-separated)"
       echo ""
       echo "Other:"
       echo "  --analyze         Generate analysis prompt for Claude"
@@ -247,9 +264,18 @@ if [[ -z "$STACK" ]]; then
     # Craft CMS
     elif [[ -f "$PROJECT_DIR/craft" ]] && [[ -f "$PROJECT_DIR/composer.json" ]] && grep -q "craftcms/cms" "$PROJECT_DIR/composer.json" 2>/dev/null; then
       STACK="craftcms"
-    # WordPress Bedrock
-    elif [[ -d "$PROJECT_DIR/web/app/mu-plugins" ]] || [[ -d "$PROJECT_DIR/web/app/plugins" ]] || [[ -f "$PROJECT_DIR/wp-config.php" ]] || [[ -d "$PROJECT_DIR/wp-content" ]]; then
+    # WordPress Bedrock/Roots (has web/app structure or roots/bedrock in composer)
+    elif [[ -d "$PROJECT_DIR/web/app/mu-plugins" ]] || [[ -d "$PROJECT_DIR/web/app/plugins" ]]; then
       STACK="wordpress-roots"
+    elif [[ -f "$PROJECT_DIR/composer.json" ]] && grep -qE '"roots/bedrock"|"roots/wordpress"' "$PROJECT_DIR/composer.json" 2>/dev/null; then
+      STACK="wordpress-roots"
+    # Standard WordPress (has wp-content or wp-config.php at root or in public/web)
+    elif [[ -f "$PROJECT_DIR/wp-config.php" ]] || [[ -d "$PROJECT_DIR/wp-content" ]]; then
+      STACK="wordpress"
+    elif [[ -f "$PROJECT_DIR/public/wp-config.php" ]] || [[ -d "$PROJECT_DIR/public/wp-content" ]]; then
+      STACK="wordpress"
+    elif [[ -f "$PROJECT_DIR/web/wp-config.php" ]] || [[ -d "$PROJECT_DIR/web/wp-content" ]]; then
+      STACK="wordpress"
     # Next.js
     elif [[ -f "$PROJECT_DIR/next.config.js" ]] || [[ -f "$PROJECT_DIR/next.config.mjs" ]] || [[ -f "$PROJECT_DIR/next.config.ts" ]]; then
       STACK="nextjs"
@@ -590,6 +616,7 @@ do_template() {
     echo -e "  ${YELLOW}[DRY-RUN]${NC} Template $src → $dest"
     echo -e "           Substitutions: {{PROJECT_NAME}}=$PROJECT_NAME, {{PROJECT_SLUG}}=$PROJECT_SLUG"
   else
+    # First pass: variable substitution
     sed -e "s/{{PROJECT_NAME}}/$PROJECT_NAME/g" \
         -e "s/{{PROJECT_SLUG}}/$PROJECT_SLUG/g" \
         -e "s|{{PROJECT_PATH}}|${PROJECT_DIR}|g" \
@@ -602,6 +629,17 @@ do_template() {
         -e "s|{{DDEV_PRIMARY_URL}}|${DDEV_PRIMARY_URL:-https://${DDEV_NAME:-$PROJECT_SLUG}.ddev.site}|g" \
         -e "s/{{TEMPLATE_GROUP}}/${TEMPLATE_GROUP:-$PROJECT_SLUG}/g" \
         "$src" > "$dest"
+
+    # Second pass: handle conditional {{#SUPERPOWERS}}...{{/SUPERPOWERS}} sections
+    if [[ "$WITH_SUPERPOWERS" == true ]]; then
+      # Remove only the markers, keep the content
+      sed -i '' -e 's/{{#SUPERPOWERS}}//' -e 's/{{\/SUPERPOWERS}}//' "$dest"
+    else
+      # Remove the entire section including markers and content
+      # Use perl for multi-line matching (more reliable than sed)
+      perl -i -0pe 's/\{\{#SUPERPOWERS\}\}.*?\{\{\/SUPERPOWERS\}\}\n?//gs' "$dest"
+    fi
+
     echo -e "  ${GREEN}✓${NC} Created $dest_file from template"
   fi
 }
@@ -626,8 +664,6 @@ do_clean() {
     "$PROJECT_DIR/.windsurf"
     # OpenAI Codex
     "$PROJECT_DIR/AGENTS.md"
-    # Aider
-    "$PROJECT_DIR/CONVENTIONS.md"
   )
 
   echo -e "${CYAN}Cleaning existing configuration...${NC}"
@@ -643,6 +679,149 @@ do_clean() {
     fi
   done
   echo ""
+}
+
+# ============================================================================
+# Superpowers Skills Deployment
+# ============================================================================
+
+deploy_superpowers() {
+  local mode="${SUPERPOWERS_MODE:-all}"
+
+  echo ""
+  echo -e "${CYAN}Deploying Superpowers workflow skills...${NC}"
+
+  # Create skills directory
+  do_mkdir "$PROJECT_DIR/.claude/skills"
+  do_mkdir "$PROJECT_DIR/.claude/skills/superpowers"
+
+  case "$mode" in
+    "all")
+      echo -e "  Mode: ${GREEN}all skills${NC}"
+      for skill_dir in "$SCRIPT_DIR/superpowers/skills"/*; do
+        if [[ -d "$skill_dir" ]]; then
+          skill_name=$(basename "$skill_dir")
+          if [[ "$DRY_RUN" == true ]]; then
+            echo -e "  ${YELLOW}[DRY-RUN]${NC} cp -r $skill_name → .claude/skills/superpowers/"
+          else
+            cp -r "$skill_dir" "$PROJECT_DIR/.claude/skills/superpowers/"
+            echo -e "  ${GREEN}✓${NC} Copied skill: $skill_name"
+          fi
+        fi
+      done
+      ;;
+    "core")
+      echo -e "  Mode: ${GREEN}core skills${NC}"
+      local core_skills=("using-superpowers" "brainstorming" "test-driven-development"
+                         "systematic-debugging" "writing-plans" "executing-plans")
+      for skill in "${core_skills[@]}"; do
+        if [[ -d "$SCRIPT_DIR/superpowers/skills/$skill" ]]; then
+          if [[ "$DRY_RUN" == true ]]; then
+            echo -e "  ${YELLOW}[DRY-RUN]${NC} cp -r $skill → .claude/skills/superpowers/"
+          else
+            cp -r "$SCRIPT_DIR/superpowers/skills/$skill" "$PROJECT_DIR/.claude/skills/superpowers/"
+            echo -e "  ${GREEN}✓${NC} Copied skill: $skill"
+          fi
+        fi
+      done
+      ;;
+    "minimal")
+      echo -e "  Mode: ${GREEN}minimal (bootstrap only)${NC}"
+      if [[ "$DRY_RUN" == true ]]; then
+        echo -e "  ${YELLOW}[DRY-RUN]${NC} cp -r using-superpowers → .claude/skills/superpowers/"
+      else
+        cp -r "$SCRIPT_DIR/superpowers/skills/using-superpowers" "$PROJECT_DIR/.claude/skills/superpowers/"
+        echo -e "  ${GREEN}✓${NC} Copied skill: using-superpowers"
+      fi
+      ;;
+    "custom")
+      echo -e "  Mode: ${GREEN}custom skills${NC}"
+      # Always include using-superpowers
+      if [[ "$DRY_RUN" == true ]]; then
+        echo -e "  ${YELLOW}[DRY-RUN]${NC} cp -r using-superpowers → .claude/skills/superpowers/"
+      else
+        cp -r "$SCRIPT_DIR/superpowers/skills/using-superpowers" "$PROJECT_DIR/.claude/skills/superpowers/"
+        echo -e "  ${GREEN}✓${NC} Copied skill: using-superpowers"
+      fi
+      # Copy custom skills
+      IFS=',' read -ra SKILLS <<< "$SUPERPOWERS_CUSTOM_SKILLS"
+      for skill in "${SKILLS[@]}"; do
+        skill=$(echo "$skill" | xargs)  # Trim whitespace
+        if [[ -d "$SCRIPT_DIR/superpowers/skills/$skill" ]]; then
+          if [[ "$DRY_RUN" == true ]]; then
+            echo -e "  ${YELLOW}[DRY-RUN]${NC} cp -r $skill → .claude/skills/superpowers/"
+          else
+            cp -r "$SCRIPT_DIR/superpowers/skills/$skill" "$PROJECT_DIR/.claude/skills/superpowers/"
+            echo -e "  ${GREEN}✓${NC} Copied skill: $skill"
+          fi
+        else
+          echo -e "  ${YELLOW}⚠${NC} Skill not found: $skill"
+        fi
+      done
+      ;;
+  esac
+
+  # Deploy commands
+  deploy_superpowers_commands
+
+  # Deploy hooks
+  deploy_superpowers_hooks
+}
+
+deploy_superpowers_commands() {
+  echo ""
+  echo -e "${CYAN}Deploying Superpowers commands...${NC}"
+
+  do_mkdir "$PROJECT_DIR/.claude/commands"
+
+  for cmd in "$SCRIPT_DIR/superpowers/commands"/*.md; do
+    if [[ -f "$cmd" ]]; then
+      cmd_name=$(basename "$cmd")
+      if [[ "$DRY_RUN" == true ]]; then
+        echo -e "  ${YELLOW}[DRY-RUN]${NC} cp $cmd_name → .claude/commands/"
+      else
+        cp "$cmd" "$PROJECT_DIR/.claude/commands/"
+        echo -e "  ${GREEN}✓${NC} Copied command: $cmd_name"
+      fi
+    fi
+  done
+}
+
+deploy_superpowers_hooks() {
+  echo ""
+  echo -e "${CYAN}Deploying Superpowers session hooks...${NC}"
+
+  do_mkdir "$PROJECT_DIR/.claude/hooks"
+
+  if [[ "$DRY_RUN" == true ]]; then
+    echo -e "  ${YELLOW}[DRY-RUN]${NC} Create hooks.json"
+    echo -e "  ${YELLOW}[DRY-RUN]${NC} Copy session-start.sh"
+  else
+    # Create hooks.json pointing to project-local script
+    cat > "$PROJECT_DIR/.claude/hooks/hooks.json" << 'HOOKS_EOF'
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/session-start.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
+HOOKS_EOF
+    echo -e "  ${GREEN}✓${NC} Created hooks.json"
+
+    # Copy session-start.sh and adapt paths
+    cp "$SCRIPT_DIR/superpowers/hooks/session-start.sh" "$PROJECT_DIR/.claude/hooks/"
+    chmod +x "$PROJECT_DIR/.claude/hooks/session-start.sh"
+    echo -e "  ${GREEN}✓${NC} Copied session-start.sh"
+  fi
 }
 
 # ============================================================================
@@ -774,7 +953,12 @@ if [[ "$REFRESH" == true ]]; then
       do_template "$STACK_DIR/gemini/GEMINI.md.template" "$PROJECT_DIR/GEMINI.md"
     fi
   fi
-  
+
+  # Deploy Superpowers if requested (even in refresh mode)
+  if [[ "$WITH_SUPERPOWERS" == true ]]; then
+    deploy_superpowers
+  fi
+
   echo ""
   echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
   echo -e "${GREEN}  CLAUDE.md refreshed successfully!${NC}"
@@ -794,7 +978,6 @@ if [[ "$REFRESH" == true ]]; then
   echo -e "  .claude/commands/   (your customizations)"
   echo -e "  .claude/rules/      (your customizations)"
   echo -e "  .claude/skills/     (your customizations)"
-  echo -e "  .vscode/            (not modified)"
   if [[ "$WITH_MCP" == true ]]; then
     echo ""
     echo -e "${CYAN}MCP configuration deployed:${NC}"
@@ -810,6 +993,13 @@ if [[ "$REFRESH" == true ]]; then
     echo -e "  .gemini/styleguide.md — Code review style guide"
     echo -e "  .gemini/settings.json — MCP servers and settings"
     echo -e "  .gemini/commands/*.toml — Custom Gemini commands"
+  fi
+  if [[ "$WITH_SUPERPOWERS" == true ]]; then
+    echo ""
+    echo -e "${CYAN}Superpowers workflow skills deployed:${NC}"
+    echo -e "  .claude/skills/superpowers/ — Workflow skills"
+    echo -e "  .claude/commands/ — Slash commands"
+    echo -e "  .claude/hooks/ — Session auto-bootstrap"
   fi
   exit 0
 fi
@@ -992,10 +1182,12 @@ if [[ -d "$STACK_DIR/rules" ]]; then
   echo -e "${CYAN}Copying rules (conditional based on detection)...${NC}"
   do_mkdir "$PROJECT_DIR/.claude/rules"
 
-  # Core rules - ALWAYS copy if they exist
-  for rule in accessibility.md performance.md; do
+  # Core rules - ALWAYS copy if they exist (stack-specific or common fallback)
+  for rule in accessibility.md performance.md memory-management.md token-optimization.md; do
     if [[ -f "$STACK_DIR/rules/$rule" ]]; then
       do_copy "$STACK_DIR/rules/$rule" "$PROJECT_DIR/.claude/rules/"
+    elif [[ -f "$SCRIPT_DIR/projects/common/rules/$rule" ]]; then
+      do_copy "$SCRIPT_DIR/projects/common/rules/$rule" "$PROJECT_DIR/.claude/rules/"
     fi
   done
 
@@ -1051,46 +1243,7 @@ if [[ -f "$STACK_DIR/settings.local.json" ]]; then
   do_copy "$STACK_DIR/settings.local.json" "$PROJECT_DIR/.claude/"
 fi
 
-# 4. Copy VSCode settings (unless skipped)
-if [[ "$SKIP_VSCODE" != true ]] && [[ -d "$STACK_DIR/.vscode" ]]; then
-  echo ""
-  echo -e "${CYAN}Copying VSCode settings...${NC}"
-  
-  # Check if .vscode exists and is not empty
-  if [[ -d "$PROJECT_DIR/.vscode" ]] && [[ "$(ls -A "$PROJECT_DIR/.vscode" 2>/dev/null)" ]]; then
-    if [[ "$FORCE" != true ]] && [[ "$DRY_RUN" != true ]]; then
-      echo -e "${YELLOW}Warning: .vscode/ directory already has files${NC}"
-      read -p "Merge/overwrite VSCode settings? (y/N) " -n 1 -r
-      echo
-      if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo -e "  ${YELLOW}○${NC} Skipped VSCode settings"
-      else
-        do_mkdir "$PROJECT_DIR/.vscode"
-        for file in "$STACK_DIR/.vscode"/*; do
-          if [[ -e "$file" ]]; then
-            do_copy "$file" "$PROJECT_DIR/.vscode/"
-          fi
-        done
-      fi
-    else
-      do_mkdir "$PROJECT_DIR/.vscode"
-      for file in "$STACK_DIR/.vscode"/*; do
-        if [[ -e "$file" ]]; then
-          do_copy "$file" "$PROJECT_DIR/.vscode/"
-        fi
-      done
-    fi
-  else
-    do_mkdir "$PROJECT_DIR/.vscode"
-    for file in "$STACK_DIR/.vscode"/*; do
-      if [[ -e "$file" ]]; then
-        do_copy "$file" "$PROJECT_DIR/.vscode/"
-      fi
-    done
-  fi
-fi
-
-# 5. Copy MCP configuration (if requested)
+# 4. Copy MCP configuration (if requested)
 if [[ "$WITH_MCP" == true ]] && [[ -f "$STACK_DIR/.mcp.json" ]]; then
   echo ""
   echo -e "${CYAN}Deploying MCP configuration...${NC}"
@@ -1106,6 +1259,41 @@ if [[ "$WITH_MCP" == true ]] && [[ -f "$STACK_DIR/.mcp.json" ]]; then
     fi
   else
     do_copy "$STACK_DIR/.mcp.json" "$PROJECT_DIR/"
+  fi
+fi
+
+# 5. Copy VSCode settings
+vscode_source=""
+if [[ -d "$STACK_DIR/.vscode" ]]; then
+  vscode_source="$STACK_DIR/.vscode"
+elif [[ -d "$SCRIPT_DIR/projects/common/.vscode" ]]; then
+  vscode_source="$SCRIPT_DIR/projects/common/.vscode"
+fi
+
+if [[ -n "$vscode_source" ]]; then
+  echo ""
+  echo -e "${CYAN}Copying VSCode settings...${NC}"
+
+  # Check if .vscode exists and is not empty
+  if [[ -d "$PROJECT_DIR/.vscode" ]] && [[ "$(ls -A "$PROJECT_DIR/.vscode" 2>/dev/null)" ]]; then
+    if [[ "$FORCE" != true ]] && [[ "$DRY_RUN" != true ]]; then
+      echo -e "${YELLOW}Warning: .vscode/ directory already has files${NC}"
+      read -p "Merge/overwrite VSCode settings? (y/N) " -n 1 -r
+      echo
+      if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo -e "  ${YELLOW}○${NC} Skipped VSCode settings"
+        vscode_source=""
+      fi
+    fi
+  fi
+
+  if [[ -n "$vscode_source" ]]; then
+    do_mkdir "$PROJECT_DIR/.vscode"
+    for file in "$vscode_source"/*; do
+      if [[ -e "$file" ]]; then
+        do_copy "$file" "$PROJECT_DIR/.vscode/"
+      fi
+    done
   fi
 fi
 
@@ -1160,13 +1348,15 @@ if [[ "$WITH_COPILOT" == true ]]; then
   # Create .github directory
   do_mkdir "$PROJECT_DIR/.github"
 
-  # Deploy copilot-instructions.md from template
+  # Deploy copilot-instructions.md from template (stack-specific or common fallback)
   if [[ -f "$STACK_DIR/copilot/copilot-instructions.md.template" ]]; then
     do_template "$STACK_DIR/copilot/copilot-instructions.md.template" "$PROJECT_DIR/.github/copilot-instructions.md"
   elif [[ -f "$STACK_DIR/copilot/copilot-instructions.md" ]]; then
     do_copy "$STACK_DIR/copilot/copilot-instructions.md" "$PROJECT_DIR/.github/"
+  elif [[ -f "$SCRIPT_DIR/projects/common/copilot/copilot-instructions.md.template" ]]; then
+    do_template "$SCRIPT_DIR/projects/common/copilot/copilot-instructions.md.template" "$PROJECT_DIR/.github/copilot-instructions.md"
   else
-    echo -e "  ${YELLOW}○${NC} No Copilot template found for this stack"
+    echo -e "  ${YELLOW}○${NC} No Copilot template found"
   fi
 fi
 
@@ -1175,13 +1365,15 @@ if [[ "$WITH_CURSOR" == true ]]; then
   echo ""
   echo -e "${CYAN}Deploying Cursor AI configuration...${NC}"
 
-  # Deploy .cursorrules from template
+  # Deploy .cursorrules from template (stack-specific or common fallback)
   if [[ -f "$STACK_DIR/cursor/cursorrules.template" ]]; then
     do_template "$STACK_DIR/cursor/cursorrules.template" "$PROJECT_DIR/.cursorrules"
   elif [[ -f "$STACK_DIR/cursor/cursorrules" ]]; then
     do_copy "$STACK_DIR/cursor/cursorrules" "$PROJECT_DIR/.cursorrules"
+  elif [[ -f "$SCRIPT_DIR/projects/common/cursor/cursorrules.template" ]]; then
+    do_template "$SCRIPT_DIR/projects/common/cursor/cursorrules.template" "$PROJECT_DIR/.cursorrules"
   else
-    echo -e "  ${YELLOW}○${NC} No Cursor template found for this stack"
+    echo -e "  ${YELLOW}○${NC} No Cursor template found"
   fi
 fi
 
@@ -1190,13 +1382,15 @@ if [[ "$WITH_WINDSURF" == true ]]; then
   echo ""
   echo -e "${CYAN}Deploying Windsurf AI configuration...${NC}"
 
-  # Deploy .windsurfrules from template
+  # Deploy .windsurfrules from template (stack-specific or common fallback)
   if [[ -f "$STACK_DIR/windsurf/windsurfrules.template" ]]; then
     do_template "$STACK_DIR/windsurf/windsurfrules.template" "$PROJECT_DIR/.windsurfrules"
   elif [[ -f "$STACK_DIR/windsurf/windsurfrules" ]]; then
     do_copy "$STACK_DIR/windsurf/windsurfrules" "$PROJECT_DIR/.windsurfrules"
+  elif [[ -f "$SCRIPT_DIR/projects/common/windsurf/windsurfrules.template" ]]; then
+    do_template "$SCRIPT_DIR/projects/common/windsurf/windsurfrules.template" "$PROJECT_DIR/.windsurfrules"
   else
-    echo -e "  ${YELLOW}○${NC} No Windsurf template found for this stack"
+    echo -e "  ${YELLOW}○${NC} No Windsurf template found"
   fi
 fi
 
@@ -1205,28 +1399,15 @@ if [[ "$WITH_CODEX" == true ]]; then
   echo ""
   echo -e "${CYAN}Deploying OpenAI Codex configuration...${NC}"
 
-  # Deploy AGENTS.md from template
+  # Deploy AGENTS.md from template (stack-specific or common fallback)
   if [[ -f "$STACK_DIR/openai/AGENTS.md.template" ]]; then
     do_template "$STACK_DIR/openai/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md"
   elif [[ -f "$STACK_DIR/openai/AGENTS.md" ]]; then
     do_copy "$STACK_DIR/openai/AGENTS.md" "$PROJECT_DIR/"
+  elif [[ -f "$SCRIPT_DIR/projects/common/openai/AGENTS.md.template" ]]; then
+    do_template "$SCRIPT_DIR/projects/common/openai/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md"
   else
-    echo -e "  ${YELLOW}○${NC} No Codex template found for this stack"
-  fi
-fi
-
-# 6f. Deploy Aider configuration (if requested)
-if [[ "$WITH_AIDER" == true ]]; then
-  echo ""
-  echo -e "${CYAN}Deploying Aider configuration...${NC}"
-
-  # Deploy CONVENTIONS.md from template
-  if [[ -f "$STACK_DIR/aider/CONVENTIONS.md.template" ]]; then
-    do_template "$STACK_DIR/aider/CONVENTIONS.md.template" "$PROJECT_DIR/CONVENTIONS.md"
-  elif [[ -f "$STACK_DIR/aider/CONVENTIONS.md" ]]; then
-    do_copy "$STACK_DIR/aider/CONVENTIONS.md" "$PROJECT_DIR/"
-  else
-    echo -e "  ${YELLOW}○${NC} No Aider template found for this stack"
+    echo -e "  ${YELLOW}○${NC} No Codex template found"
   fi
 fi
 
@@ -1237,6 +1418,22 @@ if [[ -f "$STACK_DIR/CLAUDE.md.template" ]]; then
   do_template "$STACK_DIR/CLAUDE.md.template" "$PROJECT_DIR/CLAUDE.md"
 elif [[ -f "$STACK_DIR/CLAUDE.md" ]]; then
   do_copy "$STACK_DIR/CLAUDE.md" "$PROJECT_DIR/"
+fi
+
+# 7b. Create MEMORY.md from template (if it doesn't exist)
+if [[ ! -f "$PROJECT_DIR/MEMORY.md" ]]; then
+  echo ""
+  echo -e "${CYAN}Deploying Memory Bank template...${NC}"
+  if [[ -f "$STACK_DIR/MEMORY.md.template" ]]; then
+    do_template "$STACK_DIR/MEMORY.md.template" "$PROJECT_DIR/MEMORY.md"
+  elif [[ -f "$SCRIPT_DIR/projects/common/MEMORY.md.template" ]]; then
+    do_template "$SCRIPT_DIR/projects/common/MEMORY.md.template" "$PROJECT_DIR/MEMORY.md"
+  fi
+else
+  if [[ "$DRY_RUN" != true ]]; then
+    echo ""
+    echo -e "  ${YELLOW}○${NC} MEMORY.md exists, preserving existing memory"
+  fi
 fi
 
 # 8. Generate analysis prompt if requested
@@ -1286,7 +1483,12 @@ ANALYSIS_EOF
   echo -e "  ${GREEN}✓${NC} Created .claude/ANALYZE_PROJECT.md"
 fi
 
-# 9. Generate discovery prompt if in discovery mode
+# 9. Deploy Superpowers workflow skills (enabled by default)
+if [[ "$WITH_SUPERPOWERS" == true ]]; then
+  deploy_superpowers
+fi
+
+# 10. Generate discovery prompt if in discovery mode
 if [[ "$DISCOVER" == true ]] && [[ "$DRY_RUN" != true ]]; then
   echo ""
   echo -e "${CYAN}Generating discovery analysis prompt...${NC}"
@@ -1411,19 +1613,6 @@ echo "  - CLAUDE.md — Project overview and commands"
 echo "  - .claude/rules/ — Project-specific constraints"
 echo "  - .claude/agents/ — Custom agent personas"
 echo ""
-if [[ "$SKIP_VSCODE" != true ]]; then
-  echo -e "${CYAN}VSCode settings deployed:${NC}"
-  echo "  - .vscode/settings.json — Editor + Emmet config"
-  echo "  - .vscode/extensions.json — Recommended extensions"
-  echo "  - .vscode/launch.json — Xdebug configuration"
-  echo "  - .vscode/tasks.json — DDEV Xdebug tasks"
-  echo "  - .vscode/tailwind.json — Tailwind CSS IntelliSense"
-  echo ""
-  if [[ "$INSTALL_EXTENSIONS" != true ]]; then
-    echo -e "${YELLOW}Tip:${NC} Use --install-extensions to auto-install recommended extensions"
-    echo ""
-  fi
-fi
 if [[ "$WITH_MCP" == true ]]; then
   echo -e "${CYAN}MCP configuration deployed:${NC}"
   echo "  - .mcp.json — ExpressionEngine MCP server config"
@@ -1462,26 +1651,32 @@ if [[ "$WITH_CODEX" == true ]]; then
   echo "  - AGENTS.md — Agent instructions for Codex"
   echo ""
 fi
-if [[ "$WITH_AIDER" == true ]]; then
-  echo -e "${CYAN}Aider configuration deployed:${NC}"
-  echo "  - CONVENTIONS.md — Coding conventions for Aider"
+if [[ "$WITH_SUPERPOWERS" == true ]]; then
+  echo -e "${CYAN}Superpowers workflow skills deployed:${NC}"
+  echo "  - .claude/skills/superpowers/ — Workflow skills"
+  echo "  - .claude/commands/ — Slash commands (/brainstorm, /write-plan, /execute-plan)"
+  echo "  - .claude/hooks/ — Session auto-bootstrap"
+  echo ""
+  echo -e "${GREEN}Skills activate automatically on Claude Code session start.${NC}"
   echo ""
 fi
-if [[ "$INSTALL_EXTENSIONS" == true ]] && [[ "$SKIP_VSCODE" != true ]] && [[ "$DRY_RUN" != true ]]; then
-  echo -e "${CYAN}Installing VSCode extensions...${NC}"
+echo -e "${CYAN}Memory & Token Optimization deployed:${NC}"
+echo "  - MEMORY.md — Persistent project memory bank"
+echo "  - .claude/rules/memory-management.md — Memory update protocols"
+echo "  - .claude/rules/token-optimization.md — Context efficiency rules"
+echo ""
+if [[ -n "$vscode_source" ]] || [[ -d "$PROJECT_DIR/.vscode" ]]; then
+  echo -e "${CYAN}VSCode settings deployed:${NC}"
+  echo "  - .vscode/settings.json — Editor + formatter preferences"
+  [[ -f "$PROJECT_DIR/.vscode/launch.json" ]] && echo "  - .vscode/launch.json — Xdebug configuration"
+  [[ -f "$PROJECT_DIR/.vscode/tasks.json" ]] && echo "  - .vscode/tasks.json — DDEV tasks"
   echo ""
-  if "$SCRIPT_DIR/install-vscode-extensions.sh" "$PROJECT_DIR"; then
-    echo ""
-  else
-    echo -e "${YELLOW}Note: Extension installation requires 'code' command${NC}"
-    echo "To install manually: Open VSCode → Extensions → Install recommendations"
-    echo ""
-  fi
 fi
-
 echo -e "${CYAN}Gitignore reminder:${NC}"
 echo "  Ensure .gitignore includes:"
 echo "    CLAUDE.md"
+echo "    MEMORY.md"
+echo "    MEMORY-ARCHIVE.md"
 echo "    .claude/"
 if [[ "$WITH_GEMINI" == true ]]; then
   echo "    GEMINI.md"
@@ -1501,8 +1696,5 @@ if [[ "$WITH_WINDSURF" == true ]]; then
 fi
 if [[ "$WITH_CODEX" == true ]]; then
   echo "    AGENTS.md"
-fi
-if [[ "$WITH_AIDER" == true ]]; then
-  echo "    CONVENTIONS.md"
 fi
 echo ""
