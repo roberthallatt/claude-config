@@ -113,14 +113,25 @@ Add custom rules to `.claude/rules/` in your project. They won't be overwritten 
 
 **Recommended .gitignore:**
 ```
+# Claude Code
 CLAUDE.md
+MEMORY.md
+MEMORY-ARCHIVE.md
 .claude/
+
+# Gemini Code Assist
 GEMINI.md
 .gemini/
 .geminiignore
+
+# Other AI Assistants
+.github/copilot-instructions.md
+.cursorrules
+.windsurfrules
+AGENTS.md
 ```
 
-These files are project-specific and shouldn't be committed.
+These files are project-specific and shouldn't be committed. See [File Structure](../reference/file-structure.md#ignored-files) for complete details.
 
 ## Next Steps
 
