@@ -130,7 +130,7 @@ Creates:
 
 Automatically install VSCode extensions from `.vscode/extensions.json`.
 
-Requires `code` CLI command. See [VSCode Extensions Guide](vscode-extensions.md).
+Requires `code` CLI command. See [Installation](../getting-started/installation.md#optional-vscode-cli) for setup.
 
 ## Memory & Token Optimization
 
@@ -378,7 +378,7 @@ The script couldn't automatically identify your project's stack. Options:
 
 1. Check if `code` command is available: `code --version`
 2. Install VSCode CLI: VSCode → Cmd+Shift+P → "Shell Command: Install 'code' command in PATH"
-3. Run manually: `./install-vscode-extensions.sh /path/to/project`
+3. Install manually: `code --install-extension <extension-id>`
 
 ### Technology Not Detected
 
@@ -390,6 +390,6 @@ Detection scans template files only (excluding `node_modules`, `vendor`). If tec
 ## Next Steps
 
 - **[Memory System](memory-system.md)** - Persistent context guide
-- **[VSCode Extensions](vscode-extensions.md)** - Extension installation details
+- **[Installation](../getting-started/installation.md)** - Shell aliases and VSCode CLI setup
 - **[Conditional Deployment](conditional-deployment.md)** - Detection logic
 - **[Updating Projects](updating-projects.md)** - Update workflows

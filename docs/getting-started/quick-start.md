@@ -152,5 +152,4 @@ Disable with `--no-superpowers`.
 
 - **[Memory System Guide](../guides/memory-system.md)** - Persistent context
 - **[Setup Script Guide](../guides/setup-script.md)** - Advanced usage
-- **[VSCode Extensions](../guides/vscode-extensions.md)** - Extension details
 - **[Configuration](configuration.md)** - Customize your setup
