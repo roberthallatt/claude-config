@@ -39,12 +39,15 @@ escape_for_json() {
 using_superpowers_escaped=$(escape_for_json "$using_superpowers_content")
 warning_escaped=$(escape_for_json "$warning_message")
 
+# Memory management reminder
+memory_reminder="\\n\\n<MEMORY_REQUIREMENT>\\n**AUTOMATIC MEMORY UPDATES REQUIRED**\\n\\nYou MUST update MEMORY.md automatically (without being asked) after:\\n- Completing any task or feature\\n- Making code changes (Edit/Write tools)\\n- Making architectural decisions\\n- When user indicates session is ending\\n\\nDo NOT wait to be asked. Update memory immediately after completing work.\\n</MEMORY_REQUIREMENT>"
+
 # Output context injection as JSON
 cat <<EOF
 {
   "hookSpecificOutput": {
     "hookEventName": "SessionStart",
-    "additionalContext": "<EXTREMELY_IMPORTANT>\nYou have superpowers.\n\n**Below is the full content of your 'superpowers:using-superpowers' skill - your introduction to using skills. For all other skills, use the 'Skill' tool:**\n\n${using_superpowers_escaped}\n\n${warning_escaped}\n</EXTREMELY_IMPORTANT>"
+    "additionalContext": "<EXTREMELY_IMPORTANT>\nYou have superpowers.\n\n**Below is the full content of your 'superpowers:using-superpowers' skill - your introduction to using skills. For all other skills, use the 'Skill' tool:**\n\n${using_superpowers_escaped}\n\n${warning_escaped}${memory_reminder}\n</EXTREMELY_IMPORTANT>"
   }
 }
 EOF

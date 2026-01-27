@@ -4,9 +4,35 @@
 
 Maintain persistent project context across sessions to reduce token usage and improve response quality.
 
-## Memory Bank Structure
+## CRITICAL: Automatic Memory Updates
 
-The project uses a `MEMORY.md` file at the root to persist critical context:
+**You MUST automatically update `MEMORY.md` without being asked** in these situations:
+
+### After Completing Any Task
+When you finish implementing a feature, fixing a bug, or completing any requested work:
+1. Add entry to "Recent Changes" table with date, description, and files modified
+2. Update "Current Focus" if the focus has shifted
+3. Do this IMMEDIATELY after completing the task, before responding "done"
+
+### After Making Code Changes
+When you use Edit or Write tools to modify files:
+1. Track which files were changed
+2. At task completion, log all changes to MEMORY.md
+3. Include brief description of what changed and why
+
+### After Making Decisions
+When you make architectural or implementation decisions:
+1. Add entry to "Decision Log" section
+2. Include context, decision, rationale, and consequences
+3. This helps future sessions understand why things are the way they are
+
+### Before Session Ends
+If the user says goodbye, thanks you, or indicates they're done:
+1. Update "Session Handoff" with incomplete work
+2. Document any temporary state (debug code, hardcoded values)
+3. List clear next steps
+
+## Memory Bank Structure
 
 ```
 MEMORY.md
@@ -17,6 +43,28 @@ MEMORY.md
 └── Session Handoff      # What the next session needs to know
 ```
 
+## Recent Changes Table Format
+
+Always use this format:
+```markdown
+### Recent Changes
+| Date | Change | Files |
+|------|--------|-------|
+| 2024-01-25 | Added user authentication | auth.ts, middleware.ts |
+| 2024-01-24 | Fixed login redirect bug | login.tsx |
+```
+
+## Decision Log Format
+
+```markdown
+### DEC-001: [Decision Title]
+- **Date:** 2024-01-25
+- **Context:** Why this decision was needed
+- **Decision:** What was decided
+- **Rationale:** Why this choice over alternatives
+- **Consequences:** Trade-offs, implications
+```
+
 ## When to Read Memory
 
 **Always read `MEMORY.md` at session start** before:
@@ -24,31 +72,6 @@ MEMORY.md
 - Making design decisions
 - Modifying core functionality
 - Reviewing or writing tests
-
-## When to Update Memory
-
-Update `MEMORY.md` after:
-- Completing a significant feature
-- Making an architectural decision
-- Discovering important project patterns
-- Ending a session with incomplete work
-
-## Memory Update Format
-
-When updating memory, use atomic updates:
-
-```markdown
-## Active Context
-<!-- Updated: 2024-01-25 -->
-
-### Current Focus
-- Implementing user authentication
-- Blocked on: OAuth provider selection
-
-### Recent Changes
-- Added login form component
-- Set up JWT token handling
-```
 
 ## What to Remember
 
@@ -58,21 +81,12 @@ When updating memory, use atomic updates:
 - Known issues and workarounds
 - Environment-specific configurations
 - Key file locations and purposes
+- Every code change made (in Recent Changes)
 
 **Never persist:**
-- Temporary debugging information
 - Sensitive credentials or tokens
 - User-specific preferences
-- Transient error messages
-
-## Session Handoff Protocol
-
-Before ending a session with incomplete work:
-
-1. Update "Active Context" with current state
-2. Document any blockers or pending decisions
-3. List next steps in priority order
-4. Note any temporary workarounds in place
+- Raw error messages (summarize instead)
 
 ## Memory Compression
 
@@ -87,3 +101,12 @@ When `MEMORY.md` exceeds 500 lines:
 - `MEMORY.md` = Dynamic session context (decisions, progress, state)
 
 Read both at session start. Update only `MEMORY.md` during work.
+
+## Enforcement
+
+This is not optional. Failing to update memory means:
+- Future sessions won't know what was done
+- Work may be duplicated or undone
+- Context is lost between sessions
+
+**Update memory automatically. Don't wait to be asked.**
