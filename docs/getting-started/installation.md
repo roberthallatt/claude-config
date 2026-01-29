@@ -1,63 +1,72 @@
 # Installation
 
-## Prerequisites
+## Quick Install (Recommended)
 
-- **Git** - Clone this repository
-- **Bash** - Run the setup script (macOS/Linux/WSL)
-- **VSCode** (optional) - For IDE integration
-- **DDEV** (optional) - For ExpressionEngine/Coilpack MCP servers
-
-## Clone the Repository
+One command to install:
 
 ```bash
-git clone https://github.com/canadian-paediatric-society/claude-config-repo.git
-cd claude-config-repo
+git clone https://github.com/canadian-paediatric-society/claude-config-repo.git ~/.ai-config && \
+~/.ai-config/install.sh
 ```
 
-## Make Scripts Executable
+Then reload your shell:
+
+```bash
+source ~/.zshrc  # or ~/.bashrc
+```
+
+Now use `ai-config` from anywhere:
+
+```bash
+ai-config --project=/path/to/project --with-all
+```
+
+---
+
+## What the Installer Does
+
+1. **Detects your shell** (zsh, bash, fish)
+2. **Makes scripts executable**
+3. **Adds aliases** to your shell config:
+   - `ai-config` → Main deployment command
+   - `ai-config-docs` → Documentation server
+4. **Installs global Claude config** (if present)
+
+---
+
+## Manual Installation
+
+If you prefer to install manually or to a custom location:
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/canadian-paediatric-society/claude-config-repo.git ~/path/to/ai-config
+cd ~/path/to/ai-config
+```
+
+### 2. Make Scripts Executable
 
 ```bash
 chmod +x setup-project.sh
 chmod +x serve-docs.sh
 ```
 
-## Verify Installation
-
-```bash
-./setup-project.sh --help
-```
-
-You should see the usage documentation for the setup script.
-
-## Set Up Shell Aliases (Recommended)
-
-Add global aliases to run commands from anywhere without specifying the full path.
-
-### Determine Your Shell
-
-```bash
-echo $SHELL
-```
-
-This will show `/bin/bash`, `/bin/zsh`, or another shell.
-
-### Add Aliases
+### 3. Add Shell Aliases
 
 Edit your shell configuration file:
 
-| Shell | Configuration File |
-|-------|-------------------|
+| Shell | File |
+|-------|------|
 | Zsh (macOS default) | `~/.zshrc` |
 | Bash | `~/.bashrc` or `~/.bash_profile` |
 | Fish | `~/.config/fish/config.fish` |
 
-Add these lines to the appropriate file (update the path to match where you cloned the repository):
-
-**For Zsh or Bash:**
+**For Zsh/Bash:**
 
 ```bash
-# AI Config Repository aliases
-export AI_CONFIG_REPO="$HOME/path/to/claude-config-repo"
+# AI Config
+export AI_CONFIG_REPO="$HOME/path/to/ai-config"
 alias ai-config="$AI_CONFIG_REPO/setup-project.sh"
 alias ai-config-docs="$AI_CONFIG_REPO/serve-docs.sh"
 ```
@@ -65,39 +74,118 @@ alias ai-config-docs="$AI_CONFIG_REPO/serve-docs.sh"
 **For Fish:**
 
 ```fish
-# AI Config Repository aliases
-set -gx AI_CONFIG_REPO "$HOME/path/to/claude-config-repo"
+# AI Config
+set -gx AI_CONFIG_REPO "$HOME/path/to/ai-config"
 alias ai-config "$AI_CONFIG_REPO/setup-project.sh"
 alias ai-config-docs "$AI_CONFIG_REPO/serve-docs.sh"
 ```
 
-### Apply Changes
-
-Reload your shell configuration:
+### 4. Reload Shell
 
 ```bash
-# For Zsh
-source ~/.zshrc
-
-# For Bash
-source ~/.bashrc
-
-# For Fish
-source ~/.config/fish/config.fish
+source ~/.zshrc  # or your shell's config file
 ```
 
-Or simply open a new terminal window.
+---
 
-### Verify Aliases
+## Verify Installation
 
 ```bash
 ai-config --help
-ai-config-docs
 ```
 
-The first command should show the setup script help. The second should start the documentation server at http://localhost:8000.
+You should see the usage documentation.
+
+---
+
+## Updating
+
+To update to the latest version:
+
+```bash
+cd ~/.ai-config  # or your install location
+git pull
+```
+
+Your aliases will continue to work.
+
+---
+
+## Uninstalling
+
+### 1. Remove Aliases
+
+Edit your shell config file and remove the AI Config section:
+
+```bash
+# Remove these lines from ~/.zshrc or ~/.bashrc:
+# AI Config
+export AI_CONFIG_REPO="..."
+alias ai-config="..."
+alias ai-config-docs="..."
+```
+
+### 2. Remove Repository
+
+```bash
+rm -rf ~/.ai-config  # or your install location
+```
+
+### 3. Remove Global Config (Optional)
+
+```bash
+rm -rf ~/.claude/stacks
+rm -rf ~/.claude/libraries
+```
+
+---
+
+## Requirements
+
+| Requirement | Notes |
+|-------------|-------|
+| **Bash** | macOS, Linux, or WSL |
+| **Git** | To clone the repository |
+| **VSCode** | Optional, for IDE integration |
+| **VSCode CLI** | Optional, for `--install-extensions` flag |
+| **DDEV** | Optional, for EE/Coilpack MCP servers |
+
+---
+
+## Troubleshooting
+
+### "command not found: ai-config"
+
+Your shell config hasn't been reloaded:
+
+```bash
+source ~/.zshrc  # or ~/.bashrc
+```
+
+Or open a new terminal window.
+
+### Aliases Not Working
+
+Check if aliases were added:
+
+```bash
+grep "ai-config" ~/.zshrc
+```
+
+If not found, run the installer again or add manually.
+
+### Permission Denied
+
+Make scripts executable:
+
+```bash
+chmod +x ~/.ai-config/setup-project.sh
+chmod +x ~/.ai-config/serve-docs.sh
+```
+
+---
 
 ## Next Steps
 
-- **[Quick Start](quick-start.md)** - Deploy your first configuration
-- **[Configuration](configuration.md)** - Understand what gets deployed
+- **[Quick Start](quick-start.md)** - Configure your first project
+- **[Configuration](configuration.md)** - What gets deployed

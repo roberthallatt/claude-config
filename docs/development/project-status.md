@@ -12,7 +12,7 @@ All 7+ technology stacks have complete configurations for **6 AI coding assistan
 - Superpowers workflow skills (15 skills)
 - Technology-specific coding rules (4-7 rules per stack)
 
-The setup script (`setup-project.sh`) deploys configurations for all AI assistants when using `--with-all`.
+The `ai-config` command deploys configurations for all AI assistants when using `--with-all`.
 
 ---
 
@@ -179,7 +179,7 @@ superpowers/
 ### Initial Setup Command
 
 ```bash
-./setup-project.sh \
+ai-config \
   --stack=expressionengine \
   --project=/path/to/project \
   --with-all
@@ -209,7 +209,7 @@ superpowers/
 ### Refresh Command
 
 ```bash
-./setup-project.sh \
+ai-config \
   --refresh \
   --stack=custom \
   --project=/path/to/project

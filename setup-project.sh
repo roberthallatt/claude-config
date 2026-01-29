@@ -407,8 +407,12 @@ detect_template_group() {
 }
 
 detect_frontend_tools() {
-  # Check for Tailwind
-  if [[ -f "$PROJECT_DIR/$DDEV_DOCROOT/tailwind.config.js" ]] || [[ -f "$PROJECT_DIR/tailwind.config.js" ]]; then
+  # Check for Tailwind (root, docroot, or nested in themes - common in WordPress Roots/Sage)
+  if [[ -f "$PROJECT_DIR/tailwind.config.js" ]] || [[ -f "$PROJECT_DIR/$DDEV_DOCROOT/tailwind.config.js" ]]; then
+    HAS_TAILWIND=true
+  elif [[ -f "$PROJECT_DIR/package.json" ]] && grep -q "tailwindcss" "$PROJECT_DIR/package.json" 2>/dev/null; then
+    HAS_TAILWIND=true
+  elif find "$PROJECT_DIR" -path "*/node_modules" -prune -o -name "tailwind.config.*" -print 2>/dev/null | head -1 | grep -q .; then
     HAS_TAILWIND=true
   fi
 

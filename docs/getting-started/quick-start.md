@@ -1,142 +1,134 @@
 # Quick Start
 
-Deploy AI coding assistant configurations to your project in minutes.
+Configure AI coding assistants for your project in under a minute.
 
-## Basic Deployment
+## 1. Install (One Time)
 
-### Auto-Detect Stack (Recommended)
+```bash
+git clone https://github.com/canadian-paediatric-society/claude-config-repo.git ~/.ai-config && \
+~/.ai-config/install.sh && \
+source ~/.zshrc
+```
 
-The script automatically detects your project's stack:
+## 2. Configure Your Project
 
 ```bash
 ai-config --project=/path/to/your/project --with-all
 ```
 
-This will:
-1. Auto-detect stack (ExpressionEngine, Craft CMS, WordPress, Next.js, Docusaurus, etc.)
-2. Detect project technologies (Tailwind, Alpine.js, etc.)
-3. Deploy configurations for all 6 AI assistants
-4. Deploy memory bank and token optimization rules
-5. Configure VSCode settings with syntax recognition
+That's it! The script auto-detects your framework and technologies.
 
-### New Project Setup (Manual Stack)
+---
 
-If you prefer to specify the stack manually:
+## What Happens
 
-```bash
-ai-config \
-  --stack=expressionengine \
-  --project=/path/to/your/project \
-  --with-all
-```
+When you run `ai-config --project=. --with-all`:
 
-This will:
-1. Use the specified stack template
-2. Detect project technologies (Tailwind, Alpine.js, etc.)
-3. Deploy configurations for all 6 AI assistants
-4. Deploy memory bank (`MEMORY.md`) for persistent context
-5. Configure VSCode settings with syntax recognition
+1. **Framework Detection** - Identifies ExpressionEngine, Craft CMS, WordPress, Next.js, etc.
+2. **Technology Detection** - Finds Tailwind, Alpine.js, SCSS, bilingual content, etc.
+3. **AI Configuration** - Deploys optimized configs for 6 AI assistants
+4. **Memory System** - Sets up persistent context (`MEMORY.md`)
+5. **VSCode Setup** - Configures syntax highlighting, debugging, tasks
 
-### Discovery Mode (Unknown Stacks)
+---
 
-For projects that don't match a known stack:
+## Common Commands
+
+### Current Directory
 
 ```bash
-ai-config --project=/path/to/project --discover --with-all
+cd /path/to/your/project
+ai-config --project=. --with-all
 ```
 
-This will:
-1. Detect 50+ technologies (React, Vue, Laravel, Django, Express, etc.)
-2. Deploy base configuration for all AI assistants
-3. Deploy memory and token optimization system
-4. Generate a discovery prompt for AI analysis
-
-Then open in Claude Code and run `/project-discover` to generate stack-specific rules.
-
-### Update Existing Project
-
-The script can auto-detect your stack from existing configuration:
+### Preview First
 
 ```bash
-ai-config --refresh --stack=custom --project=/path/to/your/project
+ai-config --project=. --with-all --dry-run
 ```
 
-Note: For `--refresh`, specify `--stack` if auto-detection fails.
+### Update After Changes
 
-## Supported Stacks
+```bash
+ai-config --refresh --project=.
+```
 
-| Stack | Description |
-|-------|-------------|
-| `expressionengine` | ExpressionEngine 7.x CMS |
-| `coilpack` | Laravel + ExpressionEngine hybrid |
-| `craftcms` | Craft CMS with Twig templates |
-| `wordpress-roots` | WordPress with Roots/Bedrock |
-| `wordpress` | Standard WordPress |
-| `nextjs` | Next.js with TypeScript |
-| `docusaurus` | Docusaurus documentation sites |
-| `custom` | Discovery mode for any stack |
+### Discovery Mode (Unknown Framework)
 
-## Common Options
+```bash
+ai-config --project=. --discover --with-all
+```
 
-| Flag | Description |
-|------|-------------|
-| `--stack=<name>` | Technology stack (optional - auto-detected if omitted) |
-| `--project=<path>` | Target project directory (required, use `.` for current) |
-| `--discover` | AI-powered discovery mode for unknown stacks |
-| `--with-all` | Deploy all 6 AI assistant configurations |
-| `--with-gemini` | Deploy Gemini Code Assist configuration |
-| `--with-copilot` | Deploy GitHub Copilot configuration |
-| `--with-cursor` | Deploy Cursor AI configuration |
-| `--with-windsurf` | Deploy Windsurf AI configuration |
-| `--with-codex` | Deploy OpenAI Codex configuration |
-| `--refresh` | Update existing configuration (specify --stack) |
-| `--dry-run` | Preview changes without applying |
-| `--force` | Overwrite without prompting |
-| `--clean` | Remove existing config before deploying |
+Then run `/project-discover` in Claude Code.
 
-## What Gets Deployed
+---
 
-### Claude Code (Always)
-- `CLAUDE.md` - Project context and overview
-- `MEMORY.md` - Persistent memory bank
-- `.claude/rules/` - Stack-specific coding rules
-- `.claude/rules/memory-management.md` - Memory protocols
-- `.claude/rules/token-optimization.md` - Token efficiency
-- `.claude/agents/` - Custom agent personas
-- `.claude/commands/` - Project-specific commands
-- `.claude/skills/superpowers/` - Workflow skills
+## Deployed Files
 
-### Gemini Code Assist (`--with-gemini` or `--with-all`)
-- `GEMINI.md` - Agent mode context
-- `.gemini/settings.json` - MCP servers and settings
-- `.gemini/config.yaml` - PR review configuration
-- `.gemini/commands/` - Custom Gemini commands
+| AI Assistant | Files |
+|--------------|-------|
+| Claude Code | `CLAUDE.md`, `MEMORY.md`, `.claude/` |
+| Gemini Code Assist | `GEMINI.md`, `.gemini/` |
+| GitHub Copilot | `.github/copilot-instructions.md` |
+| Cursor AI | `.cursorrules` |
+| Windsurf AI | `.windsurfrules` |
+| OpenAI Codex | `AGENTS.md` |
+| VSCode | `.vscode/settings.json`, `launch.json`, `tasks.json` |
 
-### GitHub Copilot (`--with-copilot` or `--with-all`)
-- `.github/copilot-instructions.md` - Custom instructions
+---
 
-### Cursor AI (`--with-cursor` or `--with-all`)
-- `.cursorrules` - Project rules for Cursor
+## Auto-Detected Frameworks
 
-### Windsurf AI (`--with-windsurf` or `--with-all`)
-- `.windsurfrules` - Project rules for Windsurf
+| Framework | Detection |
+|-----------|-----------|
+| ExpressionEngine | `system/ee/` directory |
+| Craft CMS | `craft` executable |
+| WordPress (Roots) | `web/app/themes/` |
+| WordPress | `wp-config.php` |
+| Next.js | `next.config.js` |
+| Docusaurus | `docusaurus.config.js` |
+| Coilpack | Laravel + EE structure |
 
-### OpenAI Codex (`--with-codex` or `--with-all`)
-- `AGENTS.md` - Agent instructions
+---
 
-### VSCode
-- `.vscode/settings.json` - Editor settings with syntax recognition
-- `.vscode/launch.json` - Xdebug debugging (PHP stacks)
-- `.vscode/tasks.json` - Build and DDEV tasks
+## Auto-Detected Technologies
 
-## Superpowers Skills (Enabled by Default)
+| Technology | Result |
+|------------|--------|
+| Tailwind CSS | Adds rules + VSCode Tailwind support |
+| Alpine.js | Adds Alpine.js rules |
+| Foundation | Adds Foundation patterns |
+| SCSS/Sass | Adds SCSS best practices |
+| Bilingual (EN/FR) | Adds bilingual content rules |
+| DDEV | Extracts project config |
 
-The deployment includes workflow skills that auto-activate:
+---
+
+## Individual AI Assistants
+
+Don't need all 6? Use specific flags:
+
+```bash
+# Just Claude (always included)
+ai-config --project=.
+
+# Claude + Gemini
+ai-config --project=. --with-gemini
+
+# Claude + Copilot + Cursor
+ai-config --project=. --with-copilot --with-cursor
+```
+
+---
+
+## Superpowers Skills
+
+Workflow skills are deployed by default:
 
 | Skill | Purpose |
 |-------|---------|
-| `memory-management` | Persistent context across sessions |
-| `brainstorming` | Structured idea generation |
+| `memory-management` | Persistent context |
+| `brainstorming` | Idea generation |
 | `writing-plans` | Implementation planning |
 | `executing-plans` | Step-by-step execution |
 | `systematic-debugging` | Root cause analysis |
@@ -144,8 +136,10 @@ The deployment includes workflow skills that auto-activate:
 
 Disable with `--no-superpowers`.
 
+---
+
 ## Next Steps
 
-- **[Memory System Guide](../guides/memory-system.md)** - Persistent context
-- **[Setup Script Guide](../guides/setup-script.md)** - Advanced usage
-- **[Configuration](configuration.md)** - Customize your setup
+- **[Memory System](../guides/memory-system.md)** - Persistent context guide
+- **[Setup Script](../guides/setup-script.md)** - All options
+- **[Configuration](configuration.md)** - What gets deployed

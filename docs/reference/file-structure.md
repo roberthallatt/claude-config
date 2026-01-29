@@ -152,7 +152,7 @@ projects/expressionengine/
 
 ## Deployed Project Structure
 
-After running `setup-project.sh --with-all`, your project will have:
+After running `ai-config --project=. --with-all`, your project will have:
 
 ```
 your-project/

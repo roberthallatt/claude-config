@@ -61,7 +61,7 @@ mkdir -p ~/test-projects/{ee,craft,nextjs}
 ### Test Changes
 
 ```bash
-./setup-project.sh \
+ai-config \
   --dry-run \
   --stack=expressionengine \
   --project=~/test-projects/ee

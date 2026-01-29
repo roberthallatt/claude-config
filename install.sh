@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 #
-# Install global Claude Code configuration files to ~/.claude/
+# AI Config Installer
 #
-# This installs:
-# - Stack-specific knowledge (stacks/)
-# - Library/framework references (libraries/)
-# - Global coding preferences (global/CLAUDE.md)
+# Installs shell aliases so you can run ai-config from anywhere.
+#
+# Usage:
+#   ./install.sh
+#
+# After installation:
+#   ai-config --project=/path/to/project --with-all
 #
 
 set -e
@@ -18,105 +21,145 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-# Script directory
+# Script directory (where ai-config is installed)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Target directory
-CLAUDE_DIR="$HOME/.claude"
-
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}  Claude Code Global Configuration Installer${NC}"
+echo -e "${BLUE}  AI Config Installer${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
-# Check if ~/.claude exists
-if [[ -d "$CLAUDE_DIR" ]]; then
-  echo -e "${YELLOW}~/.claude/ directory already exists${NC}"
+# Detect shell
+SHELL_NAME=$(basename "$SHELL")
+case "$SHELL_NAME" in
+  zsh)
+    SHELL_RC="$HOME/.zshrc"
+    ;;
+  bash)
+    if [[ -f "$HOME/.bash_profile" ]]; then
+      SHELL_RC="$HOME/.bash_profile"
+    else
+      SHELL_RC="$HOME/.bashrc"
+    fi
+    ;;
+  fish)
+    SHELL_RC="$HOME/.config/fish/config.fish"
+    ;;
+  *)
+    SHELL_RC="$HOME/.bashrc"
+    echo -e "${YELLOW}Unknown shell: $SHELL_NAME. Defaulting to ~/.bashrc${NC}"
+    ;;
+esac
+
+echo -e "${CYAN}Detected shell:${NC} $SHELL_NAME"
+echo -e "${CYAN}Config file:${NC} $SHELL_RC"
+echo ""
+
+# Make scripts executable
+echo -e "${CYAN}Making scripts executable...${NC}"
+chmod +x "$SCRIPT_DIR/setup-project.sh"
+chmod +x "$SCRIPT_DIR/serve-docs.sh"
+[[ -f "$SCRIPT_DIR/install-vscode-extensions.sh" ]] && chmod +x "$SCRIPT_DIR/install-vscode-extensions.sh"
+echo -e "  ${GREEN}✓${NC} Scripts are executable"
+echo ""
+
+# Check if aliases already exist
+if grep -q "alias ai-config=" "$SHELL_RC" 2>/dev/null; then
+  echo -e "${YELLOW}Aliases already exist in $SHELL_RC${NC}"
   echo ""
-  echo "This will:"
-  echo "  - Add/update stack knowledge files"
-  echo "  - Add/update library reference files"
-  echo "  - Add/update global coding preferences"
-  echo ""
-  read -p "Continue? (y/n) " -n 1 -r
+  read -p "Update aliases to point to this installation? (y/n) " -n 1 -r
   echo
-  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo "Installation cancelled"
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    # Remove old aliases
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      sed -i '' '/# AI Config/d' "$SHELL_RC"
+      sed -i '' '/alias ai-config=/d' "$SHELL_RC"
+      sed -i '' '/alias ai-config-docs=/d' "$SHELL_RC"
+      sed -i '' '/export AI_CONFIG_REPO=/d' "$SHELL_RC"
+    else
+      sed -i '/# AI Config/d' "$SHELL_RC"
+      sed -i '/alias ai-config=/d' "$SHELL_RC"
+      sed -i '/alias ai-config-docs=/d' "$SHELL_RC"
+      sed -i '/export AI_CONFIG_REPO=/d' "$SHELL_RC"
+    fi
+    echo -e "  ${GREEN}✓${NC} Removed old aliases"
+  else
+    echo -e "${YELLOW}Skipping alias installation${NC}"
+    echo ""
+    echo -e "${CYAN}You can manually add these to your shell config:${NC}"
+    echo ""
+    echo "  # AI Config"
+    echo "  export AI_CONFIG_REPO=\"$SCRIPT_DIR\""
+    echo "  alias ai-config=\"\$AI_CONFIG_REPO/setup-project.sh\""
+    echo "  alias ai-config-docs=\"\$AI_CONFIG_REPO/serve-docs.sh\""
+    echo ""
     exit 0
   fi
-else
-  echo -e "${CYAN}Creating ~/.claude/ directory...${NC}"
-  mkdir -p "$CLAUDE_DIR"
 fi
 
+# Add aliases
+echo -e "${CYAN}Adding aliases to $SHELL_RC...${NC}"
+
+if [[ "$SHELL_NAME" == "fish" ]]; then
+  # Fish shell syntax
+  cat >> "$SHELL_RC" << EOF
+
+# AI Config - Universal AI Coding Assistant Configuration
+set -gx AI_CONFIG_REPO "$SCRIPT_DIR"
+alias ai-config "\$AI_CONFIG_REPO/setup-project.sh"
+alias ai-config-docs "\$AI_CONFIG_REPO/serve-docs.sh"
+EOF
+else
+  # Bash/Zsh syntax
+  cat >> "$SHELL_RC" << EOF
+
+# AI Config - Universal AI Coding Assistant Configuration
+export AI_CONFIG_REPO="$SCRIPT_DIR"
+alias ai-config="\$AI_CONFIG_REPO/setup-project.sh"
+alias ai-config-docs="\$AI_CONFIG_REPO/serve-docs.sh"
+EOF
+fi
+
+echo -e "  ${GREEN}✓${NC} Aliases added"
 echo ""
 
-# Install stacks
-if [[ -d "$SCRIPT_DIR/stacks" ]]; then
-  echo -e "${CYAN}Installing stack knowledge files...${NC}"
-  mkdir -p "$CLAUDE_DIR/stacks"
+# Install global Claude config if directories exist
+if [[ -d "$SCRIPT_DIR/stacks" ]] || [[ -d "$SCRIPT_DIR/libraries" ]] || [[ -f "$SCRIPT_DIR/global/CLAUDE.md" ]]; then
+  echo -e "${CYAN}Installing global Claude configuration...${NC}"
+  CLAUDE_DIR="$HOME/.claude"
+  mkdir -p "$CLAUDE_DIR"
 
-  STACK_COUNT=0
-  for file in "$SCRIPT_DIR/stacks"/*.md; do
-    if [[ -f "$file" ]]; then
-      filename=$(basename "$file")
-      cp "$file" "$CLAUDE_DIR/stacks/$filename"
-      echo -e "  ${GREEN}✓${NC} $filename"
-      ((STACK_COUNT++))
-    fi
-  done
-  echo ""
-else
-  echo -e "${YELLOW}⚠ No stacks/ directory found${NC}"
-  echo ""
-fi
-
-# Install libraries
-if [[ -d "$SCRIPT_DIR/libraries" ]]; then
-  echo -e "${CYAN}Installing library reference files...${NC}"
-  mkdir -p "$CLAUDE_DIR/libraries"
-
-  LIBRARY_COUNT=0
-  for file in "$SCRIPT_DIR/libraries"/*.md; do
-    if [[ -f "$file" ]]; then
-      filename=$(basename "$file")
-      cp "$file" "$CLAUDE_DIR/libraries/$filename"
-      echo -e "  ${GREEN}✓${NC} $filename"
-      ((LIBRARY_COUNT++))
-    fi
-  done
-  echo ""
-else
-  echo -e "${YELLOW}⚠ No libraries/ directory found${NC}"
-  echo ""
-fi
-
-# Install global CLAUDE.md
-if [[ -f "$SCRIPT_DIR/global/CLAUDE.md" ]]; then
-  echo -e "${CYAN}Installing global coding preferences...${NC}"
-
-  if [[ -f "$CLAUDE_DIR/CLAUDE.md" ]]; then
-    echo -e "${YELLOW}  ~/.claude/CLAUDE.md already exists${NC}"
-    read -p "  Overwrite? (y/n) " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-      # Backup existing
-      backup="$CLAUDE_DIR/CLAUDE.md.backup.$(date +%Y%m%d_%H%M%S)"
-      cp "$CLAUDE_DIR/CLAUDE.md" "$backup"
-      echo -e "  ${CYAN}Backed up to: $(basename "$backup")${NC}"
-
-      cp "$SCRIPT_DIR/global/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
-      echo -e "  ${GREEN}✓${NC} CLAUDE.md updated"
-    else
-      echo -e "  ${YELLOW}○${NC} CLAUDE.md skipped"
-    fi
-  else
-    cp "$SCRIPT_DIR/global/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
-    echo -e "  ${GREEN}✓${NC} CLAUDE.md"
+  # Install stacks
+  if [[ -d "$SCRIPT_DIR/stacks" ]]; then
+    mkdir -p "$CLAUDE_DIR/stacks"
+    STACK_COUNT=0
+    for file in "$SCRIPT_DIR/stacks"/*.md; do
+      if [[ -f "$file" ]]; then
+        cp "$file" "$CLAUDE_DIR/stacks/"
+        ((STACK_COUNT++))
+      fi
+    done
+    [[ $STACK_COUNT -gt 0 ]] && echo -e "  ${GREEN}✓${NC} Installed $STACK_COUNT stack knowledge files"
   fi
-  echo ""
-else
-  echo -e "${YELLOW}⚠ No global/CLAUDE.md found${NC}"
+
+  # Install libraries
+  if [[ -d "$SCRIPT_DIR/libraries" ]]; then
+    mkdir -p "$CLAUDE_DIR/libraries"
+    LIBRARY_COUNT=0
+    for file in "$SCRIPT_DIR/libraries"/*.md; do
+      if [[ -f "$file" ]]; then
+        cp "$file" "$CLAUDE_DIR/libraries/"
+        ((LIBRARY_COUNT++))
+      fi
+    done
+    [[ $LIBRARY_COUNT -gt 0 ]] && echo -e "  ${GREEN}✓${NC} Installed $LIBRARY_COUNT library reference files"
+  fi
+
+  # Install global CLAUDE.md (only if it doesn't exist)
+  if [[ -f "$SCRIPT_DIR/global/CLAUDE.md" ]] && [[ ! -f "$CLAUDE_DIR/CLAUDE.md" ]]; then
+    cp "$SCRIPT_DIR/global/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
+    echo -e "  ${GREEN}✓${NC} Installed global CLAUDE.md"
+  fi
   echo ""
 fi
 
@@ -125,19 +168,21 @@ echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━
 echo -e "${GREEN}  Installation Complete!${NC}"
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
-echo "Global configuration installed to: ${CYAN}$CLAUDE_DIR${NC}"
+echo -e "${CYAN}To start using ai-config, run:${NC}"
 echo ""
-echo "What was installed:"
-echo "  ${GREEN}✓${NC} $STACK_COUNT stack knowledge files"
-echo "  ${GREEN}✓${NC} $LIBRARY_COUNT library reference files"
-echo "  ${GREEN}✓${NC} Global coding preferences"
+echo -e "  ${YELLOW}source $SHELL_RC${NC}"
 echo ""
-echo -e "${CYAN}Project CLAUDE.md files will reference these using:${NC}"
-echo "  @~/.claude/stacks/expressionengine.md"
-echo "  @~/.claude/libraries/tailwind.md"
-echo "  @~/.claude/libraries/alpinejs.md"
+echo -e "Or open a new terminal window."
 echo ""
-echo -e "${CYAN}Next steps:${NC}"
-echo "  Deploy configurations to your projects:"
-echo "  ${YELLOW}./setup-project.sh --stack=expressionengine --project=/path/to/project${NC}"
+echo -e "${CYAN}Then configure any project:${NC}"
+echo ""
+echo -e "  ${YELLOW}ai-config --project=/path/to/project --with-all${NC}"
+echo ""
+echo -e "${CYAN}Quick examples:${NC}"
+echo "  ai-config --project=. --with-all          # Current directory"
+echo "  ai-config --refresh --project=.           # Update existing"
+echo "  ai-config --project=. --with-all --dry-run  # Preview changes"
+echo ""
+echo -e "${CYAN}Documentation:${NC}"
+echo "  ai-config-docs                            # Start docs server"
 echo ""

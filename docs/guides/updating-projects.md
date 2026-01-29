@@ -7,7 +7,7 @@ Guide to updating existing project configurations.
 Update an existing project with the latest configuration:
 
 ```bash
-./setup-project.sh --refresh --project=/path/to/project
+ai-config --refresh --project=/path/to/project
 ```
 
 This will:
@@ -23,7 +23,7 @@ This will:
 You added Tailwind CSS to your ExpressionEngine project:
 
 ```bash
-./setup-project.sh --refresh --project=/path/to/project
+ai-config --refresh --project=/path/to/project
 ```
 
 **Result:**
@@ -37,7 +37,7 @@ You added Tailwind CSS to your ExpressionEngine project:
 Repository updated VSCode settings and you want the latest:
 
 ```bash
-./setup-project.sh --refresh --project=/path/to/project
+ai-config --refresh --project=/path/to/project
 ```
 
 **Result:**
@@ -49,7 +49,7 @@ Repository updated VSCode settings and you want the latest:
 Add Gemini configuration to existing Claude project:
 
 ```bash
-./setup-project.sh \
+ai-config \
   --refresh \
   --with-gemini \
   --project=/path/to/project
@@ -110,7 +110,7 @@ Add Gemini configuration to existing Claude project:
 Always preview changes:
 
 ```bash
-./setup-project.sh --refresh --dry-run --project=/path/to/project
+ai-config --refresh --dry-run --project=/path/to/project
 ```
 
 Review output before committing to changes.
@@ -145,7 +145,7 @@ Update all your projects:
 
 ```bash
 for project in ~/projects/*/; do
-  ./setup-project.sh --refresh --project="$project"
+  ai-config --refresh --project="$project"
 done
 ```
 
@@ -156,7 +156,7 @@ for project in ~/projects/*/; do
   echo "Update $project? (y/n)"
   read -r response
   if [[ "$response" == "y" ]]; then
-    ./setup-project.sh --refresh --project="$project"
+    ai-config --refresh --project="$project"
   fi
 done
 ```
@@ -201,7 +201,7 @@ The configuration doesn't include version numbers. Track updates via:
 
 **Solution:** Your `CLAUDE.md` might be old format. Manually specify:
 ```bash
-./setup-project.sh --refresh --stack=expressionengine --project=/path/to/project
+ai-config --refresh --stack=expressionengine --project=/path/to/project
 ```
 
 ### Files Not Updating

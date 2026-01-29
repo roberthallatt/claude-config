@@ -1,13 +1,11 @@
 # Setup Script Guide
 
-Comprehensive guide to using `setup-project.sh` (also available globally as `ai-config`).
+Comprehensive guide to using the `ai-config` command (the global alias for `setup-project.sh`).
 
 ## Synopsis
 
 ```bash
 ai-config [OPTIONS]
-# or
-./setup-project.sh [OPTIONS]
 ```
 
 ## Required Options
@@ -220,7 +218,7 @@ Preview changes without modifying any files.
 
 **Example:**
 ```bash
-./setup-project.sh --dry-run --stack=expressionengine --project=.
+ai-config --dry-run --stack=expressionengine --project=.
 ```
 
 ### --skip-vscode
