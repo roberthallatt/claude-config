@@ -22,10 +22,10 @@ All stacks have complete configurations:
 
 | Stack | Claude | Gemini | Rules | Skills | Memory | Status |
 |-------|--------|--------|-------|--------|--------|--------|
-| **coilpack** | ✅ | ✅ | 9 rules | 15+ | ✅ | ✅ Complete |
+| **coilpack** | ✅ | ✅ | 8 rules | 15+ | ✅ | ✅ Complete |
 | **craftcms** | ✅ | ✅ | 8 rules | 15+ | ✅ | ✅ Complete |
 | **docusaurus** | ✅ | ✅ | 6 rules | 15+ | ✅ | ✅ Complete |
-| **expressionengine** | ✅ | ✅ | 9 rules | 19+ | ✅ | ✅ Complete |
+| **expressionengine** | ✅ | ✅ | 8 rules | 19+ | ✅ | ✅ Complete |
 | **nextjs** | ✅ | ✅ | 6 rules | 15+ | ✅ | ✅ Complete |
 | **wordpress-roots** | ✅ | ✅ | 8 rules | 15+ | ✅ | ✅ Complete |
 | **wordpress** | ✅ | ✅ | 6 rules | 15+ | ✅ | ✅ Complete |
@@ -99,9 +99,9 @@ Every deployment includes the memory system:
 - `token-optimization.md` - Token efficiency
 - `accessibility.md` - WCAG compliance
 
-**Coilpack (Laravel + EE) - 9 rules:**
+**Coilpack (Laravel + EE) - 8 rules:**
 - accessibility.md, alpinejs.md, bilingual-content.md
-- laravel-patterns.md, mcp-workflow.md, performance.md, tailwind-css.md
+- laravel-patterns.md, performance.md, tailwind-css.md
 - memory-management.md, token-optimization.md
 
 **Craft CMS - 8 rules:**
@@ -113,9 +113,9 @@ Every deployment includes the memory system:
 - accessibility.md, markdown-content.md, performance.md, tailwind-css.md
 - memory-management.md, token-optimization.md
 
-**ExpressionEngine - 9 rules + 4 stack skills:**
+**ExpressionEngine - 8 rules + 4 stack skills:**
 - accessibility.md, alpinejs.md, bilingual-content.md
-- expressionengine-templates.md, mcp-workflow.md, performance.md, tailwind-css.md
+- expressionengine-templates.md, performance.md, tailwind-css.md
 - memory-management.md, token-optimization.md
 - Skills: alpine-component-builder, ee-stash-optimizer, ee-template-assistant, tailwind-utility-finder
 
@@ -147,8 +147,7 @@ projects/{stack}/
 ├── rules/                      # Always-on coding constraints
 ├── skills/                     # Stack-specific knowledge modules
 ├── settings.local.json         # Claude permissions
-├── .vscode/                    # VSCode settings
-└── .mcp.json                   # MCP server config (if applicable)
+└── .vscode/                    # VSCode settings
 ```
 
 ### Common Templates

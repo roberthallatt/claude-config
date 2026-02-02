@@ -227,12 +227,6 @@ Skip VSCode configuration deployment.
 
 Use this if you manage `.vscode/` settings separately or don't use VSCode.
 
-### --with-mcp
-
-Deploy `.mcp.json` for standalone MCP server integration.
-
-**Note:** Most users should use `.vscode/settings.json` or `.gemini/settings.json` for MCP configuration instead.
-
 ### --analyze
 
 Generate analysis prompt for Claude to customize configuration.

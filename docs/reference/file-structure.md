@@ -198,7 +198,6 @@ your-project/
 │   ├── launch.json
 │   └── tasks.json
 │
-├── .mcp.json                     # If --with-mcp used (rare)
 ├── .geminiignore                 # If --with-gemini or --with-all
 │
 └── (your existing project files)
@@ -234,8 +233,7 @@ Documentation and configuration files:
 
 Configuration files:
 - `.vscode/settings.json` - VSCode settings
-- `.gemini/settings.json` - MCP servers
-- `.mcp.json` - Standalone MCP config
+- `.gemini/settings.json` - Gemini settings
 - `.claude/hooks/hooks.json` - Session hooks
 
 ### YAML

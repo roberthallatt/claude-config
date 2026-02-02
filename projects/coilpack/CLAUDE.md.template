@@ -197,31 +197,6 @@ All Twig templates are in `ee/system/user/templates/default_site/` with `.html.t
 {{ route('blog.show', {slug: entry.url_title}) }}
 ```
 
-## ExpressionEngine MCP Server
-
-This project uses an ExpressionEngine MCP (Model Context Protocol) server for direct access to EE functionality.
-
-### Available Tools
-| Tool | Description |
-|------|-------------|
-| `database_query` | Execute read-only SQL queries |
-| `database_schema` | Get database schema information |
-| `clear_cache` | Clear ExpressionEngine caches |
-| `backup_database` | Backup the database |
-| `eecli` | Execute EE CLI commands |
-| `get_field_template_tags` | Get template tag information for fields |
-
-### Available Resources
-| Resource | Description |
-|----------|-------------|
-| `ee://channels` | Access channel information |
-| `ee://channels/{id}` | Get specific channel |
-| `ee://fields` | Access custom fields |
-| `ee://templates` | Access templates |
-| `ee://system/info` | System information |
-
-**Important**: Always use MCP tools over direct commands. See `.claude/rules/mcp-workflow.md` for required workflow rules.
-
 ## Bilingual Considerations
 
 This site supports bilingual content (EN/FR):

@@ -128,7 +128,6 @@ Only deployed if technology is detected:
 - `alpinejs.md` → if Alpine.js detected
 - `vanilla-js.md` → if no frameworks detected
 - `bilingual-content.md` → if bilingual patterns detected
-- `mcp-workflow.md` → always deployed if file exists
 
 ## Agent Filtering
 

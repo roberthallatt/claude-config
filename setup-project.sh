@@ -16,7 +16,6 @@
 #   --force       Overwrite existing configuration without prompting
 #   --clean       Remove existing Claude/AI config before deploying
 #   --refresh     Re-scan project and regenerate CLAUDE.md only (preserves .claude/ customizations)
-#   --with-mcp          Deploy .mcp.json for ExpressionEngine MCP server integration
 #   --with-gemini       Deploy .gemini/ configuration for Gemini Code Assist
 #   --with-copilot      Deploy .github/copilot-instructions.md for GitHub Copilot
 #   --with-cursor       Deploy .cursorrules for Cursor AI
@@ -49,7 +48,6 @@ DRY_RUN=false
 FORCE=false
 CLEAN=false
 REFRESH=false
-WITH_MCP=false
 WITH_GEMINI=false
 WITH_COPILOT=false
 WITH_CURSOR=false
@@ -112,10 +110,6 @@ while [[ $# -gt 0 ]]; do
       ;;
     --refresh)
       REFRESH=true
-      shift
-      ;;
-    --with-mcp)
-      WITH_MCP=true
       shift
       ;;
     --with-gemini)
@@ -205,7 +199,6 @@ while [[ $# -gt 0 ]]; do
       echo "  --with-windsurf   Deploy .windsurfrules for Windsurf AI"
       echo "  --with-codex      Deploy AGENTS.md for OpenAI Codex"
       echo "  --with-all        Deploy ALL AI assistant configurations"
-      echo "  --with-mcp        Deploy .mcp.json for EE MCP server integration"
       echo ""
       echo "Superpowers Skills (enabled by default):"
       echo "  --no-superpowers        Disable Superpowers skills system"
@@ -915,13 +908,6 @@ if [[ "$REFRESH" == true ]]; then
     do_copy "$STACK_DIR/CLAUDE.md" "$PROJECT_DIR/"
   fi
 
-  # Deploy MCP if requested (even in refresh mode)
-  if [[ "$WITH_MCP" == true ]] && [[ -f "$STACK_DIR/.mcp.json" ]]; then
-    echo ""
-    echo -e "${CYAN}Deploying MCP configuration...${NC}"
-    do_copy "$STACK_DIR/.mcp.json" "$PROJECT_DIR/"
-  fi
-  
   # Deploy Gemini if requested (even in refresh mode)
   if [[ "$WITH_GEMINI" == true ]] && [[ -d "$STACK_DIR/gemini" ]]; then
     echo ""
@@ -987,13 +973,6 @@ if [[ "$REFRESH" == true ]]; then
   echo -e "  .claude/commands/   (your customizations)"
   echo -e "  .claude/rules/      (your customizations)"
   echo -e "  .claude/skills/     (your customizations)"
-  if [[ "$WITH_MCP" == true ]]; then
-    echo ""
-    echo -e "${CYAN}MCP configuration deployed:${NC}"
-    echo -e "  .mcp.json — EE MCP + Context7 servers"
-    echo ""
-    echo -e "${YELLOW}Note:${NC} Restart Claude Code to activate MCP tools"
-  fi
   if [[ "$WITH_GEMINI" == true ]]; then
     echo ""
     echo -e "${CYAN}Gemini Code Assist configuration deployed:${NC}"
@@ -1201,7 +1180,7 @@ if [[ -d "$STACK_DIR/rules" ]]; then
   done
 
   # Stack-specific rules - ALWAYS copy if they exist
-  for rule in expressionengine-templates.md craft-templates.md blade-templates.md nextjs-patterns.md laravel-patterns.md markdown-content.md mcp-workflow.md; do
+  for rule in expressionengine-templates.md craft-templates.md blade-templates.md nextjs-patterns.md laravel-patterns.md markdown-content.md; do
     if [[ -f "$STACK_DIR/rules/$rule" ]]; then
       do_copy "$STACK_DIR/rules/$rule" "$PROJECT_DIR/.claude/rules/"
     fi
@@ -1252,26 +1231,7 @@ if [[ -f "$STACK_DIR/settings.local.json" ]]; then
   do_copy "$STACK_DIR/settings.local.json" "$PROJECT_DIR/.claude/"
 fi
 
-# 4. Copy MCP configuration (if requested)
-if [[ "$WITH_MCP" == true ]] && [[ -f "$STACK_DIR/.mcp.json" ]]; then
-  echo ""
-  echo -e "${CYAN}Deploying MCP configuration...${NC}"
-  
-  if [[ -f "$PROJECT_DIR/.mcp.json" ]] && [[ "$FORCE" != true ]]; then
-    echo -e "${YELLOW}Warning: .mcp.json already exists${NC}"
-    read -p "Overwrite? (y/N) " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-      do_copy "$STACK_DIR/.mcp.json" "$PROJECT_DIR/"
-    else
-      echo -e "  ${YELLOW}○${NC} Skipped .mcp.json"
-    fi
-  else
-    do_copy "$STACK_DIR/.mcp.json" "$PROJECT_DIR/"
-  fi
-fi
-
-# 5. Copy VSCode settings
+# 4. Copy VSCode settings
 vscode_source=""
 if [[ -d "$STACK_DIR/.vscode" ]]; then
   vscode_source="$STACK_DIR/.vscode"
@@ -1622,14 +1582,6 @@ echo "  - CLAUDE.md — Project overview and commands"
 echo "  - .claude/rules/ — Project-specific constraints"
 echo "  - .claude/agents/ — Custom agent personas"
 echo ""
-if [[ "$WITH_MCP" == true ]]; then
-  echo -e "${CYAN}MCP configuration deployed:${NC}"
-  echo "  - .mcp.json — ExpressionEngine MCP server config"
-  echo "  - .claude/rules/mcp-workflow.md — MCP usage rules"
-  echo ""
-  echo -e "${YELLOW}Note:${NC} Restart Claude Code to activate MCP tools"
-  echo ""
-fi
 if [[ "$WITH_GEMINI" == true ]]; then
   echo -e "${CYAN}Gemini Code Assist configuration deployed:${NC}"
   echo "  - GEMINI.md — Agent mode context file"

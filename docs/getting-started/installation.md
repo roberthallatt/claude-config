@@ -148,7 +148,6 @@ rm -rf ~/.claude/libraries
 | **Git** | To clone the repository |
 | **VSCode** | Optional, for IDE integration |
 | **VSCode CLI** | Optional, for `--install-extensions` flag |
-| **DDEV** | Optional, for EE/Coilpack MCP servers |
 
 ---
 

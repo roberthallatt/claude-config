@@ -68,7 +68,6 @@ Every stack deployment includes:
 - `tailwind-css.md` - If Tailwind detected
 - `alpinejs.md` - If Alpine.js detected
 - `bilingual-content.md` - If language/bilingual patterns detected
-- `mcp-workflow.md` - If using ExpressionEngine MCP
 
 ### Skills Included
 
@@ -77,26 +76,6 @@ Every stack deployment includes:
 - `ee-template-assistant` - EE template help
 - `tailwind-utility-finder` - Find Tailwind utilities
 - Plus all Superpowers skills
-
-### MCP Support
-
-ExpressionEngine stack includes MCP server for:
-- Database queries
-- Template analysis
-- Add-on management
-- Cache operations
-
-Configured in `.vscode/settings.json` and `.gemini/settings.json`:
-```json
-"gemini.mcpServers": {
-  "expressionengine": {
-    "type": "stdio",
-    "command": "ddev",
-    "args": ["ee", "mcp:serve"],
-    "cwd": "${workspaceFolder}"
-  }
-}
-```
 
 ### File Associations
 
@@ -132,11 +111,6 @@ Configured in `.vscode/settings.json` and `.gemini/settings.json`:
 - `tailwind-css.md`
 - `alpinejs.md`
 - `bilingual-content.md`
-- `mcp-workflow.md`
-
-### MCP Support
-
-Same as ExpressionEngine (includes EE MCP server).
 
 ### File Associations
 
@@ -175,10 +149,6 @@ Same as ExpressionEngine (includes EE MCP server).
 - `alpinejs.md`
 - `bilingual-content.md`
 
-### MCP Support
-
-Context7 only (library documentation).
-
 ### File Associations
 
 ```json
@@ -213,10 +183,6 @@ Context7 only (library documentation).
 - `tailwind-css.md`
 - `alpinejs.md`
 - `bilingual-content.md`
-
-### MCP Support
-
-Context7 only.
 
 ### File Associations
 
@@ -275,10 +241,6 @@ Context7 only.
 **Conditional:**
 - `tailwind-css.md`
 
-### MCP Support
-
-Context7 only.
-
 ### Special Settings
 
 ```json
@@ -312,10 +274,6 @@ For `cva()` and `cn()` utility functions.
 
 **Conditional:**
 - `tailwind-css.md`
-
-### MCP Support
-
-Context7 only.
 
 ### Special Settings
 

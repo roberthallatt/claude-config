@@ -109,7 +109,7 @@ Use `--with-all` to deploy all assistants at once.
 - **Memory Bank** (`MEMORY.md`) - Persistent context across sessions
 - **Superpowers Skills** - Workflow automation (planning, debugging, TDD)
 - **VSCode Settings** - Syntax highlighting, Xdebug, DDEV tasks
-- **MCP Integration** - ExpressionEngine MCP + Context7 library docs
+- **Context7 Integration** - Up-to-date library documentation
 
 ---
 
@@ -184,7 +184,6 @@ ai-config --project=<path> [options]
 |--------|-------------|
 | `--dry-run` | Preview without making changes |
 | `--skip-vscode` | Skip VSCode settings deployment |
-| `--with-mcp` | Deploy standalone `.mcp.json` |
 | `--install-extensions` | Auto-install VSCode extensions |
 | `--no-superpowers` | Disable Superpowers workflow skills |
 | `--name=<name>` | Set project name (auto-detected from directory) |
@@ -246,24 +245,7 @@ Or run standalone:
 
 ---
 
-## MCP Integration
-
-### ExpressionEngine MCP
-
-Automatically configured for ExpressionEngine and Coilpack stacks:
-
-```json
-{
-  "expressionengine": {
-    "command": "ddev",
-    "args": ["ee", "mcp:serve"]
-  }
-}
-```
-
-Provides: Database queries, template analysis, add-on management, cache operations.
-
-### Context7 MCP
+## Context7 Integration
 
 All stacks include Context7 for up-to-date library documentation (Tailwind, Alpine.js, React, Vue, 100+ more).
 
@@ -349,7 +331,6 @@ ai-config-docs  # Opens http://localhost:8000
 - **Git** - To clone the repository
 - **VSCode** (optional) - For IDE integration
 - **VSCode CLI** (optional) - For automatic extension installation (`code` command)
-- **DDEV** (optional) - For ExpressionEngine/Coilpack MCP servers
 
 ---
 
