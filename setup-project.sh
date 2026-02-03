@@ -684,6 +684,97 @@ do_clean() {
 }
 
 # ============================================================================
+# Gitignore Management
+# ============================================================================
+
+update_gitignore() {
+  local gitignore_path="$PROJECT_DIR/.gitignore"
+
+  # Check if .gitignore exists
+  if [[ ! -f "$gitignore_path" ]]; then
+    echo -e "${YELLOW}No .gitignore found, skipping automatic gitignore update${NC}"
+    echo ""
+    return
+  fi
+
+  echo ""
+  echo -e "${CYAN}Updating .gitignore...${NC}"
+
+  # Build list of entries to add
+  local entries_to_add=()
+
+  # Always add Claude entries
+  entries_to_add+=("CLAUDE.md" "MEMORY.md" "MEMORY-ARCHIVE.md" ".claude/")
+
+  # Add Gemini entries if deployed
+  if [[ "$WITH_GEMINI" == true ]]; then
+    entries_to_add+=("GEMINI.md" ".gemini/" ".geminiignore")
+  fi
+
+  # Add Copilot entries if deployed
+  if [[ "$WITH_COPILOT" == true ]]; then
+    entries_to_add+=(".github/copilot-instructions.md")
+  fi
+
+  # Add Cursor entries if deployed
+  if [[ "$WITH_CURSOR" == true ]]; then
+    entries_to_add+=(".cursorrules" ".cursor/")
+  fi
+
+  # Add Windsurf entries if deployed
+  if [[ "$WITH_WINDSURF" == true ]]; then
+    entries_to_add+=(".windsurfrules" ".windsurf/")
+  fi
+
+  # Add Codex entries if deployed
+  if [[ "$WITH_CODEX" == true ]]; then
+    entries_to_add+=("AGENTS.md")
+  fi
+
+  # Check which entries are missing
+  local entries_added=()
+  local entries_skipped=()
+
+  for entry in "${entries_to_add[@]}"; do
+    # Check if entry already exists in .gitignore (exact match or as pattern)
+    if grep -qxF "$entry" "$gitignore_path" 2>/dev/null; then
+      entries_skipped+=("$entry")
+    else
+      entries_added+=("$entry")
+    fi
+  done
+
+  # Add missing entries
+  if [[ ${#entries_added[@]} -gt 0 ]]; then
+    if [[ "$DRY_RUN" == true ]]; then
+      echo -e "  ${YELLOW}[DRY-RUN]${NC} Would add ${#entries_added[@]} entries to .gitignore:"
+      for entry in "${entries_added[@]}"; do
+        echo -e "    ${YELLOW}+${NC} $entry"
+      done
+    else
+      # Add header comment if .gitignore doesn't already have it
+      if ! grep -q "# AI Configuration" "$gitignore_path" 2>/dev/null; then
+        echo "" >> "$gitignore_path"
+        echo "# AI Configuration" >> "$gitignore_path"
+      fi
+
+      # Add each missing entry
+      for entry in "${entries_added[@]}"; do
+        echo "$entry" >> "$gitignore_path"
+        echo -e "  ${GREEN}✓${NC} Added: $entry"
+      done
+    fi
+  fi
+
+  # Report skipped entries
+  if [[ ${#entries_skipped[@]} -gt 0 ]]; then
+    echo -e "  ${GREEN}✓${NC} Already in .gitignore: ${#entries_skipped[@]} entries"
+  fi
+
+  echo ""
+}
+
+# ============================================================================
 # Superpowers Skills Deployment
 # ============================================================================
 
@@ -1633,29 +1724,6 @@ if [[ -n "$vscode_source" ]] || [[ -d "$PROJECT_DIR/.vscode" ]]; then
   [[ -f "$PROJECT_DIR/.vscode/tasks.json" ]] && echo "  - .vscode/tasks.json — DDEV tasks"
   echo ""
 fi
-echo -e "${CYAN}Gitignore reminder:${NC}"
-echo "  Ensure .gitignore includes:"
-echo "    CLAUDE.md"
-echo "    MEMORY.md"
-echo "    MEMORY-ARCHIVE.md"
-echo "    .claude/"
-if [[ "$WITH_GEMINI" == true ]]; then
-  echo "    GEMINI.md"
-  echo "    .gemini/"
-  echo "    .geminiignore"
-fi
-if [[ "$WITH_COPILOT" == true ]]; then
-  echo "    .github/copilot-instructions.md"
-fi
-if [[ "$WITH_CURSOR" == true ]]; then
-  echo "    .cursorrules"
-  echo "    .cursor/"
-fi
-if [[ "$WITH_WINDSURF" == true ]]; then
-  echo "    .windsurfrules"
-  echo "    .windsurf/"
-fi
-if [[ "$WITH_CODEX" == true ]]; then
-  echo "    AGENTS.md"
-fi
-echo ""
+
+# Update .gitignore automatically
+update_gitignore
