@@ -48,8 +48,8 @@ Enhance technology detection:
 ### Clone Repository
 
 ```bash
-git clone https://github.com/canadian-paediatric-society/claude-config-repo.git
-cd claude-config-repo
+git clone https://github.com/roberthallatt/claude-config.git
+cd claude-config
 ```
 
 ### Create Test Projects

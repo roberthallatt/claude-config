@@ -5,7 +5,7 @@
 One command to install:
 
 ```bash
-git clone https://github.com/canadian-paediatric-society/claude-config-repo.git ~/.ai-config && \
+git clone https://github.com/roberthallatt/claude-config.git ~/.ai-config && \
 ~/.ai-config/install.sh
 ```
 
@@ -41,7 +41,7 @@ If you prefer to install manually or to a custom location:
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/canadian-paediatric-society/claude-config-repo.git ~/path/to/ai-config
+git clone https://github.com/roberthallatt/claude-config.git ~/path/to/ai-config
 cd ~/path/to/ai-config
 ```
 

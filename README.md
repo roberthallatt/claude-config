@@ -18,7 +18,7 @@ Auto-detects your framework, deploys configurations for 6 AI assistants, and set
 
 ```bash
 # Clone and install (one command)
-git clone https://github.com/canadian-paediatric-society/claude-config-repo.git ~/.ai-config && \
+git clone https://github.com/roberthallatt/claude-config.git ~/.ai-config && \
 ~/.ai-config/install.sh
 ```
 
@@ -29,7 +29,7 @@ Now use `ai-config` from anywhere on your system.
 
 ```bash
 # Clone to your preferred location
-git clone https://github.com/canadian-paediatric-society/claude-config-repo.git ~/path/to/ai-config
+git clone https://github.com/roberthallatt/claude-config.git ~/path/to/ai-config
 
 # Make scripts executable
 chmod +x ~/path/to/ai-config/setup-project.sh
@@ -354,5 +354,5 @@ MIT License - See [LICENSE](LICENSE) file.
 ## Support
 
 - **Documentation:** Run `ai-config-docs` or browse [docs/](docs/)
-- **Issues:** [GitHub Issues](https://github.com/canadian-paediatric-society/claude-config-repo/issues)
+- **Issues:** [GitHub Issues](https://github.com/roberthallatt/claude-config/issues)
 - **Status:** [Project Status](docs/development/project-status.md)
