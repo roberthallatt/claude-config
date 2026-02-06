@@ -15,6 +15,13 @@ This is a **Docusaurus** documentation site.
 - **Styling**: CSS Modules / Tailwind (optional)
 - **Search**: Algolia DocSearch (if configured)
 
+## Git Workflow
+
+- **Main Branch:** `{{GIT_MAIN_BRANCH}}` (production)
+- **Integration Branch:** `{{GIT_INTEGRATION_BRANCH}}` (feature branches merge here)
+- **Feature Branch Pattern:** `feature/<description>` from `{{GIT_INTEGRATION_BRANCH}}`
+- **Hotfix Branch Pattern:** `hotfix/<description>` from `{{GIT_MAIN_BRANCH}}`
+
 ## Directory Structure
 
 ```

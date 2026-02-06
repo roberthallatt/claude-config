@@ -82,6 +82,23 @@ project=$(basename "$(git rev-parse --show-toplevel)")
 
 ### 2. Create Worktree
 
+**First, determine the base branch from CLAUDE.md:**
+
+```bash
+# Read integration branch from CLAUDE.md (this is where feature branches should start)
+INTEGRATION_BRANCH=$(grep -E "Integration Branch.*\`[a-z]+\`" CLAUDE.md 2>/dev/null | grep -oE '\`[a-z]+\`' | tr -d '`' | head -1)
+
+# Fallback to detecting from Git if not in CLAUDE.md
+if [[ -z "$INTEGRATION_BRANCH" ]]; then
+  git rev-parse --verify staging 2>/dev/null && INTEGRATION_BRANCH="staging" ||
+  git rev-parse --verify develop 2>/dev/null && INTEGRATION_BRANCH="develop" ||
+  git rev-parse --verify main 2>/dev/null && INTEGRATION_BRANCH="main" ||
+  INTEGRATION_BRANCH="master"
+fi
+```
+
+**Then create the worktree:**
+
 ```bash
 # Determine full path
 case $LOCATION in
@@ -93,8 +110,8 @@ case $LOCATION in
     ;;
 esac
 
-# Create worktree with new branch
-git worktree add "$path" -b "$BRANCH_NAME"
+# Create worktree with new branch FROM the integration branch
+git worktree add "$path" -b "$BRANCH_NAME" "$INTEGRATION_BRANCH"
 cd "$path"
 ```
 

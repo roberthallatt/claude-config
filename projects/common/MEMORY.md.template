@@ -17,6 +17,11 @@
 - **Owner:** _[Name/Team]_
 - **Primary Contact:** _[For questions/decisions]_
 
+### Repository
+- **Main Branch:** `{{GIT_MAIN_BRANCH}}`
+- **Integration Branch:** `{{GIT_INTEGRATION_BRANCH}}`
+- **Worktree Directory:** `.worktrees/` (project-local)
+
 ---
 
 ## Architecture

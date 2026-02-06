@@ -39,12 +39,28 @@ Stop. Don't proceed to Step 2.
 
 ### Step 2: Determine Base Branch
 
+**First, check CLAUDE.md for project-configured branches:**
+
 ```bash
-# Try common base branches
-git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null
+# Read integration branch from CLAUDE.md (preferred)
+INTEGRATION_BRANCH=$(grep -E "Integration Branch.*\`[a-z]+\`" CLAUDE.md 2>/dev/null | grep -oE '\`[a-z]+\`' | tr -d '`' | head -1)
+MAIN_BRANCH=$(grep -E "Main Branch.*\`[a-z]+\`" CLAUDE.md 2>/dev/null | grep -oE '\`[a-z]+\`' | tr -d '`' | head -1)
 ```
 
-Or ask: "This branch split from main - is that correct?"
+**If not found in CLAUDE.md, detect from Git:**
+
+```bash
+# Fallback: detect from available branches
+if [[ -z "$INTEGRATION_BRANCH" ]]; then
+  git merge-base HEAD staging 2>/dev/null && INTEGRATION_BRANCH="staging" ||
+  git merge-base HEAD develop 2>/dev/null && INTEGRATION_BRANCH="develop" ||
+  git merge-base HEAD main 2>/dev/null && INTEGRATION_BRANCH="main" ||
+  INTEGRATION_BRANCH="master"
+fi
+```
+
+Use `$INTEGRATION_BRANCH` as the base branch for merging feature branches.
+Use `$MAIN_BRANCH` for hotfix branches.
 
 ### Step 3: Present Options
 

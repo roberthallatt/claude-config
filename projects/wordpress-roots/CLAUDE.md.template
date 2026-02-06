@@ -18,6 +18,13 @@ This is a **WordPress** project using the Roots stack (Bedrock + Sage theme).
 - **PHP Version**: {{PHP_VERSION}}
 - **Database**: {{DATABASE_TYPE}}
 
+## Git Workflow
+
+- **Main Branch:** `{{GIT_MAIN_BRANCH}}` (production)
+- **Integration Branch:** `{{GIT_INTEGRATION_BRANCH}}` (feature branches merge here)
+- **Feature Branch Pattern:** `feature/<description>` from `{{GIT_INTEGRATION_BRANCH}}`
+- **Hotfix Branch Pattern:** `hotfix/<description>` from `{{GIT_MAIN_BRANCH}}`
+
 ## Directory Structure
 
 ```

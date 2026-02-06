@@ -9,6 +9,13 @@ This file provides guidance to Claude Code when working with code in this reposi
 - **Project Path**: {{PROJECT_PATH}}
 - **Project Slug**: {{PROJECT_SLUG}}
 
+## Git Workflow
+
+- **Main Branch:** `{{GIT_MAIN_BRANCH}}` (production)
+- **Integration Branch:** `{{GIT_INTEGRATION_BRANCH}}` (feature branches merge here)
+- **Feature Branch Pattern:** `feature/<description>` from `{{GIT_INTEGRATION_BRANCH}}`
+- **Hotfix Branch Pattern:** `hotfix/<description>` from `{{GIT_MAIN_BRANCH}}`
+
 ## Detected Technologies
 
 > Run the `/project-discover` command to have Claude analyze this codebase and populate this section with:

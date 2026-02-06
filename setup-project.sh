@@ -77,6 +77,10 @@ HAS_STASH=false
 HAS_STRUCTURE=false
 HAS_BILINGUAL=false
 
+# Git branch detection
+GIT_MAIN_BRANCH=""
+GIT_INTEGRATION_BRANCH=""
+
 # Parse arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -458,6 +462,41 @@ detect_addons() {
   return 0
 }
 
+detect_git_branches() {
+  # Check if project is a Git repository
+  if ! git -C "$PROJECT_DIR" rev-parse --git-dir >/dev/null 2>&1; then
+    GIT_MAIN_BRANCH="main"
+    GIT_INTEGRATION_BRANCH="main"
+    return 0
+  fi
+
+  # Get all local and remote branches (deduplicated)
+  local branches
+  branches=$(git -C "$PROJECT_DIR" branch -a 2>/dev/null | sed 's/[* ]*//' | sed 's|remotes/origin/||' | grep -v '^HEAD' | sort -u)
+
+  # Detect main branch (priority: main > master)
+  if echo "$branches" | grep -qx "main"; then
+    GIT_MAIN_BRANCH="main"
+  elif echo "$branches" | grep -qx "master"; then
+    GIT_MAIN_BRANCH="master"
+  else
+    GIT_MAIN_BRANCH="main"  # Default
+  fi
+
+  # Detect integration branch (priority: staging > develop > dev > main branch)
+  if echo "$branches" | grep -qx "staging"; then
+    GIT_INTEGRATION_BRANCH="staging"
+  elif echo "$branches" | grep -qx "develop"; then
+    GIT_INTEGRATION_BRANCH="develop"
+  elif echo "$branches" | grep -qx "dev"; then
+    GIT_INTEGRATION_BRANCH="dev"
+  else
+    GIT_INTEGRATION_BRANCH="$GIT_MAIN_BRANCH"
+  fi
+
+  return 0
+}
+
 # Auto-detect the technology stack based on project files
 detect_stack() {
   local detected=""
@@ -630,6 +669,8 @@ do_template() {
         -e "s/{{DDEV_TLD}}/${DDEV_TLD:-ddev.site}/g" \
         -e "s|{{DDEV_PRIMARY_URL}}|${DDEV_PRIMARY_URL:-https://${DDEV_NAME:-$PROJECT_SLUG}.ddev.site}|g" \
         -e "s/{{TEMPLATE_GROUP}}/${TEMPLATE_GROUP:-$PROJECT_SLUG}/g" \
+        -e "s/{{GIT_MAIN_BRANCH}}/${GIT_MAIN_BRANCH:-main}/g" \
+        -e "s/{{GIT_INTEGRATION_BRANCH}}/${GIT_INTEGRATION_BRANCH:-main}/g" \
         "$src" > "$dest"
 
     # Second pass: handle conditional {{#SUPERPOWERS}}...{{/SUPERPOWERS}} sections
@@ -950,6 +991,7 @@ detect_frontend_tools
 detect_addons
 [[ "$HAS_STASH" == true ]] && echo -e "  ${GREEN}✓${NC} Stash add-on detected" || true
 [[ "$HAS_STRUCTURE" == true ]] && echo -e "  ${GREEN}✓${NC} Structure add-on detected" || true
+detect_git_branches
 echo ""
 
 echo -e "  Stack:       ${GREEN}$STACK${NC}"
@@ -961,6 +1003,8 @@ echo -e "  Slug:        ${GREEN}$PROJECT_SLUG${NC}"
 [[ -n "$DDEV_PHP" ]] && echo -e "  PHP:         ${GREEN}$DDEV_PHP${NC}"
 [[ -n "$DDEV_DB_TYPE" ]] && echo -e "  Database:    ${GREEN}$DDEV_DB_TYPE $DDEV_DB_VERSION${NC}"
 [[ -n "$DDEV_PRIMARY_URL" ]] && echo -e "  Primary URL: ${GREEN}$DDEV_PRIMARY_URL${NC}"
+[[ -n "$GIT_MAIN_BRANCH" ]] && echo -e "  Git Main:    ${GREEN}$GIT_MAIN_BRANCH${NC}"
+[[ -n "$GIT_INTEGRATION_BRANCH" ]] && echo -e "  Git Integ:   ${GREEN}$GIT_INTEGRATION_BRANCH${NC}"
 echo -e "  Dry Run:     ${YELLOW}$DRY_RUN${NC}"
 echo -e "  Force:       ${YELLOW}$FORCE${NC}"
 echo -e "  Clean:       ${YELLOW}$CLEAN${NC}"
