@@ -23,7 +23,7 @@ Target project directory (absolute or relative path, use `.` for current directo
 If you omit `--stack`, the script will automatically detect your project's stack:
 
 ```bash
-ai-config --project=/path/to/project --with-all
+ai-config --project=/path/to/project 
 ```
 
 **Detects:**
@@ -59,7 +59,7 @@ ai-config --stack=expressionengine --project=/path/to/project
 AI-powered discovery mode for projects that don't match a known stack.
 
 ```bash
-ai-config --discover --project=/path/to/project --with-all
+ai-config --discover --project=/path/to/project 
 ```
 
 This will:
@@ -72,7 +72,7 @@ Then open in Claude Code and run `/project-discover` to generate custom rules.
 
 ## Deployment Options
 
-### --with-all
+### 
 
 Deploy configurations for all 6 AI coding assistants.
 
@@ -80,49 +80,33 @@ Deploy configurations for all 6 AI coding assistants.
 
 Creates:
 - Claude Code (always deployed) → `CLAUDE.md`, `MEMORY.md`, `.claude/`
-- Gemini Code Assist → `GEMINI.md`, `.gemini/`
-- GitHub Copilot → `.github/copilot-instructions.md`
-- Cursor AI → `.cursorrules`
-- Windsurf AI → `.windsurfrules`
-- OpenAI Codex → `AGENTS.md`
+-  → ``, ``
+-  → ``
+-  → ``
 
 **Template fallback:** For AI assistants without stack-specific templates, the script uses common fallback templates from `projects/common/`.
 
-### --with-gemini
+### 
 
-Deploy Gemini Code Assist configuration alongside Claude Code.
-
-Creates:
-- `GEMINI.md`
-- `.gemini/` directory
-
-### --with-copilot
-
-Deploy GitHub Copilot configuration.
+Deploy  configuration alongside Claude Code.
 
 Creates:
-- `.github/copilot-instructions.md`
+- ``
+- `` directory
 
-### --with-cursor
+### 
 
-Deploy Cursor AI configuration.
-
-Creates:
-- `.cursorrules`
-
-### --with-windsurf
-
-Deploy Windsurf AI configuration.
+Deploy  configuration.
 
 Creates:
-- `.windsurfrules`
+- ``
 
-### --with-codex
+### 
 
-Deploy OpenAI Codex configuration.
+Deploy  configuration.
 
 Creates:
-- `AGENTS.md`
+- ``
 
 ## Memory & Token Optimization
 
@@ -194,11 +178,9 @@ Remove all existing AI configuration before deploying.
 
 Deletes:
 - `CLAUDE.md`, `.claude/`
-- `GEMINI.md`, `.gemini/`, `.geminiignore`
-- `.github/copilot-instructions.md`
-- `.cursorrules`
-- `.windsurfrules`
-- `AGENTS.md`
+- ``, ``, `.geminiignore`
+- ``
+- ``
 
 **Note:** `MEMORY.md` is NOT deleted by `--clean` to preserve project memory.
 
@@ -268,7 +250,7 @@ The script automatically detects:
 
 ```bash
 # Let the script detect your stack
-ai-config --project=/Users/dev/myproject --with-all
+ai-config --project=/Users/dev/myproject 
 ```
 
 ### First-Time Setup (Manual Stack)
@@ -277,21 +259,21 @@ ai-config --project=/Users/dev/myproject --with-all
 ai-config \
   --stack=expressionengine \
   --project=/Users/dev/myproject \
-  --with-all
+  
 ```
 
 ### Discovery Mode for Unknown Stack
 
 ```bash
 # For Vue, Laravel, Django, etc.
-ai-config --discover --project=/Users/dev/my-vue-app --with-all
+ai-config --discover --project=/Users/dev/my-vue-app 
 ```
 
 ### Current Directory Shortcut
 
 ```bash
 cd /path/to/project
-ai-config --project=. --with-all
+ai-config --project=. 
 ```
 
 ### Update After Technology Changes
@@ -317,7 +299,7 @@ ai-config \
 ai-config \
   --dry-run \
   --project=../my-nextjs-app \
-  --with-all
+  
 ```
 
 ### Core Skills Only
@@ -326,7 +308,7 @@ ai-config \
 ai-config \
   --project=. \
   --superpowers-core \
-  --with-gemini
+  
 ```
 
 ## Exit Codes

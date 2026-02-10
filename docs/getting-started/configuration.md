@@ -35,20 +35,20 @@ Detailed configuration and rules:
     └── ...
 ```
 
-### GEMINI.md
+### 
 
-Agent mode context for Gemini Code Assist.
+Agent mode context for .
 
-**Location:** `{project-root}/GEMINI.md`
+**Location:** `{project-root}/`
 
-**Generated from:** `projects/{stack}/GEMINI.md.template`
+**Generated from:** `projects/{stack}/.template`
 
-### .gemini/ Directory
+###  Directory
 
 Gemini-specific configuration:
 
 ```
-.gemini/
+
 ├── settings.json       # MCP servers
 ├── config.yaml         # PR review settings
 ├── styleguide.md       # Code review guide
@@ -119,16 +119,14 @@ MEMORY.md
 MEMORY-ARCHIVE.md
 .claude/
 
-# Gemini Code Assist
-GEMINI.md
-.gemini/
+# 
+
+
 .geminiignore
 
 # Other AI Assistants
-.github/copilot-instructions.md
-.cursorrules
-.windsurfrules
-AGENTS.md
+
+
 ```
 
 These files are project-specific and shouldn't be committed. See [File Structure](../reference/file-structure.md#ignored-files) for complete details.

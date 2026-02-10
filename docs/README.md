@@ -4,7 +4,7 @@ Complete documentation for the AI Configuration Repository.
 
 ## Overview
 
-This repository provides automated configuration deployment for **6 AI coding assistants** across **8 technology stacks** with:
+This repository provides automated configuration deployment for **4 AI coding assistants** across **8 technology stacks** with:
 
 - Automatic stack detection
 - Memory bank for persistent context
@@ -16,11 +16,9 @@ This repository provides automated configuration deployment for **6 AI coding as
 | Assistant | Config File |
 |-----------|-------------|
 | Claude Code | `CLAUDE.md`, `MEMORY.md`, `.claude/` |
-| Gemini Code Assist | `GEMINI.md`, `.gemini/` |
-| GitHub Copilot | `.github/copilot-instructions.md` |
-| Cursor AI | `.cursorrules` |
-| Windsurf AI | `.windsurfrules` |
-| OpenAI Codex | `AGENTS.md` |
+|  | ``, `` |
+|  | `` |
+|  | `` |
 
 ## Getting Started
 

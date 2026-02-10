@@ -17,16 +17,16 @@ Complete reference for all supported technology stacks.
 
 ## AI Assistant Support Per Stack
 
-| Stack | Claude | Gemini | Copilot | Cursor | Windsurf | Codex |
-|-------|--------|--------|---------|--------|----------|-------|
-| **expressionengine** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Stack | ✅ Stack | ✅ Stack |
-| **coilpack** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common | ✅ Common | ✅ Common |
-| **craftcms** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common | ✅ Common | ✅ Common |
-| **wordpress-roots** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common | ✅ Common | ✅ Common |
-| **wordpress** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common | ✅ Common | ✅ Common |
-| **nextjs** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common | ✅ Common | ✅ Common |
-| **docusaurus** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common | ✅ Common | ✅ Common |
-| **custom** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Stack | ✅ Stack | ✅ Stack |
+| Stack | Claude | Gemini | Copilot | Codex |
+|-------|--------|--------|---------|-------|
+| **expressionengine** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common |
+| **coilpack** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common |
+| **craftcms** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common |
+| **wordpress-roots** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common |
+| **wordpress** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common |
+| **nextjs** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common |
+| **docusaurus** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common |
+| **custom** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common |
 
 **Legend:**
 - ✅ Stack = Stack-specific template
@@ -304,7 +304,7 @@ For `cva()` and `cn()` utility functions.
 ### Usage
 
 ```bash
-ai-config --discover --project=/path/to/project --with-all
+ai-config --discover --project=/path/to/project 
 ```
 
 Then run `/project-discover` in Claude Code to generate custom rules.

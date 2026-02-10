@@ -1,10 +1,10 @@
-# AI Configuration Repository
+# Claude Code Configuration Repository
 
-Universal AI coding assistant configuration for modern web development stacks.
+Automated Claude Code configuration for modern web development stacks with VS Code integration.
 
 ## Project Overview
 
-This repository provides automated configuration deployment for **6 AI coding assistants** across **8 technology stacks** with:
+This repository provides automated Claude Code configuration deployment across **8 technology stacks** with:
 - Automatic stack detection
 - Memory bank for persistent context
 - Token optimization rules
@@ -13,16 +13,9 @@ This repository provides automated configuration deployment for **6 AI coding as
 
 **Repository Path:** `/Users/robert/data/business/_tools/claude-config`
 
-## Supported AI Assistants
+## Supported Stacks
 
-| Assistant | Config File | Template Location |
-|-----------|-------------|-------------------|
-| Claude Code | `CLAUDE.md`, `MEMORY.md`, `.claude/` | Stack-specific (all stacks) |
-| Gemini Code Assist | `GEMINI.md`, `.gemini/` | Stack-specific (all stacks) |
-| GitHub Copilot | `.github/copilot-instructions.md` | Common fallback |
-| Cursor AI | `.cursorrules` | EE + common fallback |
-| Windsurf AI | `.windsurfrules` | EE + common fallback |
-| OpenAI Codex | `AGENTS.md` | EE + common fallback |
+All stacks include complete Claude Code configurations:
 
 ## Supported Stacks
 
@@ -46,20 +39,16 @@ This repository provides automated configuration deployment for **6 AI coding as
 ### Template Structure
 ```
 projects/
-├── common/                    # Global fallback templates
-│   ├── copilot/              # GitHub Copilot
-│   ├── cursor/               # Cursor AI
-│   ├── windsurf/             # Windsurf AI
-│   ├── openai/               # OpenAI Codex
+├── common/                    # Global templates
 │   ├── rules/                # Memory & token rules
 │   └── MEMORY.md.template    # Memory bank template
-├── expressionengine/         # Full stack config
-├── coilpack/                 # Full stack config
-├── craftcms/                 # Full stack config
-├── wordpress-roots/          # Full stack config
-├── wordpress/                # Full stack config
-├── nextjs/                   # Full stack config
-├── docusaurus/               # Full stack config
+├── expressionengine/         # Full Claude config
+├── coilpack/                 # Full Claude config
+├── craftcms/                 # Full Claude config
+├── wordpress-roots/          # Full Claude config
+├── wordpress/                # Full Claude config
+├── nextjs/                   # Full Claude config
+├── docusaurus/               # Full Claude config
 └── custom/                   # Discovery mode base
 
 superpowers/
@@ -90,14 +79,14 @@ See `docs/guides/memory-system.md` for full documentation.
 
 ### Deploy to a Project
 ```bash
-# Auto-detect stack and deploy all AI configs
-ai-config --project=/path/to/project --with-all
+# Auto-detect stack and deploy
+ai-config --project=/path/to/project
 
 # Specify stack manually
-ai-config --stack=expressionengine --project=/path/to/project --with-all
+ai-config --stack=expressionengine --project=/path/to/project
 
 # Discovery mode for unknown stacks
-ai-config --discover --project=/path/to/project --with-all
+ai-config --discover --project=/path/to/project
 ```
 
 ### Update Existing Project
@@ -110,24 +99,16 @@ ai-config --refresh --stack=custom --project=/path/to/project
 ai-config-docs  # Opens at http://localhost:8000
 ```
 
-## Template Fallback Logic
+## Stack Templates
 
-The setup script uses this priority for each AI assistant:
+Each stack includes:
 
-1. **Stack-specific template** - `projects/{stack}/{assistant}/`
-2. **Common fallback** - `projects/common/{assistant}/`
-3. **Error message** - Only if neither exists
-
-### Current Coverage
-
-| AI Assistant | Has Stack Templates | Has Common Fallback |
-|--------------|---------------------|---------------------|
-| Claude | All 8 stacks | Not needed |
-| Gemini | All 8 stacks | Not needed |
-| Copilot | None | Yes |
-| Cursor | 2 stacks (EE, custom) | Yes |
-| Windsurf | 2 stacks (EE, custom) | Yes |
-| Codex | 2 stacks (EE, custom) | Yes |
+- `CLAUDE.md.template` - Main project context
+- `rules/` - Stack-specific coding standards
+- `agents/` - Specialized agent personas (optional)
+- `commands/` - Stack-specific slash commands (optional)
+- `skills/` - Stack-specific skills (optional)
+- `vscode/` - VSCode settings and tasks
 
 ## Superpowers Skills
 
@@ -164,13 +145,6 @@ Templates use `{{VARIABLE}}` syntax, replaced during deployment:
 
 ## Development Guidelines
 
-### Adding a New AI Assistant
-
-1. Create common fallback template in `projects/common/{assistant}/`
-2. Update `setup-project.sh` with deployment logic and fallback
-3. Add command-line flag (`--with-{assistant}`)
-4. Update documentation
-
 ### Adding Stack-Specific Templates
 
 1. Create template in `projects/{stack}/{assistant}/`
@@ -195,8 +169,8 @@ Templates use `{{VARIABLE}}` syntax, replaced during deployment:
 - Added memory bank system (`MEMORY.md`, memory rules, memory skill)
 - Added token optimization rules
 - Added 15 Superpowers workflow skills
-- Removed Aider support (not used)
-- All stacks get configurations for all 6 AI assistants via `--with-all`
+- Removed all other AI assistants (focused on Claude + VS Code only)
+- Streamlined for local development workflow
 
 ## Quick Reference
 

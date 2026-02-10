@@ -51,7 +51,7 @@ Add Gemini configuration to existing Claude project:
 ```bash
 ai-config \
   --refresh \
-  --with-gemini \
+   \
   --project=/path/to/project
 ```
 
@@ -130,14 +130,14 @@ All stay intact.
 
 - `CLAUDE.md` - Regenerated from template
 - `.vscode/` - Updated with latest settings
-- `GEMINI.md` - Regenerated from template
-- `.gemini/settings.json` - Updated with MCP config
+- `` - Regenerated from template
+- `settings.json` - Updated with MCP config
 
 ### Lost During --clean
 
 Everything is deleted:
 - `CLAUDE.md`, `.claude/`
-- `GEMINI.md`, `.gemini/`, `.geminiignore`
+- ``, ``, `.geminiignore`
 
 ## Updating Multiple Projects
 

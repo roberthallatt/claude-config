@@ -18,7 +18,7 @@ source ~/.zshrc  # or ~/.bashrc
 Now use `ai-config` from anywhere:
 
 ```bash
-ai-config --project=/path/to/project --with-all
+ai-config --project=/path/to/project 
 ```
 
 ---

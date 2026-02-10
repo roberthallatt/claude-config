@@ -162,7 +162,7 @@ Memory files are deployed automatically with every stack:
 
 ```bash
 # Full deployment includes memory
-ai-config --project=. --with-all
+ai-config --project=. 
 
 # Memory is preserved on refresh
 ai-config --refresh --project=.

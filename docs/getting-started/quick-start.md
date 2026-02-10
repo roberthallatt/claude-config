@@ -13,7 +13,7 @@ source ~/.zshrc
 ## 2. Configure Your Project
 
 ```bash
-ai-config --project=/path/to/your/project --with-all
+ai-config --project=/path/to/your/project 
 ```
 
 That's it! The script auto-detects your framework and technologies.
@@ -22,11 +22,11 @@ That's it! The script auto-detects your framework and technologies.
 
 ## What Happens
 
-When you run `ai-config --project=. --with-all`:
+When you run `ai-config --project=. `:
 
 1. **Framework Detection** - Identifies ExpressionEngine, Craft CMS, WordPress, Next.js, etc.
 2. **Technology Detection** - Finds Tailwind, Alpine.js, SCSS, bilingual content, etc.
-3. **AI Configuration** - Deploys optimized configs for 6 AI assistants
+3. **AI Configuration** - Deploys optimized configs for Claude and optional AI assistants
 4. **Memory System** - Sets up persistent context (`MEMORY.md`)
 5. **VSCode Setup** - Configures syntax highlighting, debugging, tasks
 
@@ -38,13 +38,13 @@ When you run `ai-config --project=. --with-all`:
 
 ```bash
 cd /path/to/your/project
-ai-config --project=. --with-all
+ai-config --project=. 
 ```
 
 ### Preview First
 
 ```bash
-ai-config --project=. --with-all --dry-run
+ai-config --project=.  --dry-run
 ```
 
 ### Update After Changes
@@ -56,7 +56,7 @@ ai-config --refresh --project=.
 ### Discovery Mode (Unknown Framework)
 
 ```bash
-ai-config --project=. --discover --with-all
+ai-config --project=. --discover 
 ```
 
 Then run `/project-discover` in Claude Code.
@@ -68,11 +68,9 @@ Then run `/project-discover` in Claude Code.
 | AI Assistant | Files |
 |--------------|-------|
 | Claude Code | `CLAUDE.md`, `MEMORY.md`, `.claude/` |
-| Gemini Code Assist | `GEMINI.md`, `.gemini/` |
-| GitHub Copilot | `.github/copilot-instructions.md` |
-| Cursor AI | `.cursorrules` |
-| Windsurf AI | `.windsurfrules` |
-| OpenAI Codex | `AGENTS.md` |
+|  | ``, `` |
+|  | `` |
+|  | `` |
 | VSCode | `.vscode/settings.json`, `launch.json`, `tasks.json` |
 
 ---
@@ -106,17 +104,17 @@ Then run `/project-discover` in Claude Code.
 
 ## Individual AI Assistants
 
-Don't need all 6? Use specific flags:
+Don't need all? Use specific flags:
 
 ```bash
 # Just Claude (always included)
 ai-config --project=.
 
 # Claude + Gemini
-ai-config --project=. --with-gemini
+ai-config --project=. 
 
-# Claude + Copilot + Cursor
-ai-config --project=. --with-copilot --with-cursor
+# Claude + Copilot + Codex
+ai-config --project=.  
 ```
 
 ---

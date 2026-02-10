@@ -16,12 +16,6 @@
 #   --force       Overwrite existing configuration without prompting
 #   --clean       Remove existing Claude/AI config before deploying
 #   --refresh     Re-scan project and regenerate CLAUDE.md only (preserves .claude/ customizations)
-#   --with-gemini       Deploy .gemini/ configuration for Gemini Code Assist
-#   --with-copilot      Deploy .github/copilot-instructions.md for GitHub Copilot
-#   --with-cursor       Deploy .cursorrules for Cursor AI
-#   --with-windsurf     Deploy .windsurfrules for Windsurf AI
-#   --with-codex        Deploy AGENTS.md for OpenAI Codex
-#   --with-all          Deploy configuration for ALL supported AI assistants
 #   --analyze           Generate analysis prompt for AI to build custom config
 #   --discover          AI-powered analysis mode for unknown/custom stacks
 #
@@ -48,12 +42,6 @@ DRY_RUN=false
 FORCE=false
 CLEAN=false
 REFRESH=false
-WITH_GEMINI=false
-WITH_COPILOT=false
-WITH_CURSOR=false
-WITH_WINDSURF=false
-WITH_CODEX=false
-WITH_ALL=false
 ANALYZE=false
 DISCOVER=false
 WITH_SUPERPOWERS=true          # Enabled by default
@@ -116,35 +104,6 @@ while [[ $# -gt 0 ]]; do
       REFRESH=true
       shift
       ;;
-    --with-gemini)
-      WITH_GEMINI=true
-      shift
-      ;;
-    --with-copilot)
-      WITH_COPILOT=true
-      shift
-      ;;
-    --with-cursor)
-      WITH_CURSOR=true
-      shift
-      ;;
-    --with-windsurf)
-      WITH_WINDSURF=true
-      shift
-      ;;
-    --with-codex)
-      WITH_CODEX=true
-      shift
-      ;;
-    --with-all)
-      WITH_ALL=true
-      WITH_GEMINI=true
-      WITH_COPILOT=true
-      WITH_CURSOR=true
-      WITH_WINDSURF=true
-      WITH_CODEX=true
-      shift
-      ;;
     --analyze)
       ANALYZE=true
       shift
@@ -195,14 +154,6 @@ while [[ $# -gt 0 ]]; do
       echo "  --force           Overwrite existing config without prompting"
       echo "  --clean           Remove existing config before deploying (fresh start)"
       echo "  --refresh         Update config files (auto-detects stack from CLAUDE.md)"
-      echo ""
-      echo "AI Assistants:"
-      echo "  --with-gemini     Deploy .gemini/ for Gemini Code Assist"
-      echo "  --with-copilot    Deploy .github/copilot-instructions.md for GitHub Copilot"
-      echo "  --with-cursor     Deploy .cursorrules for Cursor AI"
-      echo "  --with-windsurf   Deploy .windsurfrules for Windsurf AI"
-      echo "  --with-codex      Deploy AGENTS.md for OpenAI Codex"
-      echo "  --with-all        Deploy ALL AI assistant configurations"
       echo ""
       echo "Superpowers Skills (enabled by default):"
       echo "  --no-superpowers        Disable Superpowers skills system"
@@ -693,20 +644,6 @@ do_clean() {
     # Claude Code
     "$PROJECT_DIR/CLAUDE.md"
     "$PROJECT_DIR/.claude"
-    # Gemini Code Assist
-    "$PROJECT_DIR/GEMINI.md"
-    "$PROJECT_DIR/.gemini"
-    "$PROJECT_DIR/.geminiignore"
-    # GitHub Copilot
-    "$PROJECT_DIR/.github/copilot-instructions.md"
-    # Cursor AI
-    "$PROJECT_DIR/.cursorrules"
-    "$PROJECT_DIR/.cursor"
-    # Windsurf AI
-    "$PROJECT_DIR/.windsurfrules"
-    "$PROJECT_DIR/.windsurf"
-    # OpenAI Codex
-    "$PROJECT_DIR/AGENTS.md"
   )
 
   echo -e "${CYAN}Cleaning existing configuration...${NC}"
@@ -746,31 +683,6 @@ update_gitignore() {
 
   # Always add Claude entries
   entries_to_add+=("CLAUDE.md" "MEMORY.md" "MEMORY-ARCHIVE.md" ".claude/")
-
-  # Add Gemini entries if deployed
-  if [[ "$WITH_GEMINI" == true ]]; then
-    entries_to_add+=("GEMINI.md" ".gemini/" ".geminiignore")
-  fi
-
-  # Add Copilot entries if deployed
-  if [[ "$WITH_COPILOT" == true ]]; then
-    entries_to_add+=(".github/copilot-instructions.md")
-  fi
-
-  # Add Cursor entries if deployed
-  if [[ "$WITH_CURSOR" == true ]]; then
-    entries_to_add+=(".cursorrules" ".cursor/")
-  fi
-
-  # Add Windsurf entries if deployed
-  if [[ "$WITH_WINDSURF" == true ]]; then
-    entries_to_add+=(".windsurfrules" ".windsurf/")
-  fi
-
-  # Add Codex entries if deployed
-  if [[ "$WITH_CODEX" == true ]]; then
-    entries_to_add+=("AGENTS.md")
-  fi
 
   # Check which entries are missing
   local entries_added=()
@@ -1043,47 +955,6 @@ if [[ "$REFRESH" == true ]]; then
     do_copy "$STACK_DIR/CLAUDE.md" "$PROJECT_DIR/"
   fi
 
-  # Deploy Gemini if requested (even in refresh mode)
-  if [[ "$WITH_GEMINI" == true ]] && [[ -d "$STACK_DIR/gemini" ]]; then
-    echo ""
-    echo -e "${CYAN}Refreshing Gemini Code Assist configuration...${NC}"
-    
-    # Create directories
-    do_mkdir "$PROJECT_DIR/.gemini"
-    do_mkdir "$PROJECT_DIR/.gemini/commands"
-    
-    # Copy static config files
-    for file in config.yaml styleguide.md; do
-      if [[ -f "$STACK_DIR/gemini/$file" ]]; then
-        do_copy "$STACK_DIR/gemini/$file" "$PROJECT_DIR/.gemini/"
-      fi
-    done
-    
-    # Deploy settings.json from template
-    if [[ -f "$STACK_DIR/gemini/settings.json.template" ]]; then
-      do_template "$STACK_DIR/gemini/settings.json.template" "$PROJECT_DIR/.gemini/settings.json"
-    fi
-    
-    # Deploy .geminiignore
-    if [[ -f "$STACK_DIR/gemini/geminiignore.template" ]]; then
-      do_copy "$STACK_DIR/gemini/geminiignore.template" "$PROJECT_DIR/.geminiignore"
-    fi
-    
-    # Deploy custom commands
-    if [[ -d "$STACK_DIR/gemini/commands" ]]; then
-      for file in "$STACK_DIR/gemini/commands"/*.toml; do
-        if [[ -e "$file" ]]; then
-          do_copy "$file" "$PROJECT_DIR/.gemini/commands/"
-        fi
-      done
-    fi
-    
-    # Generate GEMINI.md from template
-    if [[ -f "$STACK_DIR/gemini/GEMINI.md.template" ]]; then
-      do_template "$STACK_DIR/gemini/GEMINI.md.template" "$PROJECT_DIR/GEMINI.md"
-    fi
-  fi
-
   # Deploy Superpowers if requested (even in refresh mode)
   if [[ "$WITH_SUPERPOWERS" == true ]]; then
     deploy_superpowers
@@ -1108,15 +979,6 @@ if [[ "$REFRESH" == true ]]; then
   echo -e "  .claude/commands/   (your customizations)"
   echo -e "  .claude/rules/      (your customizations)"
   echo -e "  .claude/skills/     (your customizations)"
-  if [[ "$WITH_GEMINI" == true ]]; then
-    echo ""
-    echo -e "${CYAN}Gemini Code Assist configuration deployed:${NC}"
-    echo -e "  GEMINI.md — Agent mode context file"
-    echo -e "  .gemini/config.yaml — GitHub PR review settings"
-    echo -e "  .gemini/styleguide.md — Code review style guide"
-    echo -e "  .gemini/settings.json — MCP servers and settings"
-    echo -e "  .gemini/commands/*.toml — Custom Gemini commands"
-  fi
   if [[ "$WITH_SUPERPOWERS" == true ]]; then
     echo ""
     echo -e "${CYAN}Superpowers workflow skills deployed:${NC}"
@@ -1401,121 +1263,7 @@ if [[ -n "$vscode_source" ]]; then
   fi
 fi
 
-# 6. Deploy Gemini Code Assist configuration (if requested)
-if [[ "$WITH_GEMINI" == true ]] && [[ -d "$STACK_DIR/gemini" ]]; then
-  echo ""
-  echo -e "${CYAN}Deploying Gemini Code Assist configuration...${NC}"
-  
-  # Create .gemini directory structure
-  do_mkdir "$PROJECT_DIR/.gemini"
-  do_mkdir "$PROJECT_DIR/.gemini/commands"
-  
-  # Copy static config files
-  for file in config.yaml styleguide.md; do
-    if [[ -f "$STACK_DIR/gemini/$file" ]]; then
-      do_copy "$STACK_DIR/gemini/$file" "$PROJECT_DIR/.gemini/"
-    fi
-  done
-  
-  # Deploy settings.json from template (handles MCP config)
-  if [[ -f "$STACK_DIR/gemini/settings.json.template" ]]; then
-    do_template "$STACK_DIR/gemini/settings.json.template" "$PROJECT_DIR/.gemini/settings.json"
-  elif [[ -f "$STACK_DIR/gemini/settings.json" ]]; then
-    do_copy "$STACK_DIR/gemini/settings.json" "$PROJECT_DIR/.gemini/"
-  fi
-  
-  # Deploy .geminiignore
-  if [[ -f "$STACK_DIR/gemini/geminiignore.template" ]]; then
-    do_copy "$STACK_DIR/gemini/geminiignore.template" "$PROJECT_DIR/.geminiignore"
-  fi
-  
-  # Deploy custom commands (TOML format)
-  if [[ -d "$STACK_DIR/gemini/commands" ]]; then
-    for file in "$STACK_DIR/gemini/commands"/*.toml; do
-      if [[ -e "$file" ]]; then
-        do_copy "$file" "$PROJECT_DIR/.gemini/commands/"
-      fi
-    done
-  fi
-  
-  # Generate GEMINI.md from template
-  if [[ -f "$STACK_DIR/gemini/GEMINI.md.template" ]]; then
-    do_template "$STACK_DIR/gemini/GEMINI.md.template" "$PROJECT_DIR/GEMINI.md"
-  fi
-fi
-
-# 6b. Deploy GitHub Copilot configuration (if requested)
-if [[ "$WITH_COPILOT" == true ]]; then
-  echo ""
-  echo -e "${CYAN}Deploying GitHub Copilot configuration...${NC}"
-
-  # Create .github directory
-  do_mkdir "$PROJECT_DIR/.github"
-
-  # Deploy copilot-instructions.md from template (stack-specific or common fallback)
-  if [[ -f "$STACK_DIR/copilot/copilot-instructions.md.template" ]]; then
-    do_template "$STACK_DIR/copilot/copilot-instructions.md.template" "$PROJECT_DIR/.github/copilot-instructions.md"
-  elif [[ -f "$STACK_DIR/copilot/copilot-instructions.md" ]]; then
-    do_copy "$STACK_DIR/copilot/copilot-instructions.md" "$PROJECT_DIR/.github/"
-  elif [[ -f "$SCRIPT_DIR/projects/common/copilot/copilot-instructions.md.template" ]]; then
-    do_template "$SCRIPT_DIR/projects/common/copilot/copilot-instructions.md.template" "$PROJECT_DIR/.github/copilot-instructions.md"
-  else
-    echo -e "  ${YELLOW}○${NC} No Copilot template found"
-  fi
-fi
-
-# 6c. Deploy Cursor AI configuration (if requested)
-if [[ "$WITH_CURSOR" == true ]]; then
-  echo ""
-  echo -e "${CYAN}Deploying Cursor AI configuration...${NC}"
-
-  # Deploy .cursorrules from template (stack-specific or common fallback)
-  if [[ -f "$STACK_DIR/cursor/cursorrules.template" ]]; then
-    do_template "$STACK_DIR/cursor/cursorrules.template" "$PROJECT_DIR/.cursorrules"
-  elif [[ -f "$STACK_DIR/cursor/cursorrules" ]]; then
-    do_copy "$STACK_DIR/cursor/cursorrules" "$PROJECT_DIR/.cursorrules"
-  elif [[ -f "$SCRIPT_DIR/projects/common/cursor/cursorrules.template" ]]; then
-    do_template "$SCRIPT_DIR/projects/common/cursor/cursorrules.template" "$PROJECT_DIR/.cursorrules"
-  else
-    echo -e "  ${YELLOW}○${NC} No Cursor template found"
-  fi
-fi
-
-# 6d. Deploy Windsurf AI configuration (if requested)
-if [[ "$WITH_WINDSURF" == true ]]; then
-  echo ""
-  echo -e "${CYAN}Deploying Windsurf AI configuration...${NC}"
-
-  # Deploy .windsurfrules from template (stack-specific or common fallback)
-  if [[ -f "$STACK_DIR/windsurf/windsurfrules.template" ]]; then
-    do_template "$STACK_DIR/windsurf/windsurfrules.template" "$PROJECT_DIR/.windsurfrules"
-  elif [[ -f "$STACK_DIR/windsurf/windsurfrules" ]]; then
-    do_copy "$STACK_DIR/windsurf/windsurfrules" "$PROJECT_DIR/.windsurfrules"
-  elif [[ -f "$SCRIPT_DIR/projects/common/windsurf/windsurfrules.template" ]]; then
-    do_template "$SCRIPT_DIR/projects/common/windsurf/windsurfrules.template" "$PROJECT_DIR/.windsurfrules"
-  else
-    echo -e "  ${YELLOW}○${NC} No Windsurf template found"
-  fi
-fi
-
-# 6e. Deploy OpenAI Codex configuration (if requested)
-if [[ "$WITH_CODEX" == true ]]; then
-  echo ""
-  echo -e "${CYAN}Deploying OpenAI Codex configuration...${NC}"
-
-  # Deploy AGENTS.md from template (stack-specific or common fallback)
-  if [[ -f "$STACK_DIR/openai/AGENTS.md.template" ]]; then
-    do_template "$STACK_DIR/openai/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md"
-  elif [[ -f "$STACK_DIR/openai/AGENTS.md" ]]; then
-    do_copy "$STACK_DIR/openai/AGENTS.md" "$PROJECT_DIR/"
-  elif [[ -f "$SCRIPT_DIR/projects/common/openai/AGENTS.md.template" ]]; then
-    do_template "$SCRIPT_DIR/projects/common/openai/AGENTS.md.template" "$PROJECT_DIR/AGENTS.md"
-  else
-    echo -e "  ${YELLOW}○${NC} No Codex template found"
-  fi
-fi
-
-# 7. Create CLAUDE.md from template
+# 4. Create CLAUDE.md from template
 echo ""
 echo -e "${CYAN}Deploying Claude Code main configuration...${NC}"
 if [[ -f "$STACK_DIR/CLAUDE.md.template" ]]; then
@@ -1524,7 +1272,7 @@ elif [[ -f "$STACK_DIR/CLAUDE.md" ]]; then
   do_copy "$STACK_DIR/CLAUDE.md" "$PROJECT_DIR/"
 fi
 
-# 7b. Create MEMORY.md from template (if it doesn't exist)
+# 5. Create MEMORY.md from template (if it doesn't exist)
 if [[ ! -f "$PROJECT_DIR/MEMORY.md" ]]; then
   echo ""
   echo -e "${CYAN}Deploying Memory Bank template...${NC}"
@@ -1540,7 +1288,7 @@ else
   fi
 fi
 
-# 8. Generate analysis prompt if requested
+# 6. Generate analysis prompt if requested
 if [[ "$ANALYZE" == true ]] && [[ "$DRY_RUN" != true ]]; then
   echo ""
   echo -e "${CYAN}Generating analysis prompt...${NC}"
@@ -1587,12 +1335,12 @@ ANALYSIS_EOF
   echo -e "  ${GREEN}✓${NC} Created .claude/ANALYZE_PROJECT.md"
 fi
 
-# 9. Deploy Superpowers workflow skills (enabled by default)
+# 7. Deploy Superpowers workflow skills (enabled by default)
 if [[ "$WITH_SUPERPOWERS" == true ]]; then
   deploy_superpowers
 fi
 
-# 10. Generate discovery prompt if in discovery mode
+# 8. Generate discovery prompt if in discovery mode
 if [[ "$DISCOVER" == true ]] && [[ "$DRY_RUN" != true ]]; then
   echo ""
   echo -e "${CYAN}Generating discovery analysis prompt...${NC}"
@@ -1659,16 +1407,6 @@ Create or update:
 - Testing and QA
 - Security review
 
-### 4. Update Other AI Configs
-
-If other AI assistants were deployed, update:
-- \`.github/copilot-instructions.md\`
-- \`.cursorrules\`
-- \`.windsurfrules\`
-- \`AGENTS.md\`
-- \`CONVENTIONS.md\`
-- \`GEMINI.md\`
-
 ## Project Information
 
 - **Name**: ${PROJECT_NAME}
@@ -1717,36 +1455,6 @@ echo "  - CLAUDE.md — Project overview and commands"
 echo "  - .claude/rules/ — Project-specific constraints"
 echo "  - .claude/agents/ — Custom agent personas"
 echo ""
-if [[ "$WITH_GEMINI" == true ]]; then
-  echo -e "${CYAN}Gemini Code Assist configuration deployed:${NC}"
-  echo "  - GEMINI.md — Agent mode context file"
-  echo "  - .gemini/config.yaml — GitHub PR review settings"
-  echo "  - .gemini/styleguide.md — Code review style guide"
-  echo "  - .gemini/settings.json — MCP servers and settings"
-  echo "  - .gemini/commands/*.toml — Custom Gemini commands"
-  echo "  - .geminiignore — File exclusion patterns"
-  echo ""
-fi
-if [[ "$WITH_COPILOT" == true ]]; then
-  echo -e "${CYAN}GitHub Copilot configuration deployed:${NC}"
-  echo "  - .github/copilot-instructions.md — Custom instructions"
-  echo ""
-fi
-if [[ "$WITH_CURSOR" == true ]]; then
-  echo -e "${CYAN}Cursor AI configuration deployed:${NC}"
-  echo "  - .cursorrules — Project rules for Cursor"
-  echo ""
-fi
-if [[ "$WITH_WINDSURF" == true ]]; then
-  echo -e "${CYAN}Windsurf AI configuration deployed:${NC}"
-  echo "  - .windsurfrules — Project rules for Windsurf"
-  echo ""
-fi
-if [[ "$WITH_CODEX" == true ]]; then
-  echo -e "${CYAN}OpenAI Codex configuration deployed:${NC}"
-  echo "  - AGENTS.md — Agent instructions for Codex"
-  echo ""
-fi
 if [[ "$WITH_SUPERPOWERS" == true ]]; then
   echo -e "${CYAN}Superpowers workflow skills deployed:${NC}"
   echo "  - .claude/skills/superpowers/ — Workflow skills"

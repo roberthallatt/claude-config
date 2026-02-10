@@ -91,8 +91,6 @@ Create relevant specialist agents:
 ### Other AI Assistants
 If deployed with --with-all, also update:
 - `.github/copilot-instructions.md`
-- `.cursorrules`
-- `.windsurfrules`
 - `AGENTS.md`
 - `CONVENTIONS.md`
 - `GEMINI.md` and `.gemini/`

@@ -1,15 +1,14 @@
 # AI Config
 
-**One command to configure AI coding assistants for any project.**
+**One command to configure Claude Code for any project.**
 
 ```bash
-ai-config --project=/path/to/your/project --with-all
+ai-config --project=/path/to/your/project
 ```
 
-Auto-detects your framework, deploys configurations for 6 AI assistants, and sets up VSCode.
+Auto-detects your framework, deploys optimized Claude Code configuration, and sets up VSCode.
 
 [![Production Ready](https://img.shields.io/badge/status-production%20ready-success)]()
-[![AI Assistants: 6](https://img.shields.io/badge/AI%20assistants-6-purple)]()
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)]()
 
 ---
@@ -53,20 +52,20 @@ source ~/.zshrc
 ### Configure Any Project
 
 ```bash
-ai-config --project=/path/to/project --with-all
+ai-config --project=/path/to/project
 ```
 
 The script automatically:
 - **Detects your framework** (WordPress, Next.js, Craft CMS, ExpressionEngine, etc.)
 - **Detects technologies** (Tailwind, Alpine.js, SCSS, bilingual content, etc.)
-- **Deploys optimized configurations** for all 6 AI assistants
+- **Deploys optimized Claude Code configuration**
 - **Sets up VSCode** with syntax highlighting, debugging, and tasks
 
 ### Current Directory Shortcut
 
 ```bash
 cd /path/to/project
-ai-config --project=. --with-all
+ai-config --project=.
 ```
 
 ### Update Existing Project
@@ -82,34 +81,33 @@ Re-scans for new technologies and updates all configurations.
 For projects that don't match a known framework:
 
 ```bash
-ai-config --project=/path/to/project --discover --with-all
+ai-config --project=/path/to/project --discover
 ```
 
-This detects 50+ technologies (React, Vue, Laravel, Django, etc.), deploys base configurations, and generates a discovery prompt. Then run `/project-discover` in Claude Code to generate custom rules.
+This detects 50+ technologies (React, Vue, Laravel, Django, etc.), deploys base configuration, and generates a discovery prompt. Then run `/project-discover` in Claude Code to generate custom rules.
 
 ---
 
 ## What Gets Deployed
 
-### AI Assistants
+### Claude Code Configuration
 
-| Assistant | Config Files | Flag |
-|-----------|--------------|------|
-| **Claude Code** | `CLAUDE.md`, `MEMORY.md`, `.claude/` | Always deployed |
-| **Gemini Code Assist** | `GEMINI.md`, `.gemini/` | `--with-gemini` |
-| **GitHub Copilot** | `.github/copilot-instructions.md` | `--with-copilot` |
-| **Cursor AI** | `.cursorrules` | `--with-cursor` |
-| **Windsurf AI** | `.windsurfrules` | `--with-windsurf` |
-| **OpenAI Codex** | `AGENTS.md` | `--with-codex` |
-
-Use `--with-all` to deploy all assistants at once.
+| Component | Files |
+|-----------|-------|
+| **Main Config** | `CLAUDE.md` - Project context and commands |
+| **Memory Bank** | `MEMORY.md` - Persistent context across sessions |
+| **Rules** | `.claude/rules/` - Coding standards and constraints |
+| **Agents** | `.claude/agents/` - Custom agent personas |
+| **Commands** | `.claude/commands/` - Slash commands |
+| **Skills** | `.claude/skills/` - Workflow automation |
+| **Hooks** | `.claude/hooks/` - Session hooks |
 
 ### Additional Features
 
-- **Memory Bank** (`MEMORY.md`) - Persistent context across sessions
 - **Superpowers Skills** - Workflow automation (planning, debugging, TDD)
 - **VSCode Settings** - Syntax highlighting, Xdebug, DDEV tasks
 - **Context7 Integration** - Up-to-date library documentation
+- **MCP Server Support** - Supabase, Playwright, and more
 
 ---
 
@@ -152,16 +150,13 @@ ai-config --project=<path> [options]
 |--------|-------------|
 | `--project=<path>` | Target directory (use `.` for current) |
 
-### Deployment Options
+### Superpowers Options
 
 | Option | Description |
 |--------|-------------|
-| `--with-all` | Deploy all 6 AI assistant configurations |
-| `--with-gemini` | Deploy Gemini Code Assist |
-| `--with-copilot` | Deploy GitHub Copilot |
-| `--with-cursor` | Deploy Cursor AI |
-| `--with-windsurf` | Deploy Windsurf AI |
-| `--with-codex` | Deploy OpenAI Codex |
+| `--no-superpowers` | Disable Superpowers skills |
+| `--superpowers-core` | Deploy core skills only |
+| `--superpowers-minimal` | Deploy minimal bootstrap skill |
 
 ### Stack Options
 
@@ -197,26 +192,26 @@ ai-config --project=<path> [options]
 ## Examples
 
 ```bash
-# Auto-detect and configure with all AI assistants
-ai-config --project=. --with-all
+# Auto-detect and configure
+ai-config --project=.
 
 # Preview what would be deployed
-ai-config --project=. --with-all --dry-run
+ai-config --project=. --dry-run
 
 # Update after adding Tailwind
 ai-config --refresh --project=.
 
 # Discovery mode for a Vue/Nuxt project
-ai-config --project=~/my-vue-app --discover --with-all
+ai-config --project=~/my-vue-app --discover
 
-# Just Claude and Gemini
-ai-config --project=. --with-gemini
+# Minimal skills only
+ai-config --project=. --superpowers-minimal
 
 # Force clean reinstall
-ai-config --project=. --with-all --clean --force
+ai-config --project=. --clean --force
 
 # Manually specify stack
-ai-config --stack=craftcms --project=. --with-all
+ai-config --stack=craftcms --project=.
 ```
 
 ---
@@ -226,7 +221,7 @@ ai-config --stack=craftcms --project=. --with-all
 ### Automatic Extension Installation
 
 ```bash
-ai-config --project=. --with-all --install-extensions
+ai-config --project=. --install-extensions
 ```
 
 Or run standalone:
@@ -253,28 +248,18 @@ All stacks include Context7 for up-to-date library documentation (Tailwind, Alpi
 
 ## File Structure
 
-After running `ai-config --project=. --with-all`:
+After running `ai-config --project=.`:
 
 ```
 your-project/
 ├── CLAUDE.md                     # Claude Code context
 ├── MEMORY.md                     # Persistent memory bank
-├── GEMINI.md                     # Gemini context
-├── AGENTS.md                     # OpenAI Codex instructions
 ├── .claude/
 │   ├── rules/                    # Coding standards
 │   ├── agents/                   # AI personas
 │   ├── commands/                 # Slash commands
 │   ├── skills/superpowers/       # Workflow skills
 │   └── hooks/                    # Session hooks
-├── .gemini/
-│   ├── settings.json             # MCP servers
-│   ├── config.yaml               # PR review config
-│   └── commands/                 # Gemini commands
-├── .github/
-│   └── copilot-instructions.md
-├── .cursorrules
-├── .windsurfrules
 └── .vscode/
     ├── settings.json
     ├── launch.json
@@ -288,20 +273,11 @@ your-project/
 These files are per-developer and shouldn't be committed:
 
 ```gitignore
-# AI Configuration
+# Claude Code Configuration
 CLAUDE.md
 MEMORY.md
 MEMORY-ARCHIVE.md
 .claude/
-GEMINI.md
-.gemini/
-.geminiignore
-.github/copilot-instructions.md
-.cursorrules
-.cursor/
-.windsurfrules
-.windsurf/
-AGENTS.md
 ```
 
 ---

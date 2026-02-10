@@ -32,8 +32,6 @@ claude-config/
 └── projects/                     # Stack templates
     ├── common/                   # Global fallback templates
     │   ├── copilot/
-    │   ├── cursor/
-    │   ├── windsurf/
     │   ├── openai/
     │   ├── rules/                # Common rules
     │   │   ├── memory-management.md
@@ -57,12 +55,8 @@ The `projects/common/` directory contains global fallback templates used when a 
 projects/common/
 ├── copilot/
 │   └── copilot-instructions.md.template
-├── cursor/
-│   └── cursorrules.template
-├── windsurf/
-│   └── windsurfrules.template
 ├── openai/
-│   └── AGENTS.md.template
+│   └── .template
 ├── rules/
 │   ├── memory-management.md      # Memory protocols
 │   └── token-optimization.md     # Token efficiency
@@ -70,8 +64,8 @@ projects/common/
 ```
 
 **Fallback priority:**
-1. Stack-specific template (e.g., `projects/expressionengine/cursor/`)
-2. Common fallback (e.g., `projects/common/cursor/`)
+1. Stack-specific template (e.g., `projects/expressionengine/copilot/`)
+2. Common fallback (e.g., `projects/common/copilot/`)
 
 ## Superpowers Skills Structure
 
@@ -110,7 +104,7 @@ Each stack in `projects/{stack}/` contains:
 ```
 projects/expressionengine/
 ├── CLAUDE.md.template            # Project context template
-├── GEMINI.md.template            # Gemini context template
+├── .template            # Gemini context template
 │
 ├── .claude/                      # Claude configuration
 │   ├── rules/                    # Coding rules
@@ -135,7 +129,7 @@ projects/expressionengine/
 │       ├── ee-template-assistant/
 │       └── tailwind-utility-finder/
 │
-├── .gemini/                      # Gemini configuration
+├──                       # Gemini configuration
 │   ├── settings.json.template    # MCP servers
 │   ├── config.yaml               # PR review config
 │   ├── styleguide.md             # Code review guide
@@ -152,14 +146,14 @@ projects/expressionengine/
 
 ## Deployed Project Structure
 
-After running `ai-config --project=. --with-all`, your project will have:
+After running `ai-config --project=. `, your project will have:
 
 ```
 your-project/
 ├── CLAUDE.md                     # Generated from template
 ├── MEMORY.md                     # Persistent memory bank
-├── GEMINI.md                     # If --with-gemini or --with-all
-├── AGENTS.md                     # If --with-codex or --with-all
+├──                      # If  or 
+├──                      # If  or 
 │
 ├── .claude/
 │   ├── rules/
@@ -181,24 +175,21 @@ your-project/
 │       ├── hooks.json
 │       └── session-start.sh
 │
-├── .gemini/                      # If --with-gemini or --with-all
+├──                       # If  or 
 │   ├── settings.json
 │   ├── config.yaml
 │   ├── styleguide.md
 │   └── commands/
 │
-├── .github/                      # If --with-copilot or --with-all
+├── .github/                      # If  or 
 │   └── copilot-instructions.md
-│
-├── .cursorrules                  # If --with-cursor or --with-all
-├── .windsurfrules                # If --with-windsurf or --with-all
 │
 ├── .vscode/                      # If not --skip-vscode
 │   ├── settings.json
 │   ├── launch.json
 │   └── tasks.json
 │
-├── .geminiignore                 # If --with-gemini or --with-all
+├── .geminiignore                 # If  or 
 │
 └── (your existing project files)
 ```
@@ -226,25 +217,25 @@ Files with `.template` extension contain template variables that get replaced du
 Documentation and configuration files:
 - `CLAUDE.md` - Project context
 - `MEMORY.md` - Persistent memory bank
-- `GEMINI.md` - Agent mode context
+- `` - Agent mode context
 - Rules, agents, commands, skills
 
 ### JSON
 
 Configuration files:
 - `.vscode/settings.json` - VSCode settings
-- `.gemini/settings.json` - Gemini settings
+- `settings.json` - Gemini settings
 - `.claude/hooks/hooks.json` - Session hooks
 
 ### YAML
 
 Configuration files:
-- `.gemini/config.yaml` - Gemini PR review settings
+- `config.yaml` - Gemini PR review settings
 
 ### TOML
 
 Gemini command definitions:
-- `.gemini/commands/*.toml`
+- `commands/*.toml`
 
 ## File Permissions
 
@@ -265,15 +256,11 @@ CLAUDE.md
 MEMORY.md
 MEMORY-ARCHIVE.md
 .claude/
-GEMINI.md
-.gemini/
+
+
 .geminiignore
-.github/copilot-instructions.md
-.cursorrules
-.cursor/
-.windsurfrules
-.windsurf/
-AGENTS.md
+
+
 
 # VSCode (optional - some teams commit these)
 .vscode/

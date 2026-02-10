@@ -19,7 +19,7 @@ Superpowers combines composable "skills" with specialized instructions to guide 
 Superpowers is automatically deployed with every AI Config setup:
 
 ```bash
-ai-config --project=/path/to/project --with-all
+ai-config --project=/path/to/project 
 ```
 
 **What gets deployed:**

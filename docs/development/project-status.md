@@ -4,15 +4,15 @@
 
 **Status: ✅ PRODUCTION READY**
 
-All 7+ technology stacks have complete configurations for **6 AI coding assistants**:
+All 7+ technology stacks have complete configurations for **4 AI coding assistants**:
 - Full template systems for Claude and Gemini (stack-specific)
-- Common fallback templates for Copilot, Cursor, Windsurf, Codex
+- Common fallback templates for Copilot and Codex
 - Memory bank system for persistent context
 - Token optimization rules
 - Superpowers workflow skills (15 skills)
 - Technology-specific coding rules (4-7 rules per stack)
 
-The `ai-config` command deploys configurations for all AI assistants when using `--with-all`.
+The `ai-config` command deploys configurations for all AI assistants when using ``.
 
 ---
 
@@ -36,11 +36,9 @@ All stacks have complete configurations:
 | AI Assistant | Stack-Specific Templates | Common Fallback | Status |
 |--------------|--------------------------|-----------------|--------|
 | **Claude Code** | All 8 stacks | Not needed | ✅ Complete |
-| **Gemini Code Assist** | All 8 stacks | Not needed | ✅ Complete |
-| **GitHub Copilot** | None | ✅ Yes | ✅ Complete |
-| **Cursor AI** | 2 stacks (EE, custom) | ✅ Yes | ✅ Complete |
-| **Windsurf AI** | 2 stacks (EE, custom) | ✅ Yes | ✅ Complete |
-| **OpenAI Codex** | 2 stacks (EE, custom) | ✅ Yes | ✅ Complete |
+| **** | All 8 stacks | Not needed | ✅ Complete |
+| **** | None | ✅ Yes | ✅ Complete |
+| **** | None | ✅ Yes | ✅ Complete |
 
 The common fallback templates in `projects/common/` ensure all AI assistants work with any stack.
 
@@ -153,10 +151,8 @@ projects/{stack}/
 ### Common Templates
 ```
 projects/common/
-├── copilot/                    # GitHub Copilot fallback
-├── cursor/                     # Cursor AI fallback
-├── windsurf/                   # Windsurf AI fallback
-├── openai/                     # OpenAI Codex fallback
+├── copilot/                    #  fallback
+├── openai/                     #  fallback
 ├── rules/                      # Common rules
 │   ├── memory-management.md
 │   └── token-optimization.md
@@ -181,7 +177,7 @@ superpowers/
 ai-config \
   --stack=expressionengine \
   --project=/path/to/project \
-  --with-all
+  
 ```
 
 **What Gets Deployed:**
@@ -198,12 +194,10 @@ ai-config \
    - `settings.local.json` - Permissions
 4. `.vscode/` - Editor settings
 
-#### With --with-all
-- `GEMINI.md` + `.gemini/`
-- `.github/copilot-instructions.md`
-- `.cursorrules`
-- `.windsurfrules`
-- `AGENTS.md`
+#### With 
+- `` + ``
+- ``
+- ``
 
 ### Refresh Command
 
@@ -278,8 +272,8 @@ Templates support these auto-detected variables:
 - [x] Token optimization rules
 - [x] Superpowers workflow skills
 - [x] Session hooks
-- [x] GEMINI.md.template with variable substitution
-- [x] Complete `.gemini/` structure
+- [x] .template with variable substitution
+- [x] Complete `` structure
 
 ### ✅ Setup Script Handles:
 - [x] Memory bank deployment
@@ -300,7 +294,7 @@ Templates support these auto-detected variables:
 ai-config \
   --stack=expressionengine \
   --project=/path/to/my-ee-site \
-  --with-all
+  
 ```
 
 **Result:**
@@ -315,7 +309,7 @@ ai-config \
 ai-config \
   --discover \
   --project=/path/to/react-app \
-  --with-gemini --with-copilot --with-codex
+    
 ```
 
 **Result:**
@@ -344,15 +338,15 @@ ai-config \
 ✅ **Repository Status: Production Ready**
 
 All 8 technology stacks have complete configurations for 6 AI coding assistants:
-- **Claude Code** and **Gemini Code Assist**: Full stack-specific templates
-- **Copilot, Cursor, Windsurf, Codex**: Stack-specific (EE/custom) + common fallbacks
+- **Claude Code** and ****: Full stack-specific templates
+- **Copilot, Codex**: Common fallbacks
 
 **Key Features:**
 - Memory bank for persistent context
 - Token optimization rules
 - 15 Superpowers workflow skills
 - Template-based generation with auto-detection
-- Support for 6 AI coding assistants
+- Support for 4 AI coding assistants
 - Common fallback templates for universal coverage
 - Discovery mode for unknown stacks
 - Session hooks for auto-activation

@@ -10,7 +10,7 @@ The setup script **intelligently detects** both your project's stack and its tec
 
 When you run without specifying `--stack`:
 ```bash
-ai-config --project=/path/to/project --with-all
+ai-config --project=/path/to/project 
 ```
 
 The script will:
@@ -36,7 +36,7 @@ The script identifies stacks by looking for specific files and directories:
 
 For projects that don't match a known stack:
 ```bash
-ai-config --project=/path/to/project --discover --with-all
+ai-config --project=/path/to/project --discover 
 ```
 
 The script will:
@@ -54,10 +54,10 @@ After determining the stack (auto or manual), the script scans for specific tech
 
 ```bash
 # With auto-detected stack
-ai-config --project=/path/to/project --with-all
+ai-config --project=/path/to/project 
 
 # With manual stack
-ai-config --stack=craftcms --project=/path/to/project --with-all
+ai-config --stack=craftcms --project=/path/to/project 
 ```
 
 The script will:
@@ -289,13 +289,13 @@ The setup script is now fully automatic and respects what your project actually 
 
 ```bash
 # Auto-detect everything (recommended)
-ai-config --project=/path/to/project --with-all
+ai-config --project=/path/to/project 
 
 # Discovery mode for unknown stacks
-ai-config --project=/path/to/project --discover --with-all
+ai-config --project=/path/to/project --discover 
 
 # Manual stack (if auto-detect fails)
-ai-config --stack=craftcms --project=/path/to/project --with-all
+ai-config --stack=craftcms --project=/path/to/project 
 
 # Refresh (auto-detects stack from existing config)
 ai-config --refresh --project=/path/to/project
