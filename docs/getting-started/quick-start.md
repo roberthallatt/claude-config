@@ -110,7 +110,7 @@ Don't need all? Use specific flags:
 # Just Claude (always included)
 ai-config --project=.
 
-# Claude + Gemini
+# Claude + Copilot
 ai-config --project=. 
 
 # Claude + Copilot + Codex

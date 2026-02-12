@@ -17,16 +17,16 @@ Complete reference for all supported technology stacks.
 
 ## AI Assistant Support Per Stack
 
-| Stack | Claude | Gemini | Copilot | Codex |
-|-------|--------|--------|---------|-------|
-| **expressionengine** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common |
-| **coilpack** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common |
-| **craftcms** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common |
-| **wordpress-roots** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common |
-| **wordpress** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common |
-| **nextjs** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common |
-| **docusaurus** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common |
-| **custom** | ✅ Stack | ✅ Stack | ✅ Common | ✅ Common |
+| Stack | Claude | Copilot | Codex |
+|-------|--------|---------|-------|
+| **expressionengine** | ✅ Stack | ✅ Common | ✅ Common |
+| **coilpack** | ✅ Stack | ✅ Common | ✅ Common |
+| **craftcms** | ✅ Stack | ✅ Common | ✅ Common |
+| **wordpress-roots** | ✅ Stack | ✅ Common | ✅ Common |
+| **wordpress** | ✅ Stack | ✅ Common | ✅ Common |
+| **nextjs** | ✅ Stack | ✅ Common | ✅ Common |
+| **docusaurus** | ✅ Stack | ✅ Common | ✅ Common |
+| **custom** | ✅ Stack | ✅ Common | ✅ Common |
 
 **Legend:**
 - ✅ Stack = Stack-specific template

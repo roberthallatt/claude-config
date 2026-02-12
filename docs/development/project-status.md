@@ -5,7 +5,7 @@
 **Status: ✅ PRODUCTION READY**
 
 All 7+ technology stacks have complete configurations for **4 AI coding assistants**:
-- Full template systems for Claude and Gemini (stack-specific)
+- Full template systems for Claude (stack-specific)
 - Common fallback templates for Copilot and Codex
 - Memory bank system for persistent context
 - Token optimization rules
@@ -20,23 +20,22 @@ The `ai-config` command deploys configurations for all AI assistants when using 
 
 All stacks have complete configurations:
 
-| Stack | Claude | Gemini | Rules | Skills | Memory | Status |
-|-------|--------|--------|-------|--------|--------|--------|
-| **coilpack** | ✅ | ✅ | 8 rules | 15+ | ✅ | ✅ Complete |
-| **craftcms** | ✅ | ✅ | 8 rules | 15+ | ✅ | ✅ Complete |
-| **docusaurus** | ✅ | ✅ | 6 rules | 15+ | ✅ | ✅ Complete |
-| **expressionengine** | ✅ | ✅ | 8 rules | 19+ | ✅ | ✅ Complete |
-| **nextjs** | ✅ | ✅ | 6 rules | 15+ | ✅ | ✅ Complete |
-| **wordpress-roots** | ✅ | ✅ | 8 rules | 15+ | ✅ | ✅ Complete |
-| **wordpress** | ✅ | ✅ | 6 rules | 15+ | ✅ | ✅ Complete |
-| **custom** | ✅ | ✅ | 3 rules | 15+ | ✅ | ✅ Complete |
+| Stack | Claude | Rules | Skills | Memory | Status |
+|-------|--------|-------|--------|--------|--------|
+| **coilpack** | ✅ | 8 rules | 15+ | ✅ | ✅ Complete |
+| **craftcms** | ✅ | 8 rules | 15+ | ✅ | ✅ Complete |
+| **docusaurus** | ✅ | 6 rules | 15+ | ✅ | ✅ Complete |
+| **expressionengine** | ✅ | 8 rules | 19+ | ✅ | ✅ Complete |
+| **nextjs** | ✅ | 6 rules | 15+ | ✅ | ✅ Complete |
+| **wordpress-roots** | ✅ | 8 rules | 15+ | ✅ | ✅ Complete |
+| **wordpress** | ✅ | 6 rules | 15+ | ✅ | ✅ Complete |
+| **custom** | ✅ | 3 rules | 15+ | ✅ | ✅ Complete |
 
 ## AI Assistant Coverage
 
 | AI Assistant | Stack-Specific Templates | Common Fallback | Status |
 |--------------|--------------------------|-----------------|--------|
 | **Claude Code** | All 8 stacks | Not needed | ✅ Complete |
-| **** | All 8 stacks | Not needed | ✅ Complete |
 | **** | None | ✅ Yes | ✅ Complete |
 | **** | None | ✅ Yes | ✅ Complete |
 
@@ -272,8 +271,6 @@ Templates support these auto-detected variables:
 - [x] Token optimization rules
 - [x] Superpowers workflow skills
 - [x] Session hooks
-- [x] .template with variable substitution
-- [x] Complete `` structure
 
 ### ✅ Setup Script Handles:
 - [x] Memory bank deployment
@@ -338,7 +335,7 @@ ai-config \
 ✅ **Repository Status: Production Ready**
 
 All 8 technology stacks have complete configurations for 6 AI coding assistants:
-- **Claude Code** and ****: Full stack-specific templates
+- **Claude Code**: Full stack-specific templates
 - **Copilot, Codex**: Common fallbacks
 
 **Key Features:**

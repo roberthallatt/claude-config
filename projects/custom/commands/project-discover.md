@@ -93,7 +93,6 @@ If deployed with --with-all, also update:
 - `.github/copilot-instructions.md`
 - `AGENTS.md`
 - `CONVENTIONS.md`
-- `GEMINI.md` and `.gemini/`
 
 ## Step 4: Report Findings
 

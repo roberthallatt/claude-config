@@ -1,18 +1,16 @@
 ---
-description: Analyze project and sync both Claude and Gemini configurations with project-specific details
+description: Analyze project and update Claude configuration with project-specific details
 ---
 
 # Project Analyzer & Configuration Sync
 
-Comprehensive project analysis that updates both Claude Code and Gemini Code Assist configurations.
+Comprehensive project analysis that updates Claude Code configuration.
 
 ## Purpose
 
 This command:
 1. Scans the project to detect technologies, patterns, and configurations
 2. Updates CLAUDE.md with accurate project details
-3. Updates GEMINI.md to match (if Gemini is configured)
-4. Syncs .gemini/styleguide.md with detected coding patterns
 
 ## Analysis Steps
 
@@ -62,8 +60,6 @@ Recommend based on detected patterns.
 
 ## Sync Actions
 
-**IMPORTANT: Update BOTH CLAUDE.md and GEMINI.md with identical values**
-
 ### Update CLAUDE.md
 - Replace `{{PROJECT_NAME}}` with detected values
 - Update directory structure (docs/, blog/, src/)
@@ -71,13 +67,3 @@ Recommend based on detected patterns.
 - Update detected technologies (Tailwind, SCSS)
 - Document custom plugins
 
-### Update GEMINI.md (must match CLAUDE.md)
-- Apply ALL the same updates as CLAUDE.md
-- Keep content identical to CLAUDE.md (except Gemini-specific sections)
-- Update project name, structure, technologies
-- **Both files should have the same detected values**
-
-### Update .gemini/styleguide.md (if exists)
-- Update documentation conventions
-- Add detected brand colors (if Tailwind)
-- Document markdown patterns and admonitions

@@ -29,10 +29,10 @@ Analyze the current project structure and provide recommendations.
 
 ### /sync-configs
 
-Synchronize configuration between Claude Code and .
+Synchronize project configuration files.
 
 **What it does:**
-- Compares Claude and Gemini configs
+- Compares configuration files
 - Identifies differences
 - Suggests synchronization
 
@@ -232,17 +232,6 @@ Find and suggest appropriate Tailwind CSS utilities.
 - Responsive design patterns
 - Component extraction
 
-## Gemini-Specific Commands
-
-Commands available when using  (`commands/*.toml`):
-
-### gemini:project-analyze
-
-Same as `/project-analyze` but in TOML format for Gemini.
-
-### gemini:config-sync
-
-Same as `/sync-configs` for Gemini.
 
 ## Creating Custom Commands
 
@@ -264,20 +253,6 @@ How to use this command.
 What the AI should do when this command is invoked.
 ```
 
-### For 
-
-Create `commands/my-command.toml`:
-
-```toml
-[command]
-name = "my-command"
-description = "What this command does"
-
-[command.prompt]
-content = """
-Instructions for what the AI should do.
-"""
-```
 
 ## Command Conventions
 

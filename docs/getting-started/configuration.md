@@ -1,6 +1,6 @@
 # Configuration
 
-Understanding the Claude + Gemini configuration structure.
+Understanding the Claude Code configuration structure.
 
 ## Configuration Files
 
@@ -35,27 +35,6 @@ Detailed configuration and rules:
     └── ...
 ```
 
-### 
-
-Agent mode context for .
-
-**Location:** `{project-root}/`
-
-**Generated from:** `projects/{stack}/.template`
-
-###  Directory
-
-Gemini-specific configuration:
-
-```
-
-├── settings.json       # MCP servers
-├── config.yaml         # PR review settings
-├── styleguide.md       # Code review guide
-└── commands/           # Custom commands (TOML)
-    ├── project-analyze.toml
-    └── ...
-```
 
 ### .vscode/ Directory
 
@@ -118,11 +97,6 @@ CLAUDE.md
 MEMORY.md
 MEMORY-ARCHIVE.md
 .claude/
-
-# 
-
-
-.geminiignore
 
 # Other AI Assistants
 

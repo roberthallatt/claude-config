@@ -62,15 +62,15 @@ echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 echo -e "${GREEN}Documentation available at:${NC}"
 echo ""
-echo -e "  Main docs:  http://localhost:${PORT}/docs/"
-echo -e "  README:     http://localhost:${PORT}/"
+echo -e "  Main page:  http://localhost:${PORT}/"
+echo -e "  Docs dir:   http://localhost:${PORT}/docs/"
 echo ""
 echo -e "Press Ctrl+C to stop the server"
 echo ""
 
 # Open browser in background if enabled
 if [ "$OPEN_BROWSER" = true ]; then
-    open_browser "http://localhost:${PORT}/docs/" &
+    open_browser "http://localhost:${PORT}/" &
 fi
 
 # Check if Python is available

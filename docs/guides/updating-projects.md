@@ -44,21 +44,6 @@ ai-config --refresh --project=/path/to/project
 - Updates `.vscode/settings.json`
 - Preserves your custom settings (if any)
 
-### Gemini Config Added
-
-Add Gemini configuration to existing Claude project:
-
-```bash
-ai-config \
-  --refresh \
-   \
-  --project=/path/to/project
-```
-
-**Result:**
-- Keeps existing Claude configuration
-- Adds Gemini configuration files
-
 ## Update Strategies
 
 ### Refresh (Recommended)
@@ -96,7 +81,7 @@ ai-config \
 ```
 
 **Behavior:**
-- Deletes ALL Claude/Gemini config
+- Deletes ALL Claude config
 - Fresh deployment
 - **Complete reset**
 
@@ -137,7 +122,7 @@ All stay intact.
 
 Everything is deleted:
 - `CLAUDE.md`, `.claude/`
-- ``, ``, `.geminiignore`
+- ``
 
 ## Updating Multiple Projects
 

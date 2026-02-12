@@ -104,7 +104,6 @@ Each stack in `projects/{stack}/` contains:
 ```
 projects/expressionengine/
 ├── CLAUDE.md.template            # Project context template
-├── .template            # Gemini context template
 │
 ├── .claude/                      # Claude configuration
 │   ├── rules/                    # Coding rules
@@ -129,15 +128,6 @@ projects/expressionengine/
 │       ├── ee-template-assistant/
 │       └── tailwind-utility-finder/
 │
-├──                       # Gemini configuration
-│   ├── settings.json.template    # MCP servers
-│   ├── config.yaml               # PR review config
-│   ├── styleguide.md             # Code review guide
-│   │
-│   └── commands/                 # Gemini commands (TOML)
-│       ├── project-analyze.toml
-│       └── config-sync.toml
-│
 └── .vscode/                      # VSCode configuration
     ├── settings.json             # Editor settings
     ├── launch.json               # Debug config
@@ -152,7 +142,6 @@ After running `ai-config --project=. `, your project will have:
 your-project/
 ├── CLAUDE.md                     # Generated from template
 ├── MEMORY.md                     # Persistent memory bank
-├──                      # If  or 
 ├──                      # If  or 
 │
 ├── .claude/
@@ -175,12 +164,6 @@ your-project/
 │       ├── hooks.json
 │       └── session-start.sh
 │
-├──                       # If  or 
-│   ├── settings.json
-│   ├── config.yaml
-│   ├── styleguide.md
-│   └── commands/
-│
 ├── .github/                      # If  or 
 │   └── copilot-instructions.md
 │
@@ -189,7 +172,6 @@ your-project/
 │   ├── launch.json
 │   └── tasks.json
 │
-├── .geminiignore                 # If  or 
 │
 └── (your existing project files)
 ```
@@ -224,18 +206,8 @@ Documentation and configuration files:
 
 Configuration files:
 - `.vscode/settings.json` - VSCode settings
-- `settings.json` - Gemini settings
 - `.claude/hooks/hooks.json` - Session hooks
 
-### YAML
-
-Configuration files:
-- `config.yaml` - Gemini PR review settings
-
-### TOML
-
-Gemini command definitions:
-- `commands/*.toml`
 
 ## File Permissions
 
@@ -256,11 +228,6 @@ CLAUDE.md
 MEMORY.md
 MEMORY-ARCHIVE.md
 .claude/
-
-
-.geminiignore
-
-
 
 # VSCode (optional - some teams commit these)
 .vscode/
@@ -287,7 +254,7 @@ test-*/
 - **Templates:** `{filename}.template`
 - **Rules:** `kebab-case.md` (e.g., `memory-management.md`)
 - **Agents:** `kebab-case.md` (e.g., `code-quality-specialist.md`)
-- **Commands:** `kebab-case.md` or `.toml`
+- **Commands:** `kebab-case.md`
 - **Skills:** `kebab-case/` directory with `SKILL.md`
 - **VSCode:** Standard VSCode naming
 

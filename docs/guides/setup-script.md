@@ -178,7 +178,7 @@ Remove all existing AI configuration before deploying.
 
 Deletes:
 - `CLAUDE.md`, `.claude/`
-- ``, ``, `.geminiignore`
+- ``
 - ``
 - ``
 

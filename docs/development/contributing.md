@@ -1,6 +1,6 @@
 # Contributing
 
-Contributions to improve the Claude + Gemini Configuration Repository are welcome!
+Contributions to improve the Claude Code Configuration Repository are welcome!
 
 ## Ways to Contribute
 
@@ -24,7 +24,6 @@ Want to add a new stack?
 1. Create `projects/{stack-name}/` directory
 2. Add templates:
    - `CLAUDE.md.template`
-   - `.template`
    - `.claude/rules/` - Stack-specific rules
    - `.vscode/settings.json` - IDE configuration
 3. Update detection logic in `setup-project.sh`

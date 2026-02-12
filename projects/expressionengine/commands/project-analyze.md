@@ -1,19 +1,17 @@
 ---
-description: Analyze project and sync both Claude and Gemini configurations with project-specific details
+description: Analyze project and update Claude configuration with project-specific details
 ---
 
 # Project Analyzer & Configuration Sync
 
-Comprehensive project analysis that updates both Claude Code and Gemini Code Assist configurations.
+Comprehensive project analysis that updates Claude Code configuration.
 
 ## Purpose
 
 This command:
 1. Scans the project to detect technologies, patterns, and configurations
 2. Updates CLAUDE.md with accurate project details
-3. Updates GEMINI.md to match (if Gemini is configured)
-4. Syncs .gemini/styleguide.md with detected coding patterns
-5. Identifies missing agents, rules, or skills based on project needs
+3. Identifies missing agents, rules, or skills based on project needs
 
 ## Analysis Steps
 
@@ -85,30 +83,12 @@ Based on analysis, recommend:
 
 ## Sync Actions
 
-**IMPORTANT: Update BOTH CLAUDE.md and GEMINI.md with identical values**
-
 ### Update CLAUDE.md
 - Replace `{{PROJECT_NAME}}`, `{{DDEV_NAME}}`, `{{TEMPLATE_GROUP}}` with detected values
 - Update directory structure section
 - Update detected technologies list (Tailwind, Alpine, bilingual)
 - Update build commands based on package.json
 - Add detected EE add-ons (Stash, Structure, etc.)
-
-### Update GEMINI.md (must match CLAUDE.md)
-- Apply ALL the same updates as CLAUDE.md
-- Keep content identical to CLAUDE.md (except Gemini-specific sections)
-- Update project name, DDEV config, URLs, template group, technologies
-- **Both files should have the same detected values**
-
-### Update .gemini/styleguide.md (if exists)
-- Add detected brand colors from tailwind.config.js
-- Update framework conventions (Tailwind/Alpine/SCSS)
-- Document detected coding patterns
-
-## Output Format
-
-```markdown
-## Project Analysis: {project-name}
 
 ### Environment Detected
 | Setting | Value |
@@ -134,8 +114,6 @@ Based on analysis, recommend:
 | File | Status | Action |
 |------|--------|--------|
 | CLAUDE.md | ⚠️ Outdated | Update PHP version |
-| GEMINI.md | ⚠️ Missing info | Add build commands |
-| styleguide.md | ⚠️ Incomplete | Add brand colors |
 
 ### Missing Components Recommended
 1. **security-expert agent** - Not present, recommended for all projects
@@ -146,27 +124,17 @@ Based on analysis, recommend:
 How would you like to proceed?
 1. Full Sync (update all files)
 2. Claude Only
-3. Gemini Only  
-4. Interactive (review each)
-5. Report Only
+3. Interactive (review each)
+4. Report Only
 ```
 
 ## Sync Actions
-
 When syncing, I will:
 
 ### Update CLAUDE.md
 - Replace placeholders with detected values
 - Update directory structure
 - Update development commands
-
-### Update GEMINI.md (if exists)
-- Mirror relevant sections from CLAUDE.md
-- Ensure consistent project overview
-
-### Update .gemini/styleguide.md (if exists)
-- Add detected brand colors
-- Update framework conventions
 
 ### Create Missing Files
 If needed, offer to create:
