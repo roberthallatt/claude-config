@@ -1,6 +1,6 @@
 # Quick Start
 
-Configure AI coding assistants for your project in under a minute.
+Configure Claude Code for your project in under a minute.
 
 ## 1. Install (One Time)
 
@@ -13,7 +13,7 @@ source ~/.zshrc
 ## 2. Configure Your Project
 
 ```bash
-ai-config --project=/path/to/your/project 
+ai-config --project=/path/to/your/project
 ```
 
 That's it! The script auto-detects your framework and technologies.
@@ -22,13 +22,14 @@ That's it! The script auto-detects your framework and technologies.
 
 ## What Happens
 
-When you run `ai-config --project=. `:
+When you run `ai-config --project=.`:
 
 1. **Framework Detection** - Identifies ExpressionEngine, Craft CMS, WordPress, Next.js, etc.
 2. **Technology Detection** - Finds Tailwind, Alpine.js, SCSS, bilingual content, etc.
-3. **AI Configuration** - Deploys optimized configs for Claude and optional AI assistants
+3. **Claude Configuration** - Deploys optimized Claude Code config with rules, agents, skills
 4. **Memory System** - Sets up persistent context (`MEMORY.md`)
-5. **VSCode Setup** - Configures syntax highlighting, debugging, tasks
+5. **Permissions** - Deploys `settings.local.json` with stack-appropriate permissions
+6. **VSCode Setup** - Configures syntax highlighting, debugging, tasks
 
 ---
 
@@ -38,13 +39,13 @@ When you run `ai-config --project=. `:
 
 ```bash
 cd /path/to/your/project
-ai-config --project=. 
+ai-config --project=.
 ```
 
 ### Preview First
 
 ```bash
-ai-config --project=.  --dry-run
+ai-config --project=. --dry-run
 ```
 
 ### Update After Changes
@@ -56,21 +57,31 @@ ai-config --refresh --project=.
 ### Discovery Mode (Unknown Framework)
 
 ```bash
-ai-config --project=. --discover 
+ai-config --project=. --discover
 ```
 
 Then run `/project-discover` in Claude Code.
+
+### Skip VSCode Settings
+
+```bash
+ai-config --project=. --skip-vscode
+```
+
+### Install VSCode Extensions
+
+```bash
+ai-config --project=. --install-extensions
+```
 
 ---
 
 ## Deployed Files
 
-| AI Assistant | Files |
-|--------------|-------|
+| Component | Files |
+|-----------|-------|
 | Claude Code | `CLAUDE.md`, `MEMORY.md`, `.claude/` |
-|  | ``, `` |
-|  | `` |
-|  | `` |
+| Permissions | `.claude/settings.local.json` |
 | VSCode | `.vscode/settings.json`, `launch.json`, `tasks.json` |
 
 ---
@@ -99,23 +110,6 @@ Then run `/project-discover` in Claude Code.
 | SCSS/Sass | Adds SCSS best practices |
 | Bilingual (EN/FR) | Adds bilingual content rules |
 | DDEV | Extracts project config |
-
----
-
-## Individual AI Assistants
-
-Don't need all? Use specific flags:
-
-```bash
-# Just Claude (always included)
-ai-config --project=.
-
-# Claude + Copilot
-ai-config --project=. 
-
-# Claude + Copilot + Codex
-ai-config --project=.  
-```
 
 ---
 

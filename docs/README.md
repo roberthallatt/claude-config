@@ -1,24 +1,23 @@
 # Documentation
 
-Complete documentation for the AI Configuration Repository.
+Complete documentation for the Claude Code Configuration Repository.
 
 ## Overview
 
-This repository provides automated configuration deployment for **4 AI coding assistants** across **8 technology stacks** with:
+This repository provides automated Claude Code configuration deployment across **8 technology stacks** with:
 
 - Automatic stack detection
 - Memory bank for persistent context
-- Token optimization rules
+- Token optimization and sensitive file protection rules
 - Superpowers workflow skills
 
-## Supported AI Assistants
+## Deployed Configuration
 
-| Assistant | Config File |
-|-----------|-------------|
+| Component | Files |
+|-----------|-------|
 | Claude Code | `CLAUDE.md`, `MEMORY.md`, `.claude/` |
-|  | ``, `` |
-|  | `` |
-|  | `` |
+| Permissions | `.claude/settings.local.json` |
+| VSCode | `.vscode/settings.json`, `launch.json`, `tasks.json` |
 
 ## Getting Started
 

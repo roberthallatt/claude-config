@@ -115,14 +115,12 @@ All stay intact.
 
 - `CLAUDE.md` - Regenerated from template
 - `.vscode/` - Updated with latest settings
-- `` - Regenerated from template
-- `settings.json` - Updated with MCP config
+- `settings.local.json` - Updated with permissions
 
 ### Lost During --clean
 
 Everything is deleted:
 - `CLAUDE.md`, `.claude/`
-- ``
 
 ## Updating Multiple Projects
 

@@ -7,15 +7,12 @@ Automated Claude Code configuration for modern web development stacks with VS Co
 This repository provides automated Claude Code configuration deployment across **8 technology stacks** with:
 - Automatic stack detection
 - Memory bank for persistent context
-- Token optimization rules
+- Token optimization and sensitive file protection rules
 - VSCode settings (formatters, Xdebug, tasks)
 - 15 Superpowers workflow skills
+- `settings.local.json` with stack-appropriate permissions
 
 **Repository Path:** `/Users/robert/data/business/_tools/claude-config`
-
-## Supported Stacks
-
-All stacks include complete Claude Code configurations:
 
 ## Supported Stacks
 
@@ -40,7 +37,7 @@ All stacks include complete Claude Code configurations:
 ```
 projects/
 ├── common/                    # Global templates
-│   ├── rules/                # Memory & token rules
+│   ├── rules/                # Memory, token & sensitive file rules
 │   └── MEMORY.md.template    # Memory bank template
 ├── expressionengine/         # Full Claude config
 ├── coilpack/                 # Full Claude config
@@ -71,6 +68,7 @@ Every deployment includes persistent memory:
 | `MEMORY.md` | Project memory bank (preserved on refresh) |
 | `memory-management.md` | Memory update protocols |
 | `token-optimization.md` | Token efficiency rules |
+| `sensitive-files.md` | Prevents reading credentials/secrets |
 | `memory-management/` | Memory skill in Superpowers |
 
 See `docs/guides/memory-system.md` for full documentation.
@@ -104,11 +102,12 @@ ai-config-docs  # Opens at http://localhost:8000
 Each stack includes:
 
 - `CLAUDE.md.template` - Main project context
+- `settings.local.json` - Claude Code permissions and MCP config
 - `rules/` - Stack-specific coding standards
 - `agents/` - Specialized agent personas (optional)
 - `commands/` - Stack-specific slash commands (optional)
 - `skills/` - Stack-specific skills (optional)
-- `vscode/` - VSCode settings and tasks
+- `.vscode/` - VSCode settings and tasks
 
 ## Superpowers Skills
 
@@ -134,7 +133,6 @@ Templates use `{{VARIABLE}}` syntax, replaced during deployment:
 | `{{PROJECT_NAME}}` | Directory name or `--name` flag |
 | `{{PROJECT_SLUG}}` | Derived from name |
 | `{{PROJECT_PATH}}` | Absolute path |
-| `{{STACK}}` | Detected or specified stack |
 | `{{DDEV_NAME}}` | `.ddev/config.yaml` |
 | `{{DDEV_PRIMARY_URL}}` | `.ddev/config.yaml` |
 | `{{DDEV_PHP}}` | `.ddev/config.yaml` |
@@ -142,12 +140,18 @@ Templates use `{{VARIABLE}}` syntax, replaced during deployment:
 | `{{DDEV_DB_VERSION}}` | `.ddev/config.yaml` |
 | `{{DDEV_DOCROOT}}` | `.ddev/config.yaml` |
 | `{{TEMPLATE_GROUP}}` | EE template directory |
+| `{{GIT_MAIN_BRANCH}}` | Git default branch |
+| `{{GIT_INTEGRATION_BRANCH}}` | Git integration branch |
+| `{{BRAND_GREEN}}` | Project brand color (discovered from Tailwind config) |
+| `{{BRAND_BLUE}}` | Project brand color |
+| `{{BRAND_ORANGE}}` | Project brand color |
+| `{{BRAND_LIGHT_GREEN}}` | Project brand color |
 
 ## Development Guidelines
 
 ### Adding Stack-Specific Templates
 
-1. Create template in `projects/{stack}/{assistant}/`
+1. Create template in `projects/{stack}/`
 2. Stack-specific automatically takes priority over common
 3. No script changes needed
 
@@ -155,7 +159,7 @@ Templates use `{{VARIABLE}}` syntax, replaced during deployment:
 
 - Bash scripts: Use `set -e`, quote variables, meaningful names
 - Markdown: ATX headings, fenced code blocks, reference links
-- Templates: `{{UPPERCASE}}` for variables
+- Templates: `{{UPPERCASE}}` for variables, no hardcoded project-specific values
 
 ## Documentation
 
@@ -166,27 +170,39 @@ Templates use `{{VARIABLE}}` syntax, replaced during deployment:
 
 ## Recent Changes
 
+- Genericized all templates (replaced hardcoded project references with `{{PLACEHOLDER}}` variables)
+- Added `sensitive-files.md` rule to prevent reading credentials, secrets, and API keys
+- Added `settings.local.json` with stack-appropriate permissions to all 8 stacks
+- Added `{{BRAND_*}}` color placeholders for project brand colors
+- Fixed cross-platform `sed -i` compatibility (macOS/Linux)
+- Implemented `--skip-vscode` and `--install-extensions` CLI flags
+- Fixed `{{PRIMARY_URL}}` → `{{DDEV_PRIMARY_URL}}` across all templates
 - Added memory bank system (`MEMORY.md`, memory rules, memory skill)
 - Added token optimization rules
 - Added 15 Superpowers workflow skills
 - Removed all other AI assistants (focused on Claude + VS Code only)
-- Streamlined for local development workflow
 
 ## Quick Reference
 
 ```bash
-# Full deployment with all AI assistants
-ai-config --project=. --with-all
+# Auto-detect and deploy
+ai-config --project=.
 
 # Discovery mode for unknown stacks
-ai-config --discover --project=. --with-all
+ai-config --discover --project=.
 
 # Refresh (preserves MEMORY.md)
-ai-config --refresh --stack=custom --project=.
+ai-config --refresh --project=.
 
 # Preview without changes
-ai-config --dry-run --project=. --with-all
+ai-config --dry-run --project=.
+
+# Skip VSCode settings
+ai-config --project=. --skip-vscode
+
+# Install VSCode extensions
+ai-config --project=. --install-extensions
 
 # Force clean reinstall
-ai-config --clean --force --project=. --with-all
+ai-config --clean --force --project=.
 ```

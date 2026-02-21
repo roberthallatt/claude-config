@@ -15,23 +15,6 @@ Complete reference for all supported technology stacks.
 | **docusaurus** | Docusaurus | MDX | Documentation sites |
 | **custom** | Any | Any | Discovery mode for unknown stacks |
 
-## AI Assistant Support Per Stack
-
-| Stack | Claude | Copilot | Codex |
-|-------|--------|---------|-------|
-| **expressionengine** | ✅ Stack | ✅ Common | ✅ Common |
-| **coilpack** | ✅ Stack | ✅ Common | ✅ Common |
-| **craftcms** | ✅ Stack | ✅ Common | ✅ Common |
-| **wordpress-roots** | ✅ Stack | ✅ Common | ✅ Common |
-| **wordpress** | ✅ Stack | ✅ Common | ✅ Common |
-| **nextjs** | ✅ Stack | ✅ Common | ✅ Common |
-| **docusaurus** | ✅ Stack | ✅ Common | ✅ Common |
-| **custom** | ✅ Stack | ✅ Common | ✅ Common |
-
-**Legend:**
-- ✅ Stack = Stack-specific template
-- ✅ Common = Uses common fallback template
-
 ## Common Features (All Stacks)
 
 Every stack deployment includes:
@@ -41,6 +24,8 @@ Every stack deployment includes:
 | Memory Bank | `MEMORY.md` |
 | Memory Rules | `.claude/rules/memory-management.md` |
 | Token Optimization | `.claude/rules/token-optimization.md` |
+| Sensitive File Protection | `.claude/rules/sensitive-files.md` |
+| Permissions | `.claude/settings.local.json` |
 | Superpowers Skills | `.claude/skills/superpowers/` |
 | Session Hooks | `.claude/hooks/` |
 
@@ -61,6 +46,7 @@ Every stack deployment includes:
 - `accessibility.md` - WCAG compliance
 - `expressionengine-templates.md` - EE template best practices
 - `performance.md` - Performance optimization
+- `sensitive-files.md` - Credential protection
 - `memory-management.md` - Memory protocols
 - `token-optimization.md` - Token efficiency
 
@@ -104,6 +90,7 @@ Every stack deployment includes:
 - `accessibility.md`
 - `laravel-patterns.md` - Laravel best practices
 - `performance.md`
+- `sensitive-files.md`
 - `memory-management.md`
 - `token-optimization.md`
 
@@ -141,6 +128,7 @@ Every stack deployment includes:
 - `accessibility.md`
 - `craft-templates.md` - Craft/Twig best practices
 - `performance.md`
+- `sensitive-files.md`
 - `memory-management.md`
 - `token-optimization.md`
 
@@ -176,6 +164,7 @@ Every stack deployment includes:
 - `accessibility.md`
 - `wordpress-patterns.md` - WordPress/Roots best practices
 - `performance.md`
+- `sensitive-files.md`
 - `memory-management.md`
 - `token-optimization.md`
 
@@ -211,6 +200,7 @@ Every stack deployment includes:
 - `accessibility.md`
 - `wordpress-patterns.md`
 - `performance.md`
+- `sensitive-files.md`
 - `memory-management.md`
 - `token-optimization.md`
 
@@ -235,6 +225,7 @@ Every stack deployment includes:
 - `accessibility.md`
 - `nextjs-patterns.md` - Next.js best practices
 - `performance.md`
+- `sensitive-files.md`
 - `memory-management.md`
 - `token-optimization.md`
 
@@ -269,6 +260,7 @@ For `cva()` and `cn()` utility functions.
 - `accessibility.md`
 - `markdown-content.md` - MDX best practices
 - `performance.md`
+- `sensitive-files.md`
 - `memory-management.md`
 - `token-optimization.md`
 
@@ -298,13 +290,14 @@ For `cva()` and `cn()` utility functions.
 
 **Always:**
 - `accessibility.md`
+- `sensitive-files.md`
 - `memory-management.md`
 - `token-optimization.md`
 
 ### Usage
 
 ```bash
-ai-config --discover --project=/path/to/project 
+ai-config --discover --project=/path/to/project
 ```
 
 Then run `/project-discover` in Claude Code to generate custom rules.

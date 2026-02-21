@@ -224,11 +224,6 @@ ai-config --stack=craftcms --project=.
 ai-config --project=. --install-extensions
 ```
 
-Or run standalone:
-```bash
-~/.ai-config/install-vscode-extensions.sh /path/to/project
-```
-
 ### Extensions by Stack
 
 | Stack | Extensions |

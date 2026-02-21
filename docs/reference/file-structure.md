@@ -8,6 +8,7 @@ Complete reference for the configuration repository structure.
 claude-config/
 ├── setup-project.sh              # Main deployment script
 ├── serve-docs.sh                 # Documentation server
+├── install.sh                    # Installer script
 ├── README.md                     # Overview and quick links
 ├── CLAUDE.md                     # Repository context for Claude
 │
@@ -31,11 +32,10 @@ claude-config/
 │
 └── projects/                     # Stack templates
     ├── common/                   # Global fallback templates
-    │   ├── copilot/
-    │   ├── openai/
     │   ├── rules/                # Common rules
     │   │   ├── memory-management.md
-    │   │   └── token-optimization.md
+    │   │   ├── token-optimization.md
+    │   │   └── sensitive-files.md
     │   └── MEMORY.md.template    # Memory bank template
     ├── expressionengine/
     ├── coilpack/
@@ -47,25 +47,16 @@ claude-config/
     └── custom/
 ```
 
-## Common Fallback Templates
+## Common Rules
 
-The `projects/common/` directory contains global fallback templates used when a stack doesn't have its own template.
+The `projects/common/rules/` directory contains rules deployed to all stacks:
 
 ```
-projects/common/
-├── copilot/
-│   └── copilot-instructions.md.template
-├── openai/
-│   └── .template
-├── rules/
-│   ├── memory-management.md      # Memory protocols
-│   └── token-optimization.md     # Token efficiency
-└── MEMORY.md.template            # Project memory bank
+projects/common/rules/
+├── memory-management.md      # Memory protocols
+├── token-optimization.md     # Token efficiency
+└── sensitive-files.md        # Prevents reading credentials/secrets
 ```
-
-**Fallback priority:**
-1. Stack-specific template (e.g., `projects/expressionengine/copilot/`)
-2. Common fallback (e.g., `projects/common/copilot/`)
 
 ## Superpowers Skills Structure
 
@@ -104,50 +95,51 @@ Each stack in `projects/{stack}/` contains:
 ```
 projects/expressionengine/
 ├── CLAUDE.md.template            # Project context template
+├── settings.local.json           # Claude Code permissions
 │
-├── .claude/                      # Claude configuration
-│   ├── rules/                    # Coding rules
-│   │   ├── accessibility.md
-│   │   ├── expressionengine-templates.md
-│   │   ├── performance.md
-│   │   ├── tailwind-css.md       # Conditional
-│   │   ├── alpinejs.md           # Conditional
-│   │   └── bilingual-content.md  # Conditional
-│   │
-│   ├── agents/                   # Agent personas
-│   │   ├── code-quality-specialist.md
-│   │   └── security-expert.md
-│   │
-│   ├── commands/                 # Slash commands
-│   │   ├── project-analyze.md
-│   │   └── sync-configs.md
-│   │
-│   └── skills/                   # Knowledge modules
-│       ├── alpine-component-builder/
-│       ├── ee-stash-optimizer/
-│       ├── ee-template-assistant/
-│       └── tailwind-utility-finder/
+├── rules/                        # Coding rules
+│   ├── accessibility.md
+│   ├── expressionengine-templates.md
+│   ├── performance.md
+│   ├── tailwind-css.md           # Conditional
+│   ├── alpinejs.md               # Conditional
+│   └── bilingual-content.md      # Conditional
+│
+├── agents/                       # Agent personas
+│   ├── code-quality-specialist.md
+│   └── performance-auditor.md
+│
+├── commands/                     # Slash commands
+│   ├── project-analyze.md
+│   └── ee-template-scaffold.md
+│
+├── skills/                       # Knowledge modules
+│   ├── alpine-component-builder/
+│   ├── ee-stash-optimizer/
+│   ├── ee-template-assistant/
+│   └── tailwind-utility-finder/
 │
 └── .vscode/                      # VSCode configuration
-    ├── settings.json             # Editor settings
-    ├── launch.json               # Debug config
-    └── tasks.json                # Tasks
+    ├── settings.json
+    ├── launch.json
+    └── tasks.json
 ```
 
 ## Deployed Project Structure
 
-After running `ai-config --project=. `, your project will have:
+After running `ai-config --project=.`, your project will have:
 
 ```
 your-project/
 ├── CLAUDE.md                     # Generated from template
 ├── MEMORY.md                     # Persistent memory bank
-├──                      # If  or 
 │
 ├── .claude/
+│   ├── settings.local.json       # Permissions + MCP config
 │   ├── rules/
 │   │   ├── memory-management.md  # Memory protocols
 │   │   ├── token-optimization.md # Token efficiency
+│   │   ├── sensitive-files.md    # Credential protection
 │   │   └── ...                   # Stack-specific rules
 │   ├── agents/
 │   ├── commands/
@@ -164,14 +156,10 @@ your-project/
 │       ├── hooks.json
 │       └── session-start.sh
 │
-├── .github/                      # If  or 
-│   └── copilot-instructions.md
-│
 ├── .vscode/                      # If not --skip-vscode
 │   ├── settings.json
 │   ├── launch.json
 │   └── tasks.json
-│
 │
 └── (your existing project files)
 ```
@@ -186,28 +174,33 @@ Files with `.template` extension contain template variables that get replaced du
 - `{{PROJECT_NAME}}` - Human-readable project name
 - `{{PROJECT_SLUG}}` - URL-safe identifier
 - `{{PROJECT_PATH}}` - Absolute path to project
-- `{{STACK}}` - Detected or specified stack name
 - `{{DDEV_NAME}}` - DDEV project name
 - `{{DDEV_PRIMARY_URL}}` - Primary URL
 - `{{DDEV_DOCROOT}}` - Document root
 - `{{DDEV_PHP}}` - PHP version
 - `{{DDEV_DB_TYPE}}` - Database type
 - `{{DDEV_DB_VERSION}}` - Database version
+- `{{TEMPLATE_GROUP}}` - EE template directory
+- `{{GIT_MAIN_BRANCH}}` - Default git branch
+- `{{GIT_INTEGRATION_BRANCH}}` - Integration branch
+- `{{BRAND_GREEN}}` - Brand color hex value
+- `{{BRAND_BLUE}}` - Brand color hex value
+- `{{BRAND_ORANGE}}` - Brand color hex value
+- `{{BRAND_LIGHT_GREEN}}` - Brand color hex value
 
 ### Markdown (.md)
 
 Documentation and configuration files:
 - `CLAUDE.md` - Project context
 - `MEMORY.md` - Persistent memory bank
-- `` - Agent mode context
 - Rules, agents, commands, skills
 
 ### JSON
 
 Configuration files:
+- `settings.local.json` - Claude Code permissions and MCP config
 - `.vscode/settings.json` - VSCode settings
 - `.claude/hooks/hooks.json` - Session hooks
-
 
 ## File Permissions
 

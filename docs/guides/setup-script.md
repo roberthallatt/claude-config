@@ -23,7 +23,7 @@ Target project directory (absolute or relative path, use `.` for current directo
 If you omit `--stack`, the script will automatically detect your project's stack:
 
 ```bash
-ai-config --project=/path/to/project 
+ai-config --project=/path/to/project
 ```
 
 **Detects:**
@@ -59,54 +59,27 @@ ai-config --stack=expressionengine --project=/path/to/project
 AI-powered discovery mode for projects that don't match a known stack.
 
 ```bash
-ai-config --discover --project=/path/to/project 
+ai-config --discover --project=/path/to/project
 ```
 
 This will:
 1. Detect 50+ technologies (React, Vue, Laravel, Django, Express, etc.)
-2. Deploy base configuration for all AI assistants
+2. Deploy base Claude Code configuration
 3. Deploy memory bank and token optimization
 4. Generate a discovery prompt for AI analysis
 
 Then open in Claude Code and run `/project-discover` to generate custom rules.
 
-## Deployment Options
+## Deployment
 
-### 
+### What Gets Deployed
 
-Deploy configurations for all 6 AI coding assistants.
-
-**Recommended for maximum compatibility.**
-
-Creates:
-- Claude Code (always deployed) → `CLAUDE.md`, `MEMORY.md`, `.claude/`
--  → ``, ``
--  → ``
--  → ``
-
-**Template fallback:** For AI assistants without stack-specific templates, the script uses common fallback templates from `projects/common/`.
-
-### 
-
-Deploy  configuration alongside Claude Code.
-
-Creates:
-- ``
-- `` directory
-
-### 
-
-Deploy  configuration.
-
-Creates:
-- ``
-
-### 
-
-Deploy  configuration.
-
-Creates:
-- ``
+Every deployment creates:
+- `CLAUDE.md` - Generated from stack template
+- `MEMORY.md` - Persistent memory bank
+- `.claude/` directory with rules, agents, commands, skills, hooks
+- `.claude/settings.local.json` - Stack-appropriate permissions
+- `.vscode/` - Editor settings (unless `--skip-vscode`)
 
 ## Memory & Token Optimization
 
@@ -115,6 +88,7 @@ Every deployment includes the memory system:
 - `MEMORY.md` - Persistent memory bank (preserved on refresh)
 - `.claude/rules/memory-management.md` - Memory update protocols
 - `.claude/rules/token-optimization.md` - Token efficiency rules
+- `.claude/rules/sensitive-files.md` - Prevents reading credentials and secrets
 - `.claude/skills/superpowers/memory-management/` - Memory skill
 
 See [Memory System Guide](memory-system.md) for details.
@@ -161,7 +135,7 @@ Update configuration files while preserving customizations.
 
 **Example:**
 ```bash
-ai-config --refresh --stack=custom --project=/path/to/project
+ai-config --refresh --project=/path/to/project
 ```
 
 **Note:** Specify `--stack` for refresh if auto-detection fails.
@@ -178,15 +152,32 @@ Remove all existing AI configuration before deploying.
 
 Deletes:
 - `CLAUDE.md`, `.claude/`
-- ``
-- ``
-- ``
 
 **Note:** `MEMORY.md` is NOT deleted by `--clean` to preserve project memory.
 
 Use this for a complete fresh start.
 
-## Advanced Options
+## VSCode Options
+
+### --skip-vscode
+
+Skip VSCode configuration deployment.
+
+Use this if you manage `.vscode/` settings separately or don't use VSCode.
+
+### --install-extensions
+
+Auto-install recommended VSCode extensions for your stack.
+
+Installs stack-appropriate extensions:
+- **All stacks:** Prettier, EditorConfig
+- **PHP stacks:** Intelephense, Xdebug
+- **JS stacks:** ESLint
+- **Tailwind projects:** Tailwind CSS IntelliSense
+
+Requires the `code` CLI command to be available.
+
+## Other Options
 
 ### --dry-run
 
@@ -203,11 +194,9 @@ Preview changes without modifying any files.
 ai-config --dry-run --stack=expressionengine --project=.
 ```
 
-### --skip-vscode
+### --name=\<name>
 
-Skip VSCode configuration deployment.
-
-Use this if you manage `.vscode/` settings separately or don't use VSCode.
+Set project name manually instead of deriving from directory name.
 
 ### --analyze
 
@@ -249,8 +238,7 @@ The script automatically detects:
 ### Auto-Detect Any Project (Recommended)
 
 ```bash
-# Let the script detect your stack
-ai-config --project=/Users/dev/myproject 
+ai-config --project=/Users/dev/myproject
 ```
 
 ### First-Time Setup (Manual Stack)
@@ -258,29 +246,26 @@ ai-config --project=/Users/dev/myproject
 ```bash
 ai-config \
   --stack=expressionengine \
-  --project=/Users/dev/myproject \
-  
+  --project=/Users/dev/myproject
 ```
 
 ### Discovery Mode for Unknown Stack
 
 ```bash
-# For Vue, Laravel, Django, etc.
-ai-config --discover --project=/Users/dev/my-vue-app 
+ai-config --discover --project=/Users/dev/my-vue-app
 ```
 
 ### Current Directory Shortcut
 
 ```bash
 cd /path/to/project
-ai-config --project=. 
+ai-config --project=.
 ```
 
 ### Update After Technology Changes
 
 ```bash
-# Added Tailwind CSS to your project
-ai-config --refresh --stack=custom --project=/Users/dev/myproject
+ai-config --refresh --project=/Users/dev/myproject
 ```
 
 ### Force Clean Reinstall
@@ -296,19 +281,20 @@ ai-config \
 ### Preview Without Changes
 
 ```bash
-ai-config \
-  --dry-run \
-  --project=../my-nextjs-app \
-  
+ai-config --dry-run --project=../my-nextjs-app
+```
+
+### Skip VSCode, Install Extensions
+
+```bash
+ai-config --project=. --skip-vscode
+ai-config --project=. --install-extensions
 ```
 
 ### Core Skills Only
 
 ```bash
-ai-config \
-  --project=. \
-  --superpowers-core \
-  
+ai-config --project=. --superpowers-core
 ```
 
 ## Exit Codes

@@ -1,57 +1,45 @@
-# AI Configuration Repository - Status Report
+# Claude Code Configuration Repository - Status Report
 
 ## Executive Summary
 
-**Status: ✅ PRODUCTION READY**
+**Status: PRODUCTION READY**
 
-All 7+ technology stacks have complete configurations for **4 AI coding assistants**:
-- Full template systems for Claude (stack-specific)
-- Common fallback templates for Copilot and Codex
+All 8 technology stacks have complete Claude Code configurations:
+- Full template systems with generic `{{PLACEHOLDER}}` variables
+- Stack-appropriate `settings.local.json` for all stacks
 - Memory bank system for persistent context
-- Token optimization rules
-- Superpowers workflow skills (15 skills)
-- Technology-specific coding rules (4-7 rules per stack)
-
-The `ai-config` command deploys configurations for all AI assistants when using ``.
+- Token optimization and sensitive file protection rules
+- 15 Superpowers workflow skills
+- Technology-specific coding rules (4-8 rules per stack)
 
 ---
 
 ## Stack Coverage
 
-All stacks have complete configurations:
-
-| Stack | Claude | Rules | Skills | Memory | Status |
-|-------|--------|-------|--------|--------|--------|
-| **coilpack** | ✅ | 8 rules | 15+ | ✅ | ✅ Complete |
-| **craftcms** | ✅ | 8 rules | 15+ | ✅ | ✅ Complete |
-| **docusaurus** | ✅ | 6 rules | 15+ | ✅ | ✅ Complete |
-| **expressionengine** | ✅ | 8 rules | 19+ | ✅ | ✅ Complete |
-| **nextjs** | ✅ | 6 rules | 15+ | ✅ | ✅ Complete |
-| **wordpress-roots** | ✅ | 8 rules | 15+ | ✅ | ✅ Complete |
-| **wordpress** | ✅ | 6 rules | 15+ | ✅ | ✅ Complete |
-| **custom** | ✅ | 3 rules | 15+ | ✅ | ✅ Complete |
-
-## AI Assistant Coverage
-
-| AI Assistant | Stack-Specific Templates | Common Fallback | Status |
-|--------------|--------------------------|-----------------|--------|
-| **Claude Code** | All 8 stacks | Not needed | ✅ Complete |
-| **** | None | ✅ Yes | ✅ Complete |
-| **** | None | ✅ Yes | ✅ Complete |
-
-The common fallback templates in `projects/common/` ensure all AI assistants work with any stack.
+| Stack | Claude | Rules | Skills | Memory | Permissions | Status |
+|-------|--------|-------|--------|--------|-------------|--------|
+| **coilpack** | Yes | 9 rules | 15+ | Yes | Yes | Complete |
+| **craftcms** | Yes | 9 rules | 15+ | Yes | Yes | Complete |
+| **docusaurus** | Yes | 7 rules | 15+ | Yes | Yes | Complete |
+| **expressionengine** | Yes | 9 rules | 19+ | Yes | Yes | Complete |
+| **nextjs** | Yes | 7 rules | 15+ | Yes | Yes | Complete |
+| **wordpress-roots** | Yes | 9 rules | 15+ | Yes | Yes | Complete |
+| **wordpress** | Yes | 7 rules | 15+ | Yes | Yes | Complete |
+| **custom** | Yes | 4 rules | 15+ | Yes | Yes | Complete |
 
 ---
 
 ## Memory & Token System
 
-Every deployment includes the memory system:
+Every deployment includes:
 
 | Component | File | Purpose |
 |-----------|------|---------|
 | Memory Bank | `MEMORY.md` | Persistent project context |
 | Memory Rules | `.claude/rules/memory-management.md` | Update protocols |
 | Token Rules | `.claude/rules/token-optimization.md` | Efficiency guidelines |
+| Sensitive Files | `.claude/rules/sensitive-files.md` | Prevents reading credentials |
+| Permissions | `.claude/settings.local.json` | Stack-appropriate CLI permissions |
 | Memory Skill | `.claude/skills/superpowers/memory-management/` | Automated behaviors |
 
 ### Memory Bank Sections
@@ -94,40 +82,37 @@ Every deployment includes the memory system:
 **All Stacks Include:**
 - `memory-management.md` - Memory protocols
 - `token-optimization.md` - Token efficiency
+- `sensitive-files.md` - Credential and secret protection
 - `accessibility.md` - WCAG compliance
 
-**Coilpack (Laravel + EE) - 8 rules:**
-- accessibility.md, alpinejs.md, bilingual-content.md
-- laravel-patterns.md, performance.md, tailwind-css.md
-- memory-management.md, token-optimization.md
+**Coilpack (Laravel + EE) - 9 rules:**
+- accessibility, alpinejs, bilingual-content, laravel-patterns, performance, tailwind-css
+- memory-management, token-optimization, sensitive-files
 
-**Craft CMS - 8 rules:**
-- accessibility.md, alpinejs.md, bilingual-content.md
-- craft-templates.md, performance.md, tailwind-css.md
-- memory-management.md, token-optimization.md
+**Craft CMS - 9 rules:**
+- accessibility, alpinejs, bilingual-content, craft-templates, performance, tailwind-css
+- memory-management, token-optimization, sensitive-files
 
-**Docusaurus - 6 rules:**
-- accessibility.md, markdown-content.md, performance.md, tailwind-css.md
-- memory-management.md, token-optimization.md
+**Docusaurus - 7 rules:**
+- accessibility, markdown-content, performance, tailwind-css
+- memory-management, token-optimization, sensitive-files
 
-**ExpressionEngine - 8 rules + 4 stack skills:**
-- accessibility.md, alpinejs.md, bilingual-content.md
-- expressionengine-templates.md, performance.md, tailwind-css.md
-- memory-management.md, token-optimization.md
+**ExpressionEngine - 9 rules + 4 stack skills:**
+- accessibility, alpinejs, bilingual-content, expressionengine-templates, performance, tailwind-css
+- memory-management, token-optimization, sensitive-files
 - Skills: alpine-component-builder, ee-stash-optimizer, ee-template-assistant, tailwind-utility-finder
 
-**Next.js - 6 rules:**
-- accessibility.md, nextjs-patterns.md, performance.md, tailwind-css.md
-- memory-management.md, token-optimization.md
+**Next.js - 7 rules:**
+- accessibility, nextjs-patterns, performance, tailwind-css
+- memory-management, token-optimization, sensitive-files
 
-**WordPress/Roots - 8 rules:**
-- accessibility.md, alpinejs.md, bilingual-content.md
-- blade-templates.md, performance.md, tailwind-css.md
-- memory-management.md, token-optimization.md
+**WordPress/Roots - 9 rules:**
+- accessibility, alpinejs, bilingual-content, blade-templates, performance, tailwind-css
+- memory-management, token-optimization, sensitive-files
 
-**Custom (Discovery Mode) - 3 rules:**
-- accessibility.md
-- memory-management.md, token-optimization.md
+**Custom (Discovery Mode) - 4 rules:**
+- accessibility, sensitive-files
+- memory-management, token-optimization
 
 ---
 
@@ -135,86 +120,26 @@ Every deployment includes the memory system:
 
 Each stack in `projects/` contains:
 
-### Claude Code Configuration
 ```
 projects/{stack}/
 ├── CLAUDE.md.template          # Main AI context (templated with project vars)
+├── settings.local.json         # Claude Code permissions
 ├── agents/                     # Specialized AI agents
 ├── commands/                   # Claude slash commands
 ├── rules/                      # Always-on coding constraints
 ├── skills/                     # Stack-specific knowledge modules
-├── settings.local.json         # Claude permissions
 └── .vscode/                    # VSCode settings
 ```
 
 ### Common Templates
 ```
 projects/common/
-├── copilot/                    #  fallback
-├── openai/                     #  fallback
 ├── rules/                      # Common rules
 │   ├── memory-management.md
-│   └── token-optimization.md
+│   ├── token-optimization.md
+│   └── sensitive-files.md
 └── MEMORY.md.template          # Memory bank template
 ```
-
-### Superpowers Skills
-```
-superpowers/
-├── skills/                     # 15 workflow skills
-├── commands/                   # Slash commands
-└── hooks/                      # Session hooks
-```
-
----
-
-## Setup Script Behavior
-
-### Initial Setup Command
-
-```bash
-ai-config \
-  --stack=expressionengine \
-  --project=/path/to/project \
-  
-```
-
-**What Gets Deployed:**
-
-#### Always Deployed
-1. `CLAUDE.md` - Generated from template
-2. `MEMORY.md` - Persistent memory bank
-3. `.claude/` directory with:
-   - `agents/` - AI agent personas
-   - `commands/` - Slash commands + Superpowers commands
-   - `rules/` - Coding constraints + memory/token rules
-   - `skills/superpowers/` - Workflow skills
-   - `hooks/` - Session hooks
-   - `settings.local.json` - Permissions
-4. `.vscode/` - Editor settings
-
-#### With 
-- `` + ``
-- ``
-- ``
-
-### Refresh Command
-
-```bash
-ai-config \
-  --refresh \
-  --stack=custom \
-  --project=/path/to/project
-```
-
-**What Gets Updated:**
-
-- ✅ Regenerates `CLAUDE.md` with current project values
-- ✅ Regenerates other AI config files (if flags provided)
-- ✅ Updates Superpowers skills
-- ⏸️ **Preserves** `MEMORY.md` (never overwritten)
-- ⏸️ **Preserves** `.claude/` customizations
-- ⏸️ **Preserves** `.vscode/` settings
 
 ---
 
@@ -233,117 +158,93 @@ Templates support these auto-detected variables:
 | `{{DDEV_DB_VERSION}}` | `10.11` | `.ddev/config.yaml` |
 | `{{DDEV_PRIMARY_URL}}` | `https://myproject.ddev.site` | `.ddev/config.yaml` |
 | `{{TEMPLATE_GROUP}}` | `myproject` | `system/user/templates/` (EE) |
+| `{{GIT_MAIN_BRANCH}}` | `main` | Git repository |
+| `{{GIT_INTEGRATION_BRANCH}}` | `main` | Git repository |
+| `{{BRAND_GREEN}}` | `#238937` | Tailwind config or manual |
+| `{{BRAND_BLUE}}` | `#00639A` | Tailwind config or manual |
+| `{{BRAND_ORANGE}}` | `#F15922` | Tailwind config or manual |
+| `{{BRAND_LIGHT_GREEN}}` | `#D7DF21` | Tailwind config or manual |
 
 ---
 
 ## Recent Changes
 
-### Memory System Added
+### Genericized Templates (Feb 2026)
+- Replaced all hardcoded project references with `{{PLACEHOLDER}}` variables
+- Added `{{BRAND_*}}` color placeholders for project brand colors
+- Fixed `{{PRIMARY_URL}}` → `{{DDEV_PRIMARY_URL}}` across all templates
+
+### Sensitive File Protection (Feb 2026)
+- Added `sensitive-files.md` rule preventing Claude from reading credentials, API keys, `.env` files, etc.
+- Deployed as a core rule to all stacks
+
+### Cross-Platform Compatibility (Feb 2026)
+- Added `sed_inplace()` wrapper function for macOS/Linux `sed -i` compatibility
+- Script now works on both macOS and Linux without modification
+
+### Stack Permissions (Feb 2026)
+- Added `settings.local.json` with stack-appropriate CLI permissions to all 8 stacks
+- PHP stacks include `composer`, `php`; WordPress stacks include `wp`; JS stacks include `node`, `yarn`
+
+### CLI Flags (Feb 2026)
+- Implemented `--skip-vscode` flag to skip VSCode settings deployment
+- Implemented `--install-extensions` flag to auto-install recommended VSCode extensions
+
+### Other AI Assistants Removed (Feb 2026)
+- Removed Gemini, Windsurf, Copilot, and Codex configurations
+- Focused exclusively on Claude Code + VS Code
+
+### Memory System
 - `projects/common/MEMORY.md.template` - Memory bank template
 - `projects/common/rules/memory-management.md` - Memory protocols
 - `projects/common/rules/token-optimization.md` - Token efficiency
 - `superpowers/skills/memory-management/` - Memory skill
-
-### Aider Support Removed
-- Removed `--with-aider` flag
-- Removed `projects/common/aider/` directory
-- Now supports 6 AI assistants (was 7)
 
 ### Superpowers Skills Integration
 - 15 workflow skills deployed by default
 - Session hooks for auto-activation
 - Slash commands (`/brainstorm`, `/write-plan`, `/execute-plan`)
 
-### Setup Script Updates
-- Memory files deployed with all stacks
-- `MEMORY.md` preserved on refresh/clean
-- Common rules fallback for memory/token optimization
-
 ---
 
 ## Verification Checklist
 
-### ✅ All Stacks Have:
+### All Stacks Have:
 - [x] CLAUDE.md.template with variable substitution
+- [x] settings.local.json with stack-appropriate permissions
 - [x] MEMORY.md.template (common fallback)
-- [x] Complete `.claude/` structure
 - [x] Memory management rules
 - [x] Token optimization rules
+- [x] Sensitive file protection rules
 - [x] Superpowers workflow skills
 - [x] Session hooks
+- [x] No hardcoded project-specific references
 
-### ✅ Setup Script Handles:
+### Setup Script Handles:
 - [x] Memory bank deployment
 - [x] Memory preservation on refresh
 - [x] Superpowers skills deployment
 - [x] Token optimization rules
-- [x] Common fallback templates
-- [x] Template variable substitution
+- [x] Sensitive file protection rules
+- [x] settings.local.json deployment
+- [x] Template variable substitution (including brand colors)
+- [x] Cross-platform sed compatibility (macOS/Linux)
+- [x] --skip-vscode flag
+- [x] --install-extensions flag
 - [x] Discovery mode for unknown stacks
-
----
-
-## Usage Examples
-
-### Setup New Project with All AI Assistants
-
-```bash
-ai-config \
-  --stack=expressionengine \
-  --project=/path/to/my-ee-site \
-  
-```
-
-**Result:**
-- Full Claude configuration with memory system
-- All 6 AI assistant configurations
-- Superpowers workflow skills
-- VSCode settings configured
-
-### Discovery Mode for Unknown Stack
-
-```bash
-ai-config \
-  --discover \
-  --project=/path/to/react-app \
-    
-```
-
-**Result:**
-- Technologies auto-detected
-- Memory bank deployed
-- Run `/project-discover` for custom rules
-
-### Refresh After Changes
-
-```bash
-ai-config \
-  --refresh \
-  --stack=custom \
-  --project=/path/to/project
-```
-
-**Result:**
-- `CLAUDE.md` regenerated
-- `MEMORY.md` preserved
-- Skills updated
 
 ---
 
 ## Summary
 
-✅ **Repository Status: Production Ready**
+**Repository Status: Production Ready**
 
-All 8 technology stacks have complete configurations for 6 AI coding assistants:
-- **Claude Code**: Full stack-specific templates
-- **Copilot, Codex**: Common fallbacks
-
-**Key Features:**
-- Memory bank for persistent context
-- Token optimization rules
-- 15 Superpowers workflow skills
-- Template-based generation with auto-detection
-- Support for 4 AI coding assistants
-- Common fallback templates for universal coverage
-- Discovery mode for unknown stacks
-- Session hooks for auto-activation
+All 8 technology stacks have complete Claude Code configurations with:
+- **Generic templates** using `{{PLACEHOLDER}}` variables
+- **Stack permissions** via `settings.local.json`
+- **Sensitive file protection** preventing credential exposure
+- **Memory bank** for persistent context
+- **Token optimization** rules
+- **15 Superpowers** workflow skills
+- **Cross-platform** macOS/Linux compatibility
+- **VSCode integration** with optional extension installation
