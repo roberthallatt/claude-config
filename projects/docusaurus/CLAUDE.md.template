@@ -4,7 +4,7 @@
 
 This is a **Docusaurus** documentation site.
 
-- **Primary URL**: {{PRIMARY_URL}}
+- **Primary URL**: {{DDEV_PRIMARY_URL}}
 - **Framework**: Docusaurus 3.x
 
 ## Tech Stack

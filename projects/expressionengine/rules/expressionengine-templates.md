@@ -5,14 +5,14 @@ These rules MUST be followed when writing or modifying ExpressionEngine template
 ## File Organization
 
 ### Template Location
-- ✅ All templates MUST be in `/system/user/templates/cyntc/`
-- ✅ Organize by template groups: `home/`, `about/`, `care/`, `resources/`
+- ✅ All templates MUST be in `/system/user/templates/{{TEMPLATE_GROUP}}/`
+- ✅ Organize by template groups (e.g., `home/`, `about/`, `resources/`)
 - ✅ Use lowercase kebab-case for template names: `about-us.html`, `resource-detail.html`
-- ❌ NEVER create templates outside the cyntc group
+- ❌ NEVER create templates outside the designated template group
 
 ### File Structure
 ```
-/system/user/templates/cyntc/
+/system/user/templates/{{TEMPLATE_GROUP}}/
 ├── home/
 │   └── index.html
 ├── about/

@@ -33,6 +33,15 @@ NC='\033[0m' # No Color
 # Script directory (where claude-config-repo lives)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# Cross-platform sed in-place editing (macOS uses -i '', Linux uses -i)
+sed_inplace() {
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "$@"
+  else
+    sed -i "$@"
+  fi
+}
+
 # Default values
 STACK=""
 PROJECT_DIR=""
@@ -44,6 +53,8 @@ CLEAN=false
 REFRESH=false
 ANALYZE=false
 DISCOVER=false
+SKIP_VSCODE=false
+INSTALL_EXTENSIONS=false
 WITH_SUPERPOWERS=true          # Enabled by default
 SUPERPOWERS_MODE=""            # all, core, minimal, custom
 SUPERPOWERS_CUSTOM_SKILLS=""   # comma-separated skill names
@@ -64,6 +75,12 @@ HAS_VANILLA_JS=false
 HAS_STASH=false
 HAS_STRUCTURE=false
 HAS_BILINGUAL=false
+
+# Brand colors (discovered from project's Tailwind config or set manually)
+BRAND_GREEN=""
+BRAND_BLUE=""
+BRAND_ORANGE=""
+BRAND_LIGHT_GREEN=""
 
 # Git branch detection
 GIT_MAIN_BRANCH=""
@@ -110,6 +127,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     --discover)
       DISCOVER=true
+      shift
+      ;;
+    --skip-vscode)
+      SKIP_VSCODE=true
+      shift
+      ;;
+    --install-extensions)
+      INSTALL_EXTENSIONS=true
       shift
       ;;
     --with-superpowers)
@@ -161,6 +186,10 @@ while [[ $# -gt 0 ]]; do
       echo "  --superpowers-core      Deploy core skills only (TDD, debugging, brainstorming)"
       echo "  --superpowers-minimal   Deploy only the bootstrap skill"
       echo "  --superpowers-skill=X   Deploy specific skills (comma-separated)"
+      echo ""
+      echo "VSCode:"
+      echo "  --skip-vscode           Skip VSCode settings deployment"
+      echo "  --install-extensions    Auto-install recommended VSCode extensions"
       echo ""
       echo "Other:"
       echo "  --analyze         Generate analysis prompt for Claude"
@@ -317,10 +346,10 @@ detect_ddev_config() {
     if [[ -n "$DDEV_PRIMARY_FQDN" ]]; then
       # Check if FQDN already has a TLD (contains a dot after the hostname)
       if [[ "$DDEV_PRIMARY_FQDN" == *.*.* ]]; then
-        # Already a full FQDN (e.g., www.kidsnewtocanada.test)
+        # Already a full FQDN (e.g., www.example-project.test)
         DDEV_PRIMARY_URL="https://$DDEV_PRIMARY_FQDN"
       else
-        # Partial FQDN (e.g., www.caringforkids) - append the project TLD
+        # Partial FQDN (e.g., www.example-project) - append the project TLD
         DDEV_PRIMARY_URL="https://${DDEV_PRIMARY_FQDN}.${DDEV_TLD}"
       fi
     elif [[ -n "$DDEV_TLD" ]] && [[ "$DDEV_TLD" != "ddev.site" ]]; then
@@ -622,12 +651,16 @@ do_template() {
         -e "s/{{TEMPLATE_GROUP}}/${TEMPLATE_GROUP:-$PROJECT_SLUG}/g" \
         -e "s/{{GIT_MAIN_BRANCH}}/${GIT_MAIN_BRANCH:-main}/g" \
         -e "s/{{GIT_INTEGRATION_BRANCH}}/${GIT_INTEGRATION_BRANCH:-main}/g" \
+        -e "s/{{BRAND_GREEN}}/${BRAND_GREEN:-#000000}/g" \
+        -e "s/{{BRAND_BLUE}}/${BRAND_BLUE:-#000000}/g" \
+        -e "s/{{BRAND_ORANGE}}/${BRAND_ORANGE:-#000000}/g" \
+        -e "s/{{BRAND_LIGHT_GREEN}}/${BRAND_LIGHT_GREEN:-#000000}/g" \
         "$src" > "$dest"
 
     # Second pass: handle conditional {{#SUPERPOWERS}}...{{/SUPERPOWERS}} sections
     if [[ "$WITH_SUPERPOWERS" == true ]]; then
       # Remove only the markers, keep the content
-      sed -i '' -e 's/{{#SUPERPOWERS}}//' -e 's/{{\/SUPERPOWERS}}//' "$dest"
+      sed_inplace -e 's/{{#SUPERPOWERS}}//' -e 's/{{\/SUPERPOWERS}}//' "$dest"
     else
       # Remove the entire section including markers and content
       # Use perl for multi-line matching (more reliable than sed)
@@ -1168,7 +1201,7 @@ if [[ -d "$STACK_DIR/rules" ]]; then
   do_mkdir "$PROJECT_DIR/.claude/rules"
 
   # Core rules - ALWAYS copy if they exist (stack-specific or common fallback)
-  for rule in accessibility.md performance.md memory-management.md token-optimization.md; do
+  for rule in accessibility.md performance.md memory-management.md token-optimization.md sensitive-files.md; do
     if [[ -f "$STACK_DIR/rules/$rule" ]]; then
       do_copy "$STACK_DIR/rules/$rule" "$PROJECT_DIR/.claude/rules/"
     elif [[ -f "$SCRIPT_DIR/projects/common/rules/$rule" ]]; then
@@ -1230,10 +1263,15 @@ fi
 
 # 4. Copy VSCode settings
 vscode_source=""
-if [[ -d "$STACK_DIR/.vscode" ]]; then
-  vscode_source="$STACK_DIR/.vscode"
-elif [[ -d "$SCRIPT_DIR/projects/common/.vscode" ]]; then
-  vscode_source="$SCRIPT_DIR/projects/common/.vscode"
+if [[ "$SKIP_VSCODE" != true ]]; then
+  if [[ -d "$STACK_DIR/.vscode" ]]; then
+    vscode_source="$STACK_DIR/.vscode"
+  elif [[ -d "$SCRIPT_DIR/projects/common/.vscode" ]]; then
+    vscode_source="$SCRIPT_DIR/projects/common/.vscode"
+  fi
+else
+  echo ""
+  echo -e "  ${YELLOW}○${NC} Skipped VSCode settings (--skip-vscode)"
 fi
 
 if [[ -n "$vscode_source" ]]; then
@@ -1474,6 +1512,54 @@ if [[ -n "$vscode_source" ]] || [[ -d "$PROJECT_DIR/.vscode" ]]; then
   echo "  - .vscode/settings.json — Editor + formatter preferences"
   [[ -f "$PROJECT_DIR/.vscode/launch.json" ]] && echo "  - .vscode/launch.json — Xdebug configuration"
   [[ -f "$PROJECT_DIR/.vscode/tasks.json" ]] && echo "  - .vscode/tasks.json — DDEV tasks"
+  echo ""
+fi
+
+# Install VSCode extensions if requested
+if [[ "$INSTALL_EXTENSIONS" == true ]] && [[ "$DRY_RUN" != true ]]; then
+  echo ""
+  echo -e "${CYAN}Installing recommended VSCode extensions...${NC}"
+
+  # Common extensions for all stacks
+  EXTENSIONS=(
+    "esbenp.prettier-vscode"
+    "editorconfig.editorconfig"
+  )
+
+  # Stack-specific extensions
+  case "$STACK" in
+    expressionengine|coilpack|craftcms|wordpress|wordpress-roots)
+      EXTENSIONS+=(
+        "bmewburn.vscode-intelephense-client"
+        "xdebug.php-debug"
+      )
+      ;;
+    nextjs|docusaurus)
+      EXTENSIONS+=(
+        "dbaeumer.vscode-eslint"
+      )
+      ;;
+  esac
+
+  # Tailwind extension if project uses Tailwind
+  if [[ "$HAS_TAILWIND" == true ]]; then
+    EXTENSIONS+=("bradlc.vscode-tailwindcss")
+  fi
+
+  for ext in "${EXTENSIONS[@]}"; do
+    if command -v code &>/dev/null; then
+      code --install-extension "$ext" --force 2>/dev/null && \
+        echo -e "  ${GREEN}✓${NC} Installed $ext" || \
+        echo -e "  ${YELLOW}○${NC} Failed to install $ext"
+    else
+      echo -e "  ${YELLOW}○${NC} VSCode CLI (code) not found — install extensions manually"
+      break
+    fi
+  done
+  echo ""
+elif [[ "$INSTALL_EXTENSIONS" == true ]] && [[ "$DRY_RUN" == true ]]; then
+  echo ""
+  echo -e "${CYAN}[DRY RUN] Would install VSCode extensions${NC}"
   echo ""
 fi
 

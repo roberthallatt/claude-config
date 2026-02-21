@@ -4,8 +4,8 @@
 
 This is a **Craft CMS** project using DDEV for local development.
 
-- **Primary URL**: {{PRIMARY_URL}}
-- **Control Panel**: {{PRIMARY_URL}}/admin
+- **Primary URL**: {{DDEV_PRIMARY_URL}}
+- **Control Panel**: {{DDEV_PRIMARY_URL}}/admin
 - **Environment**: DDEV local development
 
 ## Tech Stack

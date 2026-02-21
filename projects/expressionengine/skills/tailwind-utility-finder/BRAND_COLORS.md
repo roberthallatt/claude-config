@@ -2,14 +2,14 @@
 
 ## Primary Colors
 
-### Brand Green (#238937)
+### Brand Green ({{BRAND_GREEN}})
 - Primary action color
 - Navigation backgrounds
 - Hero sections
 - CTA buttons
 - Use: `bg-brand-green`, `text-brand-green`, `border-brand-green`
 
-### Brand Blue (#00639A)
+### Brand Blue ({{BRAND_BLUE}})
 - Secondary actions
 - Links
 - Accents
@@ -17,13 +17,13 @@
 
 ## Accent Colors
 
-### Brand Orange (#F15922)
+### Brand Orange ({{BRAND_ORANGE}})
 - Highlights
 - Important notices
 - Attention-grabbing elements
 - Use: `bg-brand-orange`, `text-brand-orange`
 
-### Brand Light Green (#D7DF21)
+### Brand Light Green ({{BRAND_LIGHT_GREEN}})
 - Light accents
 - Hover states
 - Background highlights

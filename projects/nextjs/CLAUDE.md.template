@@ -4,7 +4,7 @@
 
 This is a **Next.js** project with React and TypeScript.
 
-- **Primary URL**: {{PRIMARY_URL}}
+- **Primary URL**: {{DDEV_PRIMARY_URL}}
 - **Environment**: Node.js development
 
 ## Tech Stack

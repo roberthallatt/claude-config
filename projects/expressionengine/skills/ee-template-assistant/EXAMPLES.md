@@ -4,16 +4,16 @@
 
 ```
 {if lang == 'en'}
-  {embed="_meta_tags" title="Home - Kids New To Canada"}
+  {embed="_meta_tags" title="Home - {{PROJECT_NAME}}"}
 {if:else}
-  {embed="_meta_tags" title="Accueil - Les enfants nouveaux au Canada"}
+  {embed="_meta_tags" title="Accueil - {{PROJECT_NAME_FR}}"}
 {/if}
 
 <main class="container mx-auto px-4 py-8">
   {if lang == 'en'}
-    <h1>Welcome to Kids New To Canada</h1>
+    <h1>Welcome to {{PROJECT_NAME}}</h1>
   {if:else}
-    <h1>Bienvenue à Les enfants nouveaux au Canada</h1>
+    <h1>Bienvenue à {{PROJECT_NAME_FR}}</h1>
   {/if}
 
   {exp:channel:entries channel="pages" url_title="index"}

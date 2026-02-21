@@ -1,6 +1,6 @@
 ---
 name: alpine-component-builder
-description: Build interactive components using Alpine.js for the Kids New To Canada site. Use when creating dropdowns, modals, tabs, accordions, or other interactive elements.
+description: Build interactive components using Alpine.js for the {{PROJECT_NAME}} site. Use when creating dropdowns, modals, tabs, accordions, or other interactive elements.
 allowed-tools: Read, Grep, Glob
 ---
 

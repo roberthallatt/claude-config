@@ -4,7 +4,7 @@ description: Generate a new ExpressionEngine template file with proper structure
 
 # ExpressionEngine Template Scaffold
 
-Create a new template file at `/system/user/templates/cyntc/{template-group}/{template-name}.html` with:
+Create a new template file at `/system/user/templates/{{TEMPLATE_GROUP}}/{template-group}/{template-name}.html` with:
 
 1. Bilingual conditional structure (English/French)
 2. Meta tag embed for SEO
@@ -18,9 +18,9 @@ Generate a template with the following structure:
 
 ```
 {if lang == 'en'}
-  {embed="_meta_tags" title="[Page Title] - Kids New To Canada"}
+  {embed="_meta_tags" title="[Page Title] - {{PROJECT_NAME}}"}
 {if:else}
-  {embed="_meta_tags" title="[Titre de page] - Les enfants nouveaux au Canada"}
+  {embed="_meta_tags" title="[Titre de page] - {{PROJECT_NAME_FR}}"}
 {/if}
 
 <main class="container mx-auto px-4 py-8">

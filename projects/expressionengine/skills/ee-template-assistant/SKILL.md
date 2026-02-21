@@ -28,7 +28,7 @@ Ask when you need help with:
 ## Key ExpressionEngine Concepts
 
 ### Template Structure
-Templates are stored in: `/system/user/templates/cyntc/`
+Templates are stored in: `/system/user/templates/{{TEMPLATE_GROUP}}/`
 - Templates are organized by template groups (home, about, care, etc.)
 - Stash add-on manages advanced template caching and variable sharing
 - Bilingual support built into template structure

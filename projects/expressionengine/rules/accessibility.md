@@ -1,6 +1,6 @@
 # Accessibility Rules (WCAG 2.1 AA Compliance)
 
-These rules MUST be followed to ensure the Kids New To Canada website is accessible to all users.
+These rules MUST be followed to ensure the {{PROJECT_NAME}} website is accessible to all users.
 
 ## Semantic HTML
 
@@ -35,7 +35,7 @@ These rules MUST be followed to ensure the Kids New To Canada website is accessi
 </aside>
 
 <footer class="site-footer">
-  <p>&copy; 2024 Kids New To Canada</p>
+  <p>&copy; 2024 {{PROJECT_NAME}}</p>
 </footer>
 ```
 
@@ -143,7 +143,7 @@ These rules MUST be followed to ensure the Kids New To Canada website is accessi
 **Correct:**
 ```html
 <a href="/resources/immunization" class="text-brand-blue underline">
-  Immunization Guidelines for Refugee Children
+  View Resource Details
 </a>
 
 <a href="/about" class="text-brand-blue hover:text-brand-green">
@@ -346,10 +346,10 @@ These rules MUST be followed to ensure the Kids New To Canada website is accessi
 
 **Acceptable Combinations:**
 ```html
-{* White text on brand-green (#238937) - 4.8:1 ratio ✅ *}
+{* White text on brand-green ({{BRAND_GREEN}}) - 4.8:1 ratio ✅ *}
 <div class="bg-brand-green text-white">
 
-{* White text on brand-blue (#00639A) - 5.2:1 ratio ✅ *}
+{* White text on brand-blue ({{BRAND_BLUE}}) - 5.2:1 ratio ✅ *}
 <div class="bg-brand-blue text-white">
 
 {* Dark gray text on white - 12:1 ratio ✅ *}
@@ -555,8 +555,8 @@ Use tools like:
 **Mixed Language Content:**
 ```html
 <p>
-  The organization is called
-  <span lang="fr">Les enfants nouveaux au Canada</span>
+  The site is called
+  <span lang="fr">{{PROJECT_NAME_FR}}</span>
   in French.
 </p>
 ```

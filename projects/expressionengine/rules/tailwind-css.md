@@ -1,14 +1,14 @@
 # Tailwind CSS Rules
 
-These rules MUST be followed when writing Tailwind CSS classes for the Kids New To Canada website.
+These rules MUST be followed when writing Tailwind CSS classes for the {{PROJECT_NAME}} website.
 
 ## Brand Color System
 
 ### Official Brand Colors
-- ✅ `brand-green` (#238937) - Primary actions, hero sections, navigation
-- ✅ `brand-blue` (#00639A) - Links, secondary actions
-- ✅ `brand-orange` (#F15922) - Highlights, important notices
-- ✅ `brand-light-green` (#D7DF21) - Light accents, hover states
+- ✅ `brand-green` ({{BRAND_GREEN}}) - Primary actions, hero sections, navigation
+- ✅ `brand-blue` ({{BRAND_BLUE}}) - Links, secondary actions
+- ✅ `brand-orange` ({{BRAND_ORANGE}}) - Highlights, important notices
+- ✅ `brand-light-green` ({{BRAND_LIGHT_GREEN}}) - Light accents, hover states
 
 ### Color Usage Rules
 - ✅ ALWAYS use brand colors for primary UI elements
@@ -27,7 +27,7 @@ These rules MUST be followed when writing Tailwind CSS classes for the Kids New 
 
 ❌ Incorrect:
 <button class="text-white bg-green-500">
-<button class="bg-[#238937] text-white">
+<button class="bg-[{{BRAND_GREEN}}] text-white">
 ```
 
 **Links:**

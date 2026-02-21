@@ -1,6 +1,6 @@
 ---
 name: tailwind-utility-finder
-description: Find optimal Tailwind CSS utility classes and brand colors for the Kids New To Canada site. Use when styling components, creating responsive designs, or applying brand colors.
+description: Find optimal Tailwind CSS utility classes and brand colors for the {{PROJECT_NAME}} site. Use when styling components, creating responsive designs, or applying brand colors.
 allowed-tools: Read, Grep, Glob
 ---
 
@@ -18,10 +18,10 @@ Helps identify and apply the right Tailwind CSS utilities and brand colors for t
 ## Project Color System
 
 Brand colors available in Tailwind config:
-- `brand-light-green` - Light green accent (#D7DF21)
-- `brand-green` - Primary green (#238937)
-- `brand-blue` - Primary blue (#00639A)
-- `brand-orange` - Accent orange (#F15922)
+- `brand-light-green` - Light green accent ({{BRAND_LIGHT_GREEN}})
+- `brand-green` - Primary green ({{BRAND_GREEN}})
+- `brand-blue` - Primary blue ({{BRAND_BLUE}})
+- `brand-orange` - Accent orange ({{BRAND_ORANGE}})
 
 ## When to Use This Skill
 

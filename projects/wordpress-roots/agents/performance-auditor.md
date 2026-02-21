@@ -2,7 +2,7 @@
 name: performance-auditor
 description: >
   Performance optimization specialist. Audits templates, identifies bottlenecks,
-  and implements caching strategies for the Kids New To Canada site.
+  and implements caching strategies for the {{PROJECT_NAME}} site.
 ---
 
 # Performance Auditor

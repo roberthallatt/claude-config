@@ -168,7 +168,7 @@ templates/
 
 ```bash
 # Test GraphQL endpoint
-curl -X POST {{PRIMARY_URL}}/api \
+curl -X POST {{DDEV_PRIMARY_URL}}/api \
   -H "Content-Type: application/json" \
   -d '{"query": "{ entries { title } }"}'
 ```

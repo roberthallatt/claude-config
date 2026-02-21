@@ -4,8 +4,8 @@
 
 This is a **WordPress** project using the Roots stack (Bedrock + Sage theme).
 
-- **Primary URL**: {{PRIMARY_URL}}
-- **Admin URL**: {{PRIMARY_URL}}/wp/wp-admin
+- **Primary URL**: {{DDEV_PRIMARY_URL}}
+- **Admin URL**: {{DDEV_PRIMARY_URL}}/wp/wp-admin
 - **Environment**: DDEV local development
 
 ## Tech Stack

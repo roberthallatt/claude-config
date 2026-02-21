@@ -1,6 +1,6 @@
 # Performance Optimization Rules
 
-These rules MUST be followed to ensure optimal performance for the Kids New To Canada website.
+These rules MUST be followed to ensure optimal performance for the {{PROJECT_NAME}} website.
 
 ## Database and Caching
 

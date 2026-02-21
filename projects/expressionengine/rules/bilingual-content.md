@@ -13,17 +13,17 @@ These rules MUST be followed to ensure proper bilingual support for English and 
 **Correct:**
 ```html
 {if lang == 'en'}
-  <h1>Welcome to Kids New To Canada</h1>
-  <p>Resources for healthcare providers</p>
+  <h1>Welcome to {{PROJECT_NAME}}</h1>
+  <p>{{PROJECT_DESCRIPTION}}</p>
 {if:else}
-  <h1>Bienvenue à Les enfants nouveaux au Canada</h1>
-  <p>Ressources pour les professionnels de la santé</p>
+  <h1>Bienvenue à {{PROJECT_NAME_FR}}</h1>
+  <p>{{PROJECT_DESCRIPTION_FR}}</p>
 {/if}
 ```
 
 **Incorrect:**
 ```html
-<h1>Welcome to Kids New To Canada</h1>  {* English only *}
+<h1>Welcome to {{PROJECT_NAME}}</h1>  {* English only *}
 
 {if lang == 'en'}
   <h1>Welcome</h1>
@@ -40,14 +40,14 @@ These rules MUST be followed to ensure proper bilingual support for English and 
 ```html
 {if lang == 'en'}
   {embed="_meta_tags"
-    title="About Us - Kids New To Canada"
-    description="Learn about our organization and mission to support immigrant and refugee children."
+    title="About Us - {{PROJECT_NAME}}"
+    description="Learn about our organization and mission."
   }
   <html lang="en">
 {if:else}
   {embed="_meta_tags"
-    title="À Propos - Les enfants nouveaux au Canada"
-    description="Apprenez-en davantage sur notre organisation et notre mission de soutenir les enfants immigrants et réfugiés."
+    title="À Propos - {{PROJECT_NAME_FR}}"
+    description="Apprenez-en davantage sur notre organisation et notre mission."
   }
   <html lang="fr">
 {/if}
@@ -161,8 +161,8 @@ These rules MUST be followed to ensure proper bilingual support for English and 
 
 **Hreflang Tags:**
 ```html
-<link rel="alternate" hreflang="en" href="https://kidsnewtocanada.ca/en/about" />
-<link rel="alternate" hreflang="fr" href="https://kidsnewtocanada.ca/fr/about" />
+<link rel="alternate" hreflang="en" href="https://{{PROJECT_DOMAIN}}/en/about" />
+<link rel="alternate" hreflang="fr" href="https://{{PROJECT_DOMAIN}}/fr/about" />
 ```
 
 ## Date and Number Formatting
