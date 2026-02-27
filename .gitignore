@@ -1,17 +1,183 @@
-# OS files
+# =============================================================================
+# OS & Editor Files
+# =============================================================================
+
 .DS_Store
 Thumbs.db
+.Spotlight-V100
+.Trashes
 
-# Editor files
 *.swp
 *.swo
 *~
 .idea/
+*.iml
 
 # Ignore .vscode at root, but allow in project templates
 /.vscode/
 !projects/**/.vscode/
 
+# =============================================================================
 # Archives
+# =============================================================================
+
 *.zip
 *.tar.gz
+*.tar.bz2
+*.tar.xz
+*.rar
+*.7z
+
+# =============================================================================
+# Environment & Secret Files
+# =============================================================================
+
+# Dotenv — all variants except .example and .template (safe placeholders)
+.env
+.env.*
+!.env.example
+!.env.*.example
+!.env.template
+!.env.*.template
+
+# Secret / token files
+secrets.yml
+secrets.yaml
+secrets.json
+*.secret
+*.secrets
+
+# Vault files (Ansible, HashiCorp)
+vault.yml
+vault.yaml
+*vault*.yml
+*vault*.yaml
+
+# =============================================================================
+# Database Credentials
+# =============================================================================
+
+# WordPress
+wp-config.php
+!wp-config-sample.php
+
+# ExpressionEngine
+system/user/config/config.php
+
+# Craft CMS
+config/db.php
+config/general.php
+
+# Laravel / Coilpack
+# (covered by .env above — db credentials live there)
+
+# Generic database config patterns
+database.yml
+database.yaml
+database.json
+db-config.*
+*database-credentials*
+
+# DDEV snapshots (can contain real data)
+.ddev/db_snapshots/
+.ddev/import-db/
+.ddev/.gitignore-additions
+
+# =============================================================================
+# Authentication & Certificates
+# =============================================================================
+
+# Private keys and certificates
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+*.der
+*.csr
+*.jks
+*.keystore
+
+# SSH
+.ssh/
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+known_hosts
+
+# Credential stores
+.netrc
+.git-credentials
+.gitconfig
+
+# Package manager auth tokens
+auth.json
+.npmrc
+.yarnrc
+.pypirc
+.pip/pip.conf
+
+# =============================================================================
+# Cloud Provider Credentials
+# =============================================================================
+
+# AWS
+.aws/credentials
+.aws/config
+aws-credentials*
+*_accessKeys.csv
+
+# Google Cloud
+gcloud/application_default_credentials.json
+*-service-account*.json
+service-account*.json
+*-credentials.json
+credentials.json
+
+# Azure
+.azure/
+
+# Generic cloud credential patterns
+*_credentials.*
+*_secret.*
+*_token.*
+
+# =============================================================================
+# API Keys & Tokens
+# =============================================================================
+
+# Files commonly used to store API keys
+apikeys.*
+api-keys.*
+api_keys.*
+*apikey*
+*api-key*
+*api_key*
+*_token.*
+*-token.*
+
+# =============================================================================
+# Logs (can contain sensitive runtime data)
+# =============================================================================
+
+*.log
+logs/
+log/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =============================================================================
+# Build Artifacts & Dependencies (not sensitive, but not repo content)
+# =============================================================================
+
+node_modules/
+vendor/
+.cache/
+dist/
+build/
+.next/
+.nuxt/
+.output/
