@@ -1,0 +1,66 @@
+# AGENTS.md — {{PROJECT_NAME}}
+
+This file provides project context for AI coding tools (OpenAI Codex, GitHub Copilot Workspace,
+and similar API-based assistants). Read this file at the start of each session.
+
+## Project Identity
+
+- **Name**: {{PROJECT_NAME}}
+- **Path**: {{PROJECT_PATH}}
+- **Primary URL**: {{DDEV_PRIMARY_URL}}
+- **Stack**: To be documented after project discovery
+
+## Local Development
+
+```bash
+ddev start          # Start local environment
+ddev stop           # Stop local environment
+ddev describe       # Show URLs and connection info
+ddev ssh            # SSH into the web container
+```
+
+## Git Workflow
+
+- **Main branch**: `{{GIT_MAIN_BRANCH}}` — production, never commit directly
+- **Integration branch**: `{{GIT_INTEGRATION_BRANCH}}` — feature branches merge here
+- **Feature branches**: `feature/<description>` branched from `{{GIT_INTEGRATION_BRANCH}}`
+- **Hotfix branches**: `hotfix/<description>` branched from `{{GIT_MAIN_BRANCH}}`
+
+## Coding Conventions
+
+- Follow existing patterns before introducing new ones
+- Check for existing utilities before creating new ones
+- Meaningful, descriptive names — clarity over brevity
+- One statement per line; no chaining more than 2–3 methods
+- Use strict equality checks
+- Early returns to reduce nesting
+- Never mutate function arguments
+- Sanitize all user input; use parameterized queries; escape output by context
+
+## Security Requirements
+
+**Never read, display, or include the contents of these files:**
+
+| Category | Files / Patterns |
+|----------|-----------------|
+| Environment | `.env`, `.env.*` — `.env.example` is safe |
+| Database config | `wp-config.php`, `config/database.php`, `system/user/config/config.php` |
+| Keys & certs | `*.key`, `*.pem`, `*.p12`, `*.pfx`, `*.crt`, `*.cer` |
+| Credentials | `auth.json`, `credentials.json`, `*service-account*.json`, `*-credentials.json` |
+| Cloud auth | `.aws/credentials`, `.aws/config`, `.azure/` |
+| SSH / Git | `.ssh/`, `.git-credentials`, `.netrc`, `.gitconfig` |
+| Secrets | `secrets.yml`, `vault.yml`, any file with `secret`, `token`, or `apikey` in name |
+| DB dumps | `.ddev/db_snapshots/`, `*.sql.gz`, `*.dump` |
+
+When you need values from a sensitive file: ask the user, reference `.env.example` for
+variable names, or suggest a command they can run (e.g., `ddev describe` for DB info).
+
+**Additional rules:**
+- Never include secrets in code examples or responses
+- Always use environment variables for sensitive configuration
+- Verify `.gitignore` covers sensitive file patterns before staging files
+
+## Important Notes
+
+- Do not modify vendor/, node_modules/, or CMS core directories
+- See `CLAUDE.md` for Claude Code-specific workflow skills and the memory system

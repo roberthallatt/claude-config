@@ -1,0 +1,67 @@
+# AGENTS.md — {{PROJECT_NAME}}
+
+This file provides project context for AI coding tools (OpenAI Codex, GitHub Copilot Workspace,
+and similar API-based assistants). Read this file at the start of each session.
+
+> **Note**: This project was set up in discovery mode. The sections below are placeholders.
+> Run `/project-analyze` in Claude Code to populate this file with project-specific details.
+
+## Project Identity
+
+- **Name**: {{PROJECT_NAME}}
+- **Path**: {{PROJECT_PATH}}
+- **Primary URL**: {{DDEV_PRIMARY_URL}}
+- **Stack**: To be discovered — see directory structure below
+
+## Local Development
+
+```bash
+# Adjust commands based on the actual stack
+ddev start          # Start local environment (if DDEV)
+ddev describe       # Show URLs and connection info
+```
+
+## Git Workflow
+
+- **Main branch**: `{{GIT_MAIN_BRANCH}}` — production, never commit directly
+- **Integration branch**: `{{GIT_INTEGRATION_BRANCH}}` — feature branches merge here
+- **Feature branches**: `feature/<description>` from `{{GIT_INTEGRATION_BRANCH}}`
+- **Hotfix branches**: `hotfix/<description>` from `{{GIT_MAIN_BRANCH}}`
+
+## Coding Conventions
+
+- Follow existing patterns in the codebase before introducing new ones
+- Check for existing utilities/helpers before creating new ones
+- Meaningful, descriptive names — clarity over brevity
+- Sanitize all user input; use parameterized queries; escape output by context
+- Use environment variables for all sensitive configuration
+
+## Security Requirements
+
+**Never read, display, or include the contents of these files:**
+
+| Category | Files / Patterns |
+|----------|-----------------|
+| Environment | `.env`, `.env.*` — `.env.example` is safe |
+| Database config | `wp-config.php`, `config/database.php`, `system/user/config/config.php`, `config/db.php` |
+| Keys & certs | `*.key`, `*.pem`, `*.p12`, `*.pfx`, `*.crt`, `*.cer`, `*.priv` |
+| Credentials | `auth.json`, `credentials.json`, `*service-account*.json`, `*-credentials.json` |
+| Package auth | `.npmrc`, `.yarnrc`, `.pypirc`, `auth.json` |
+| Cloud auth | `.aws/credentials`, `.aws/config`, `.azure/`, `gcloud/application_default_credentials.json` |
+| SSH / Git | `.ssh/`, `.git-credentials`, `.netrc`, `.gitconfig` |
+| Secrets | `secrets.yml`, `vault.yml`, any file with `secret`, `token`, or `apikey` in name |
+| DB data | `.ddev/db_snapshots/`, `*.sql.gz`, `*.dump`, `*.sql.bz2` |
+
+When you need values from a sensitive file: ask the user, reference `.env.example` for
+variable names, or suggest a command they can run.
+
+**Additional rules:**
+- Never include secrets in code examples or responses
+- Always use environment variables for sensitive configuration
+- Verify `.gitignore` covers sensitive patterns before staging files
+- Never modify vendor/, node_modules/, or CMS core directories
+
+## Important Notes
+
+- This is a discovery-mode setup — update this file as you learn more about the project
+- See `CLAUDE.md` for Claude Code-specific workflow skills and the memory system

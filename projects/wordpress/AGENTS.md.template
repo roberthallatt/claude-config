@@ -1,0 +1,110 @@
+# AGENTS.md — {{PROJECT_NAME}}
+
+This file provides project context for AI coding tools (OpenAI Codex, GitHub Copilot Workspace,
+and similar API-based assistants). Read this file at the start of each session.
+
+## Project Identity
+
+- **Name**: {{PROJECT_NAME}}
+- **CMS**: WordPress 6.x
+- **Theme**: Custom theme in `wp-content/themes/{{PROJECT_SLUG}}/`
+- **Database**: {{DDEV_DB_TYPE}} {{DDEV_DB_VERSION}}
+- **PHP**: {{DDEV_PHP}}+
+- **Environment**: DDEV (Docker-based local dev)
+- **Primary URL**: {{DDEV_PRIMARY_URL}}
+- **Admin URL**: {{DDEV_PRIMARY_URL}}/wp-admin/
+
+## Directory Structure
+
+```
+{{PROJECT_SLUG}}/
+├── {{DDEV_DOCROOT}}/
+│   ├── wp-content/
+│   │   ├── themes/{{PROJECT_SLUG}}/  # Custom theme
+│   │   │   ├── assets/               # Compiled CSS/JS
+│   │   │   ├── src/                  # Source files
+│   │   │   ├── template-parts/       # Reusable template parts
+│   │   │   ├── inc/                  # PHP includes
+│   │   │   ├── functions.php
+│   │   │   └── style.css
+│   │   ├── plugins/
+│   │   ├── mu-plugins/
+│   │   └── uploads/
+│   ├── wp-admin/                     # Core — do not modify
+│   ├── wp-includes/                  # Core — do not modify
+│   └── wp-config.php
+├── .ddev/
+└── .github/workflows/
+```
+
+## Development Commands
+
+```bash
+# DDEV
+ddev start                          # Start local environment
+ddev stop                           # Stop local environment
+ddev describe                       # Show URLs and connection info
+ddev ssh                            # SSH into web container
+
+# WP-CLI
+ddev wp plugin list                 # List installed plugins
+ddev wp cache flush                 # Clear WordPress cache
+ddev wp rewrite flush               # Flush rewrite rules
+ddev wp db export backup.sql        # Export database
+ddev wp db import backup.sql        # Import database
+ddev wp search-replace 'old' 'new'  # Search and replace in DB
+
+# Database
+ddev export-db > backup.sql.gz      # Export (compressed)
+ddev import-db < backup.sql.gz      # Import
+
+# Xdebug
+ddev xdebug on / off
+```
+
+## Git Workflow
+
+- **Main branch**: `{{GIT_MAIN_BRANCH}}` — production, never commit directly
+- **Integration branch**: `{{GIT_INTEGRATION_BRANCH}}` — feature branches merge here
+- **Feature branches**: `feature/<description>` from `{{GIT_INTEGRATION_BRANCH}}`
+- **Hotfix branches**: `hotfix/<description>` from `{{GIT_MAIN_BRANCH}}`
+
+## Coding Conventions
+
+- PHP: WordPress Coding Standards (4-space indentation / tabs per WP standards)
+- Prefix all functions, classes, and globals with theme/plugin slug
+- Document functions with PHPDoc
+- Use `esc_html()`, `esc_attr()`, `esc_url()` for all output
+- Use `$wpdb->prepare()` for database queries
+- Use `wp_nonce_field()` and `wp_verify_nonce()` for forms
+- Use `current_user_can()` for capability checks
+- Use `get_template_part()` for reusable template components
+- Always call `wp_reset_postdata()` after custom WP_Query loops
+- Enqueue assets via `wp_enqueue_scripts` — never inline in templates
+
+## Security Requirements
+
+**Never read, display, or include the contents of these files:**
+
+| Category | Files / Patterns |
+|----------|-----------------|
+| Environment | `.env`, `.env.*` — `.env.example` is safe |
+| WordPress config | `wp-config.php`, `wp-config-local.php`, `wp-salt.php` |
+| Keys & certs | `*.key`, `*.pem`, `*.p12`, `*.pfx`, `*.crt`, `*.cer` |
+| Credentials | `auth.json`, `credentials.json`, `*service-account*.json` |
+| Cloud auth | `.aws/credentials`, `.aws/config`, `.azure/` |
+| SSH / Git | `.ssh/`, `.git-credentials`, `.netrc` |
+| Secrets | `secrets.yml`, `vault.yml`, any file with `secret` or `token` in name |
+| DB snapshots | `.ddev/db_snapshots/`, `.ddev/import-db/`, `*.sql.gz`, `*.dump` |
+
+**Hard rules:**
+- Never edit `wp-admin/` or `wp-includes/` (core files)
+- Never commit `wp-config.php` with real credentials
+- Never include secrets in code examples or responses
+- Verify `.gitignore` covers sensitive patterns before staging
+
+## Important Notes
+
+- Test all changes locally before pushing; flush cache after template changes
+- Backup database before major schema or data changes
+- See `CLAUDE.md` for Claude Code-specific workflow skills and the memory system

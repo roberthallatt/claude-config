@@ -1,0 +1,108 @@
+# AGENTS.md — {{PROJECT_NAME}}
+
+This file provides project context for AI coding tools (OpenAI Codex, GitHub Copilot Workspace,
+and similar API-based assistants). Read this file at the start of each session.
+
+## Project Identity
+
+- **Name**: {{PROJECT_NAME}}
+- **CMS**: Craft CMS 4.x / 5.x
+- **Database**: {{DDEV_DB_TYPE}} {{DDEV_DB_VERSION}}
+- **PHP**: {{DDEV_PHP}}+
+- **Environment**: DDEV (Docker-based local dev)
+- **Primary URL**: {{DDEV_PRIMARY_URL}}
+- **Admin URL**: {{DDEV_PRIMARY_URL}}/admin
+
+## Directory Structure
+
+```
+{{PROJECT_SLUG}}/
+├── config/                        # Craft configuration (YAML + PHP)
+│   ├── app.php                    # Application config
+│   ├── general.php                # General settings
+│   └── project-config/            # Version-controlled project config (YAML)
+├── modules/                       # Custom Craft modules
+├── templates/                     # Twig templates
+│   ├── _layouts/                  # Base layouts
+│   ├── _partials/                 # Reusable template parts
+│   └── [sections]/                # Section-specific templates
+├── web/                           # Document root (public)
+│   ├── index.php
+│   └── assets/                    # Compiled CSS/JS
+├── storage/                       # Generated (cache, logs, backups)
+├── vendor/                        # Composer dependencies
+├── .ddev/
+└── .github/workflows/
+```
+
+## Development Commands
+
+```bash
+# DDEV
+ddev start                          # Start local environment
+ddev stop                           # Stop local environment
+ddev describe                       # Show URLs and connection info
+ddev ssh                            # SSH into web container
+
+# Craft CLI
+ddev craft migrate/all              # Run pending migrations
+ddev craft project-config/apply     # Apply project config changes
+ddev craft cache/flush-all          # Flush all caches
+ddev craft gc                       # Garbage collection
+ddev craft resave/entries           # Re-save all entries
+
+# Composer
+ddev composer install               # Install PHP dependencies
+ddev composer require craftcms/X    # Add a plugin
+
+# Database
+ddev export-db > backup.sql.gz      # Export (compressed)
+ddev import-db < backup.sql.gz      # Import
+
+# Xdebug
+ddev xdebug on / off
+```
+
+## Git Workflow
+
+- **Main branch**: `{{GIT_MAIN_BRANCH}}` — production, never commit directly
+- **Integration branch**: `{{GIT_INTEGRATION_BRANCH}}` — feature branches merge here
+- **Feature branches**: `feature/<description>` from `{{GIT_INTEGRATION_BRANCH}}`
+- **Hotfix branches**: `hotfix/<description>` from `{{GIT_MAIN_BRANCH}}`
+
+## Coding Conventions
+
+- PHP: PSR-12, 4-space indentation, type declarations for parameters and returns
+- Twig: 2-space indentation; use `{{ value|escape }}` for output; keep logic minimal
+- CSS: BEM naming unless using a utility framework; 2-space indentation
+- JS: ES6+, 2-space indentation, `const` over `let`
+- Project config YAML files in `config/project-config/` should always be committed
+- Custom logic belongs in `modules/` — avoid overriding plugin behaviour
+
+## Security Requirements
+
+**Never read, display, or include the contents of these files:**
+
+| Category | Files / Patterns |
+|----------|-----------------|
+| Environment | `.env`, `.env.*` — `.env.example` is safe |
+| Craft config | `config/db.php` (may contain DB credentials in older setups) |
+| Keys & certs | `*.key`, `*.pem`, `*.p12`, `*.pfx`, `*.crt`, `*.cer` |
+| Credentials | `auth.json`, `credentials.json`, `*service-account*.json` |
+| Cloud auth | `.aws/credentials`, `.aws/config`, `.azure/` |
+| SSH / Git | `.ssh/`, `.git-credentials`, `.netrc` |
+| Secrets | `secrets.yml`, `vault.yml`, any file with `secret` or `token` in name |
+| Backups | `storage/backups/`, `.ddev/db_snapshots/`, `*.sql.gz`, `*.craftbackup` |
+
+**Hard rules:**
+- Never modify `vendor/craftcms/cms/` (Craft core)
+- `storage/` is generated — never commit runtime or backup files from it
+- `config/project-config/` IS safe and should be committed
+- Never include secrets in code examples or responses
+
+## Important Notes
+
+- Project config (`config/project-config/`) enables schema version control — always commit it
+- Apply project config changes with `ddev craft project-config/apply` on pull
+- Flush caches after template or config changes
+- See `CLAUDE.md` for Claude Code-specific workflow skills and the memory system

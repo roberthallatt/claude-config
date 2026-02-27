@@ -1,0 +1,94 @@
+# AGENTS.md — {{PROJECT_NAME}}
+
+This file provides project context for AI coding tools (OpenAI Codex, GitHub Copilot Workspace,
+and similar API-based assistants). Read this file at the start of each session.
+
+## Project Identity
+
+- **Name**: {{PROJECT_NAME}}
+- **Framework**: Next.js 14+ (App Router)
+- **Language**: TypeScript
+- **Primary URL**: {{DDEV_PRIMARY_URL}}
+
+## Directory Structure
+
+```
+{{PROJECT_SLUG}}/
+├── app/                    # App Router pages and layouts
+│   ├── layout.tsx          # Root layout
+│   ├── page.tsx            # Homepage
+│   ├── globals.css         # Global styles
+│   └── [routes]/           # Route segments
+├── components/             # React components
+│   ├── ui/                 # UI primitives
+│   └── features/           # Feature components
+├── lib/                    # Utility functions
+├── hooks/                  # Custom React hooks
+├── types/                  # TypeScript type definitions
+├── public/                 # Static assets
+└── next.config.js          # Next.js configuration
+```
+
+## Development Commands
+
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # ESLint
+npm run type-check   # TypeScript type checking
+npm test             # Run tests
+```
+
+## Git Workflow
+
+- **Main branch**: `{{GIT_MAIN_BRANCH}}` — production, never commit directly
+- **Integration branch**: `{{GIT_INTEGRATION_BRANCH}}` — feature branches merge here
+- **Feature branches**: `feature/<description>` from `{{GIT_INTEGRATION_BRANCH}}`
+- **Hotfix branches**: `hotfix/<description>` from `{{GIT_MAIN_BRANCH}}`
+
+## Coding Conventions
+
+### TypeScript
+- Use strict mode; no `any` type; define interfaces for all props
+- Use discriminated unions for complex state
+- Prefer `type` for unions/intersections, `interface` for object shapes
+
+### React / Next.js
+- Default to Server Components; use `'use client'` only for interactivity
+- Use `next/image` for all images (required for optimization)
+- Use `next/font` for font loading
+- Use `generateMetadata()` for page SEO
+- Prefix client-only env vars with `NEXT_PUBLIC_`; never expose server secrets to client
+- Place API routes in `app/api/` as Route Handlers
+- Use Suspense boundaries for async Server Components
+
+### General
+- 2-space indentation; single quotes for strings
+- Early returns to reduce nesting
+- Extract reusable logic into custom hooks
+- Memoize expensive computations with `useMemo` / `useCallback`
+
+## Security Requirements
+
+**Never read, display, or include the contents of these files:**
+
+| Category | Files / Patterns |
+|----------|-----------------|
+| Environment | `.env`, `.env.*`, `.env.local`, `.env.*.local` — `.env.example` is safe |
+| Keys & certs | `*.key`, `*.pem`, `*.p12`, `*.pfx`, `*.crt`, `*.cer` |
+| Credentials | `auth.json`, `credentials.json`, `*service-account*.json` |
+| Cloud auth | `.aws/credentials`, `.aws/config`, `.azure/` |
+| SSH / Git | `.ssh/`, `.git-credentials`, `.netrc` |
+| Secrets | `secrets.yml`, `vault.yml`, any file with `secret` or `token` in name |
+
+**Hard rules:**
+- `NEXT_PUBLIC_` variables are bundled into the client — never use this prefix for secrets
+- Never include API keys or tokens in code examples or responses
+- Verify `.gitignore` covers `.env.local` variants before staging
+
+## Important Notes
+
+- `.next/` and `node_modules/` are generated — never edit or commit them
+- Run `npm run type-check` before committing to catch type errors
+- See `CLAUDE.md` for Claude Code-specific workflow skills and the memory system

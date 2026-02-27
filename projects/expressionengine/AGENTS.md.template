@@ -1,0 +1,95 @@
+# AGENTS.md — {{PROJECT_NAME}}
+
+This file provides project context for AI coding tools (OpenAI Codex, GitHub Copilot Workspace,
+and similar API-based assistants). Read this file at the start of each session.
+
+## Project Identity
+
+- **Name**: {{PROJECT_NAME}}
+- **CMS**: ExpressionEngine 7.x
+- **Template Group**: `{{TEMPLATE_GROUP}}`
+- **Database**: {{DDEV_DB_TYPE}} {{DDEV_DB_VERSION}}
+- **PHP**: {{DDEV_PHP}}+
+- **Environment**: DDEV (Docker-based local dev)
+- **Primary URL**: {{DDEV_PRIMARY_URL}}
+- **Admin URL**: {{DDEV_PRIMARY_URL}}/admin.php
+
+## Directory Structure
+
+```
+{{PROJECT_SLUG}}/
+├── system/
+│   ├── ee/                        # EE core — do not modify
+│   └── user/
+│       ├── config/config.php      # App config (contains DB creds — never read)
+│       ├── templates/             # EE template groups
+│       │   └── {{TEMPLATE_GROUP}}.group/
+│       ├── addons/                # Custom addons
+│       └── cache/                 # Generated — do not commit
+├── {{DDEV_DOCROOT}}/              # Document root
+│   ├── index.php
+│   └── assets/                    # Public CSS/JS/images
+├── .ddev/
+└── .github/workflows/
+```
+
+## Development Commands
+
+```bash
+# DDEV
+ddev start                # Start local environment
+ddev stop                 # Stop local environment
+ddev describe             # Show URLs and connection info
+ddev ssh                  # SSH into web container
+
+# Database
+ddev export-db > backup.sql.gz   # Export (compressed)
+ddev import-db < backup.sql.gz   # Import
+
+# Xdebug
+ddev xdebug on / off
+```
+
+## Git Workflow
+
+- **Main branch**: `{{GIT_MAIN_BRANCH}}` — production, never commit directly
+- **Integration branch**: `{{GIT_INTEGRATION_BRANCH}}` — feature branches merge here
+- **Feature branches**: `feature/<description>` from `{{GIT_INTEGRATION_BRANCH}}`
+- **Hotfix branches**: `hotfix/<description>` from `{{GIT_MAIN_BRANCH}}`
+
+## Coding Conventions
+
+- PHP: PSR-12 + 4-space indentation
+- EE templates: use EE template tags (`{exp:channel:entries}`) — no raw PHP in templates
+- CSS: BEM naming unless using a utility framework
+- JS: ES6+, 2-space indentation, `const` over `let`, no `var`
+- Keep EE template logic minimal; move business logic to add-on PHP
+- Use EE's built-in security functions for output escaping
+- Document EE template parameters with inline comments
+
+## Security Requirements
+
+**Never read, display, or include the contents of these files:**
+
+| Category | Files / Patterns |
+|----------|-----------------|
+| EE config | `system/user/config/config.php` (contains DB credentials & encryption keys) |
+| Environment | `.env`, `.env.*`, `.env.php`, `ee.env` — `.env.example` is safe |
+| Keys & certs | `*.key`, `*.pem`, `*.p12`, `*.pfx`, `*.crt`, `*.cer` |
+| Credentials | `auth.json`, `credentials.json`, `*service-account*.json` |
+| Cloud auth | `.aws/credentials`, `.aws/config`, `.azure/` |
+| SSH / Git | `.ssh/`, `.git-credentials`, `.netrc` |
+| Secrets | `secrets.yml`, `vault.yml`, any file with `secret` or `token` in name |
+| DB snapshots | `.ddev/db_snapshots/`, `.ddev/import-db/`, `*.sql.gz` |
+
+**Hard rules:**
+- Never edit `system/ee/` (EE core files)
+- Never commit `system/user/config/config.php` with real credentials
+- Never commit `system/user/cache/` contents
+- Never include secrets in code examples or responses
+
+## Important Notes
+
+- Clear EE cache after template or config changes
+- EE template groups are stored as directories with `.group` suffix
+- See `CLAUDE.md` for Claude Code-specific workflow skills and the memory system

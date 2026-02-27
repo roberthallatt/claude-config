@@ -56,6 +56,7 @@ DISCOVER=false
 SKIP_VSCODE=false
 INSTALL_EXTENSIONS=false
 WITH_SUPERPOWERS=true          # Enabled by default
+WITH_OPENAI=false              # Disabled by default; use --with-openai to enable
 SUPERPOWERS_MODE=""            # all, core, minimal, custom
 SUPERPOWERS_CUSTOM_SKILLS=""   # comma-separated skill names
 
@@ -166,6 +167,10 @@ while [[ $# -gt 0 ]]; do
       WITH_SUPERPOWERS=false
       shift
       ;;
+    --with-openai)
+      WITH_OPENAI=true
+      shift
+      ;;
     -h|--help)
       echo "Usage: $0 --project=<path> [options]"
       echo ""
@@ -186,6 +191,9 @@ while [[ $# -gt 0 ]]; do
       echo "  --superpowers-core      Deploy core skills only (TDD, debugging, brainstorming)"
       echo "  --superpowers-minimal   Deploy only the bootstrap skill"
       echo "  --superpowers-skill=X   Deploy specific skills (comma-separated)"
+      echo ""
+      echo "OpenAI / API tools:"
+      echo "  --with-openai           Deploy AGENTS.md for OpenAI Codex and API tools"
       echo ""
       echo "VSCode:"
       echo "  --skip-vscode           Skip VSCode settings deployment"
@@ -762,6 +770,25 @@ merge_settings_json() {
   fi
 }
 
+deploy_agents_md() {
+  local label="${1:-Deploying}"
+  echo ""
+  echo -e "${CYAN}${label} AGENTS.md (OpenAI Codex / API tools)...${NC}"
+
+  local agents_template=""
+  if [[ -f "$STACK_DIR/AGENTS.md.template" ]]; then
+    agents_template="$STACK_DIR/AGENTS.md.template"
+  elif [[ -f "$SCRIPT_DIR/projects/common/AGENTS.md.template" ]]; then
+    agents_template="$SCRIPT_DIR/projects/common/AGENTS.md.template"
+  fi
+
+  if [[ -n "$agents_template" ]]; then
+    do_template "$agents_template" "$PROJECT_DIR/AGENTS.md"
+  else
+    echo -e "  ${YELLOW}○${NC} No AGENTS.md template found for stack: $STACK"
+  fi
+}
+
 merge_gitignore_template() {
   local template_file="$1"
   local gitignore_path="$2"
@@ -876,7 +903,7 @@ update_gitignore() {
   echo -e "${CYAN}Updating .gitignore...${NC}"
 
   # --- 1. Claude AI configuration entries ---
-  local claude_entries=("CLAUDE.md" "MEMORY.md" "MEMORY-ARCHIVE.md" ".claude/")
+  local claude_entries=("CLAUDE.md" "AGENTS.md" "MEMORY.md" "MEMORY-ARCHIVE.md" ".claude/")
   local claude_added=()
   local claude_skipped=()
 
@@ -1161,6 +1188,11 @@ if [[ "$REFRESH" == true ]]; then
     do_template "$STACK_DIR/CLAUDE.md.template" "$PROJECT_DIR/CLAUDE.md"
   elif [[ -f "$STACK_DIR/CLAUDE.md" ]]; then
     do_copy "$STACK_DIR/CLAUDE.md" "$PROJECT_DIR/"
+  fi
+
+  # Regenerate AGENTS.md from template (OpenAI Codex / API tools)
+  if [[ "$WITH_OPENAI" == true ]]; then
+    deploy_agents_md "Refreshing"
   fi
 
   # Merge settings.local.json (adds missing global rules, preserves project customizations)
@@ -1493,6 +1525,11 @@ if [[ -f "$STACK_DIR/CLAUDE.md.template" ]]; then
   do_template "$STACK_DIR/CLAUDE.md.template" "$PROJECT_DIR/CLAUDE.md"
 elif [[ -f "$STACK_DIR/CLAUDE.md" ]]; then
   do_copy "$STACK_DIR/CLAUDE.md" "$PROJECT_DIR/"
+fi
+
+# 4a. Create AGENTS.md from template (OpenAI Codex / API tools)
+if [[ "$WITH_OPENAI" == true ]]; then
+  deploy_agents_md "Deploying"
 fi
 
 # 5. Create MEMORY.md from template (if it doesn't exist)
