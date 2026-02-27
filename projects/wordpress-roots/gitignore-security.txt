@@ -1,0 +1,35 @@
+# =============================================================================
+# Bedrock WordPress Configuration (credentials managed via .env — already covered)
+# Additional config files that may be generated with credentials
+# =============================================================================
+web/wp-config.php
+config/application.php
+
+# =============================================================================
+# WordPress Cache (may contain rendered content with sensitive data)
+# =============================================================================
+web/wp-content/cache/
+web/app/cache/
+web/wp-content/wflogs/
+
+# =============================================================================
+# WordPress Database Exports
+# =============================================================================
+*.sql
+!*-schema.sql
+!*-migrations.sql
+web/app/database-backups/
+web/wp-content/ai1wm-backups/
+
+# =============================================================================
+# DDEV Local Development (contains local DB snapshots)
+# =============================================================================
+.ddev/db_snapshots/
+.ddev/import-db/
+.ddev/.gitignore-additions
+
+# =============================================================================
+# PHP Dependencies (never commit — use composer install)
+# =============================================================================
+vendor/
+web/wp/

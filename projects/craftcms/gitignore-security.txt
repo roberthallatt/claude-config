@@ -1,0 +1,39 @@
+# =============================================================================
+# Craft CMS Configuration (may expose database credentials)
+# =============================================================================
+config/db.php
+config/general.php
+
+# =============================================================================
+# Craft CMS Storage — Backups (contain full database exports)
+# =============================================================================
+storage/backups/
+backups/
+*.craftbackup
+
+# =============================================================================
+# Craft CMS Storage — Runtime & Logs (may contain sensitive request data)
+# =============================================================================
+storage/runtime/
+storage/logs/
+
+# =============================================================================
+# DDEV Local Development (contains local DB snapshots)
+# =============================================================================
+.ddev/db_snapshots/
+.ddev/import-db/
+.ddev/.gitignore-additions
+
+# =============================================================================
+# PHP Dependencies (never commit — use composer install)
+# =============================================================================
+vendor/
+
+# =============================================================================
+# Database Credentials
+# =============================================================================
+database.yml
+database.yaml
+database.json
+db-config.*
+*database-credentials*

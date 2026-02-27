@@ -762,6 +762,80 @@ merge_settings_json() {
   fi
 }
 
+merge_gitignore_template() {
+  local template_file="$1"
+  local gitignore_path="$2"
+  local label="$3"
+
+  local total_added=0
+  local block_header_written=false
+  local -a pending_section_lines=()
+  local section_header_written=false
+
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    # Any comment line — accumulate into the current section header block
+    if [[ "$line" =~ ^# ]]; then
+      pending_section_lines+=("$line")
+      continue
+    fi
+
+    # Blank line — section boundary: flush accumulated header state
+    if [[ -z "$line" ]]; then
+      pending_section_lines=()
+      section_header_written=false
+      continue
+    fi
+
+    # Pattern line — skip if already present (exact match)
+    if grep -qxF "$line" "$gitignore_path" 2>/dev/null; then
+      continue
+    fi
+
+    # New pattern found — write to file (or count for dry-run)
+    if [[ "$DRY_RUN" != true ]]; then
+      # Write the outer block header once
+      if [[ "$block_header_written" == false ]]; then
+        {
+          echo ""
+          echo "# ============================================================================="
+          echo "# Security: ${label}"
+          echo "# (Added by ai-config — do not remove section header)"
+          echo "# ============================================================================="
+        } >> "$gitignore_path"
+        block_header_written=true
+      fi
+
+      # Write the section header once per section
+      if [[ "$section_header_written" == false ]] && [[ ${#pending_section_lines[@]} -gt 0 ]]; then
+        echo "" >> "$gitignore_path"
+        for hline in "${pending_section_lines[@]}"; do
+          echo "$hline" >> "$gitignore_path"
+        done
+        section_header_written=true
+      fi
+
+      echo "$line" >> "$gitignore_path"
+    fi
+
+    ((total_added++))
+  done < "$template_file"
+
+  if [[ "$DRY_RUN" == true ]]; then
+    if [[ $total_added -gt 0 ]]; then
+      echo -e "  ${YELLOW}[DRY-RUN]${NC} Would add ${total_added} Security (${label}) entries to .gitignore"
+    else
+      echo -e "  ${GREEN}✓${NC}  Security (${label}) entries already up to date"
+    fi
+    return
+  fi
+
+  if [[ $total_added -gt 0 ]]; then
+    echo -e "  ${GREEN}✓${NC}  Added ${total_added} Security (${label}) entries to .gitignore"
+  else
+    echo -e "  ${GREEN}✓${NC}  Security (${label}) entries already up to date"
+  fi
+}
+
 do_clean() {
   # Remove existing AI assistant configuration files
   local files_to_clean=(
@@ -792,9 +866,8 @@ do_clean() {
 update_gitignore() {
   local gitignore_path="$PROJECT_DIR/.gitignore"
 
-  # Check if .gitignore exists
   if [[ ! -f "$gitignore_path" ]]; then
-    echo -e "${YELLOW}No .gitignore found, skipping automatic gitignore update${NC}"
+    echo -e "${YELLOW}  No .gitignore found — skipping gitignore update${NC}"
     echo ""
     return
   fi
@@ -802,50 +875,61 @@ update_gitignore() {
   echo ""
   echo -e "${CYAN}Updating .gitignore...${NC}"
 
-  # Build list of entries to add
-  local entries_to_add=()
+  # --- 1. Claude AI configuration entries ---
+  local claude_entries=("CLAUDE.md" "MEMORY.md" "MEMORY-ARCHIVE.md" ".claude/")
+  local claude_added=()
+  local claude_skipped=()
 
-  # Always add Claude entries
-  entries_to_add+=("CLAUDE.md" "MEMORY.md" "MEMORY-ARCHIVE.md" ".claude/")
-
-  # Check which entries are missing
-  local entries_added=()
-  local entries_skipped=()
-
-  for entry in "${entries_to_add[@]}"; do
-    # Check if entry already exists in .gitignore (exact match or as pattern)
+  for entry in "${claude_entries[@]}"; do
     if grep -qxF "$entry" "$gitignore_path" 2>/dev/null; then
-      entries_skipped+=("$entry")
+      claude_skipped+=("$entry")
     else
-      entries_added+=("$entry")
+      claude_added+=("$entry")
     fi
   done
 
-  # Add missing entries
-  if [[ ${#entries_added[@]} -gt 0 ]]; then
+  if [[ ${#claude_added[@]} -gt 0 ]]; then
     if [[ "$DRY_RUN" == true ]]; then
-      echo -e "  ${YELLOW}[DRY-RUN]${NC} Would add ${#entries_added[@]} entries to .gitignore:"
-      for entry in "${entries_added[@]}"; do
-        echo -e "    ${YELLOW}+${NC} $entry"
-      done
+      echo -e "  ${YELLOW}[DRY-RUN]${NC} Would add ${#claude_added[@]} Claude entries to .gitignore"
     else
-      # Add header comment if .gitignore doesn't already have it
       if ! grep -q "# AI Configuration" "$gitignore_path" 2>/dev/null; then
         echo "" >> "$gitignore_path"
         echo "# AI Configuration" >> "$gitignore_path"
       fi
-
-      # Add each missing entry
-      for entry in "${entries_added[@]}"; do
+      for entry in "${claude_added[@]}"; do
         echo "$entry" >> "$gitignore_path"
         echo -e "  ${GREEN}✓${NC} Added: $entry"
       done
     fi
   fi
 
-  # Report skipped entries
-  if [[ ${#entries_skipped[@]} -gt 0 ]]; then
-    echo -e "  ${GREEN}✓${NC} Already in .gitignore: ${#entries_skipped[@]} entries"
+  if [[ ${#claude_skipped[@]} -gt 0 ]]; then
+    echo -e "  ${GREEN}✓${NC} Claude entries already in .gitignore (${#claude_skipped[@]})"
+  fi
+
+  # --- 2. Common security patterns (all stacks) ---
+  local common_security="$SCRIPT_DIR/projects/common/gitignore-security.txt"
+  if [[ -f "$common_security" ]]; then
+    merge_gitignore_template "$common_security" "$gitignore_path" "Common"
+  fi
+
+  # --- 3. Stack-specific security patterns ---
+  local stack_label
+  case "$STACK" in
+    expressionengine) stack_label="ExpressionEngine" ;;
+    coilpack)         stack_label="Coilpack (Laravel + EE)" ;;
+    craftcms)         stack_label="Craft CMS" ;;
+    wordpress)        stack_label="WordPress" ;;
+    wordpress-roots)  stack_label="WordPress Roots/Bedrock" ;;
+    nextjs)           stack_label="Next.js" ;;
+    docusaurus)       stack_label="Docusaurus" ;;
+    custom)           stack_label="Custom" ;;
+    *)                stack_label="$STACK" ;;
+  esac
+
+  local stack_security="$STACK_DIR/gitignore-security.txt"
+  if [[ -f "$stack_security" ]]; then
+    merge_gitignore_template "$stack_security" "$gitignore_path" "$stack_label"
   fi
 
   echo ""
@@ -1084,6 +1168,9 @@ if [[ "$REFRESH" == true ]]; then
     merge_settings_json "$STACK_DIR/settings.local.json" "$PROJECT_DIR/.claude/settings.local.json"
   fi
 
+  # Merge .gitignore security patterns (adds missing entries, preserves existing content)
+  update_gitignore
+
   # Deploy Superpowers if requested (even in refresh mode)
   if [[ "$WITH_SUPERPOWERS" == true ]]; then
     deploy_superpowers
@@ -1103,12 +1190,13 @@ if [[ "$REFRESH" == true ]]; then
   [[ -n "$TEMPLATE_GROUP" ]] && echo -e "  Template:    ${GREEN}$TEMPLATE_GROUP${NC}"
   [[ "$HAS_TAILWIND" == true ]] && echo -e "  Tailwind:    ${GREEN}Yes${NC}"
   echo ""
-  echo -e "${CYAN}Preserved:${NC}"
+  echo -e "${CYAN}Preserved & merged:${NC}"
   echo -e "  .claude/agents/              (your customizations)"
   echo -e "  .claude/commands/            (your customizations)"
   echo -e "  .claude/rules/               (your customizations)"
   echo -e "  .claude/skills/              (your customizations)"
   echo -e "  settings.local.json (allow)  (project-specific rules kept)"
+  echo -e "  .gitignore                   (existing entries kept, missing security patterns added)"
   if [[ "$WITH_SUPERPOWERS" == true ]]; then
     echo ""
     echo -e "${CYAN}Superpowers workflow skills deployed:${NC}"

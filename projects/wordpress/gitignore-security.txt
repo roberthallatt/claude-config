@@ -1,0 +1,38 @@
+# =============================================================================
+# WordPress Configuration (contains database credentials & auth keys)
+# =============================================================================
+wp-config.php
+!wp-config-sample.php
+wp-config-local.php
+wp-config-production.php
+wp-config-staging.php
+wp-salt.php
+local-config.php
+
+# =============================================================================
+# WordPress Cache (may contain rendered page content with data)
+# =============================================================================
+wp-content/cache/
+wp-content/wflogs/
+wp-content/w3tc-config/
+
+# =============================================================================
+# WordPress Database Exports
+# =============================================================================
+*.sql
+!*-schema.sql
+!*-migrations.sql
+wp-content/database-backups/
+wp-content/ai1wm-backups/
+
+# =============================================================================
+# DDEV Local Development (contains local DB snapshots)
+# =============================================================================
+.ddev/db_snapshots/
+.ddev/import-db/
+.ddev/.gitignore-additions
+
+# =============================================================================
+# PHP Dependencies (never commit — use composer install)
+# =============================================================================
+vendor/

@@ -1,0 +1,112 @@
+# =============================================================================
+# Environment Variables
+# Contains database credentials, API keys, and secrets
+# =============================================================================
+.env
+.env.*
+!.env.example
+!.env.*.example
+!.env.template
+!.env.*.template
+
+# =============================================================================
+# Private Keys & Certificates
+# =============================================================================
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+*.der
+*.csr
+*.jks
+*.keystore
+*.priv
+
+# =============================================================================
+# SSH Keys
+# =============================================================================
+.ssh/
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+id_dsa
+id_ecdsa
+known_hosts
+
+# =============================================================================
+# Credential Files
+# =============================================================================
+.netrc
+.git-credentials
+.htpasswd
+.pypirc
+.gitconfig
+
+# Package manager auth tokens (contain registry credentials)
+auth.json
+.npmrc
+.yarnrc
+.pip/pip.conf
+
+# =============================================================================
+# Cloud Provider Credentials
+# =============================================================================
+# AWS
+.aws/credentials
+.aws/config
+aws-credentials*
+*_accessKeys.csv
+
+# Google Cloud
+gcloud/application_default_credentials.json
+*-service-account*.json
+service-account*.json
+*-credentials.json
+credentials.json
+
+# Azure
+.azure/
+
+# Generic patterns
+*_credentials.*
+*_secret.*
+
+# =============================================================================
+# API Keys & Tokens
+# =============================================================================
+apikeys.*
+api-keys.*
+api_keys.*
+*apikey*
+*api-key*
+*api_key*
+*_token.*
+*-token.*
+
+# =============================================================================
+# Secret & Vault Files
+# =============================================================================
+secrets.json
+secrets.yml
+secrets.yaml
+*.secret
+*.secrets
+*.token
+*.password
+vault.yml
+vault.yaml
+*vault*.yml
+*vault*.yaml
+
+# =============================================================================
+# Database Dumps (may contain real data)
+# =============================================================================
+*.sql.gz
+*.sql.bz2
+*.dump
+db-dump.*
+dump-*.sql
+*-dump.sql

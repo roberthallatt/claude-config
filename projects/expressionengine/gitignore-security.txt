@@ -1,0 +1,41 @@
+# =============================================================================
+# ExpressionEngine Configuration (contains database credentials & encryption keys)
+# =============================================================================
+system/user/config/config.php
+system/expressionengine/config/config.php
+user/config/config.php
+.env.php
+ee.env
+
+# =============================================================================
+# ExpressionEngine Cache & Session Data
+# =============================================================================
+system/user/cache/
+system/expressionengine/cache/
+cache/
+
+# =============================================================================
+# ExpressionEngine Logs (may contain request data and errors)
+# =============================================================================
+system/user/logs/
+system/expressionengine/logs/
+
+# =============================================================================
+# DDEV Local Development (contains local DB snapshots)
+# =============================================================================
+.ddev/db_snapshots/
+.ddev/import-db/
+.ddev/.gitignore-additions
+
+# =============================================================================
+# Database Credentials & Dumps
+# =============================================================================
+database.php
+database.yml
+database.yaml
+database.json
+db-config.*
+*database-credentials*
+*.sql
+!*-schema.sql
+!*-migrations.sql
