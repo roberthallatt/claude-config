@@ -15,7 +15,7 @@
 #   --dry-run     Show what would be done without making changes
 #   --force       Overwrite existing configuration without prompting
 #   --clean       Remove existing Claude/AI config before deploying
-#   --refresh     Re-scan project and regenerate CLAUDE.md only (preserves .claude/ customizations)
+#   --refresh     Regenerate CLAUDE.md and merge settings.local.json (preserves .claude/ customizations)
 #   --analyze           Generate analysis prompt for AI to build custom config
 #   --discover          AI-powered analysis mode for unknown/custom stacks
 #
@@ -671,6 +671,97 @@ do_template() {
   fi
 }
 
+merge_settings_json() {
+  local template_file="$1"
+  local target_file="$2"
+
+  # If target doesn't exist yet, just copy
+  if [[ ! -f "$target_file" ]]; then
+    do_copy "$template_file" "$(dirname "$target_file")/"
+    return
+  fi
+
+  if ! command -v jq &>/dev/null; then
+    echo -e "  ${YELLOW}⚠${NC}  jq not found — skipping settings merge (install jq to enable)"
+    return
+  fi
+
+  # Validate both files are valid JSON before attempting merge
+  if ! jq empty "$target_file" 2>/dev/null; then
+    echo -e "  ${YELLOW}⚠${NC}  Existing settings.local.json is invalid JSON — skipping merge"
+    return
+  fi
+  if ! jq empty "$template_file" 2>/dev/null; then
+    echo -e "  ${YELLOW}⚠${NC}  Template settings.local.json is invalid JSON — skipping merge"
+    return
+  fi
+
+  local before_deny before_allow
+  before_deny=$(jq '.permissions.deny | length' "$target_file")
+  before_allow=$(jq '.permissions.allow | length' "$target_file")
+
+  if [[ "$DRY_RUN" == true ]]; then
+    local preview_deny preview_allow
+    preview_deny=$(jq -s '
+      (.[0].permissions.deny // []) as $existing |
+      (.[1].permissions.deny // []) as $template |
+      ($template + $existing | unique | length)
+    ' "$target_file" "$template_file")
+    preview_allow=$(jq -s '
+      (.[0].permissions.allow // []) as $existing |
+      (.[1].permissions.allow // []) as $template |
+      ($template + $existing | unique | length)
+    ' "$target_file" "$template_file")
+    local added_deny=$((preview_deny - before_deny))
+    local added_allow=$((preview_allow - before_allow))
+    echo -e "  ${YELLOW}[DRY-RUN]${NC} Merge settings.local.json (+${added_allow} allow, +${added_deny} deny)"
+    return
+  fi
+
+  # Merge strategy:
+  #   - Scalar fields: existing value wins (project customizations preserved)
+  #   - Array fields (allow, deny, enabledMcpjsonServers): union of both sets
+  #   - Top-level keys only in template are added; keys only in existing are kept
+  local merged
+  merged=$(jq -s '
+    .[0] as $existing |
+    .[1] as $template |
+    ($template * $existing) |
+    .permissions.allow = (
+      (($template.permissions.allow // []) + ($existing.permissions.allow // [])) | unique
+    ) |
+    .permissions.deny = (
+      (($template.permissions.deny // []) + ($existing.permissions.deny // [])) | unique
+    ) |
+    if ($template.enabledMcpjsonServers != null or $existing.enabledMcpjsonServers != null) then
+      .enabledMcpjsonServers = (
+        (($template.enabledMcpjsonServers // []) + ($existing.enabledMcpjsonServers // [])) | unique
+      )
+    else . end
+  ' "$target_file" "$template_file")
+
+  if [[ $? -ne 0 ]]; then
+    echo -e "  ${RED}✗${NC}  Failed to merge settings.local.json — skipping"
+    return
+  fi
+
+  echo "$merged" > "$target_file"
+
+  local after_deny after_allow
+  after_deny=$(echo "$merged" | jq '.permissions.deny | length')
+  after_allow=$(echo "$merged" | jq '.permissions.allow | length')
+  local added_deny=$((after_deny - before_deny))
+  local added_allow=$((after_allow - before_allow))
+
+  if [[ $added_deny -gt 0 || $added_allow -gt 0 ]]; then
+    echo -e "  ${GREEN}✓${NC} Merged settings.local.json"
+    [[ $added_allow -gt 0 ]] && echo -e "       ${GREEN}+${added_allow}${NC} allow rule(s) added"
+    [[ $added_deny -gt 0 ]] && echo -e "       ${GREEN}+${added_deny}${NC} deny rule(s) added"
+  else
+    echo -e "  ${GREEN}✓${NC} settings.local.json already up to date"
+  fi
+}
+
 do_clean() {
   # Remove existing AI assistant configuration files
   local files_to_clean=(
@@ -976,16 +1067,21 @@ if [[ "$DISCOVER" == true ]]; then
   echo ""
 fi
 
-# Refresh mode: only regenerate CLAUDE.md, skip everything else
+# Refresh mode: regenerate CLAUDE.md and merge settings.local.json
 if [[ "$REFRESH" == true ]]; then
   echo -e "${BLUE}Refreshing CLAUDE.md...${NC}"
   echo ""
-  
+
   # Regenerate CLAUDE.md from template
   if [[ -f "$STACK_DIR/CLAUDE.md.template" ]]; then
     do_template "$STACK_DIR/CLAUDE.md.template" "$PROJECT_DIR/CLAUDE.md"
   elif [[ -f "$STACK_DIR/CLAUDE.md" ]]; then
     do_copy "$STACK_DIR/CLAUDE.md" "$PROJECT_DIR/"
+  fi
+
+  # Merge settings.local.json (adds missing global rules, preserves project customizations)
+  if [[ -f "$STACK_DIR/settings.local.json" ]]; then
+    merge_settings_json "$STACK_DIR/settings.local.json" "$PROJECT_DIR/.claude/settings.local.json"
   fi
 
   # Deploy Superpowers if requested (even in refresh mode)
@@ -1008,10 +1104,11 @@ if [[ "$REFRESH" == true ]]; then
   [[ "$HAS_TAILWIND" == true ]] && echo -e "  Tailwind:    ${GREEN}Yes${NC}"
   echo ""
   echo -e "${CYAN}Preserved:${NC}"
-  echo -e "  .claude/agents/     (your customizations)"
-  echo -e "  .claude/commands/   (your customizations)"
-  echo -e "  .claude/rules/      (your customizations)"
-  echo -e "  .claude/skills/     (your customizations)"
+  echo -e "  .claude/agents/              (your customizations)"
+  echo -e "  .claude/commands/            (your customizations)"
+  echo -e "  .claude/rules/               (your customizations)"
+  echo -e "  .claude/skills/              (your customizations)"
+  echo -e "  settings.local.json (allow)  (project-specific rules kept)"
   if [[ "$WITH_SUPERPOWERS" == true ]]; then
     echo ""
     echo -e "${CYAN}Superpowers workflow skills deployed:${NC}"
@@ -1256,9 +1353,9 @@ if [[ -d "$STACK_DIR/rules" ]]; then
   fi
 fi
 
-# 3. Copy settings.local.json
+# 3. Copy/merge settings.local.json
 if [[ -f "$STACK_DIR/settings.local.json" ]]; then
-  do_copy "$STACK_DIR/settings.local.json" "$PROJECT_DIR/.claude/"
+  merge_settings_json "$STACK_DIR/settings.local.json" "$PROJECT_DIR/.claude/settings.local.json"
 fi
 
 # 4. Copy VSCode settings
