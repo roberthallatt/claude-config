@@ -1,5 +1,6 @@
 {
   "enableAllProjectMcpServers": true,
+  "respectGitignore": true,
   "enabledMcpjsonServers": [
     "context7"
   ],
@@ -37,7 +38,6 @@
     "deny": [
       "Read(**/.env)",
       "Read(**/.env.*)",
-
       "Read(**/*.key)",
       "Read(**/*.pem)",
       "Read(**/*.p12)",
@@ -49,7 +49,6 @@
       "Read(**/*.jks)",
       "Read(**/*.keystore)",
       "Read(**/*.priv)",
-
       "Read(**/.ssh/*)",
       "Read(**/id_rsa)",
       "Read(**/id_rsa.pub)",
@@ -57,16 +56,13 @@
       "Read(**/id_ed25519.pub)",
       "Read(**/id_dsa)",
       "Read(**/id_ecdsa)",
-
       "Read(**/.netrc)",
       "Read(**/.git-credentials)",
       "Read(**/.htpasswd)",
-
       "Read(**/auth.json)",
       "Read(**/.npmrc)",
       "Read(**/.yarnrc)",
       "Read(**/.pypirc)",
-
       "Read(**/.aws/credentials)",
       "Read(**/.aws/config)",
       "Read(**/application_default_credentials.json)",
@@ -74,7 +70,6 @@
       "Read(**/*-credentials.json)",
       "Read(**/credentials.json)",
       "Read(**/.azure/*)",
-
       "Read(**/secrets.json)",
       "Read(**/secrets.yml)",
       "Read(**/secrets.yaml)",
@@ -84,14 +79,11 @@
       "Read(**/*.password)",
       "Read(**/vault.yml)",
       "Read(**/vault.yaml)",
-
       "Read(**/database.yml)",
       "Read(**/database.yaml)",
-
       "Read(**/*.log)",
       "Read(**/logs/*)",
       "Read(**/storage/logs/*)",
-
       "Read(**/config/db.php)",
       "Read(**/config/general.php)",
       "Read(**/.ddev/db_snapshots/*)",
